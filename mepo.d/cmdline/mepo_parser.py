@@ -9,8 +9,8 @@ class MepoParser(object):
         self.parser = argparse.ArgumentParser(
             description = 'Tool to manage (m)ultiple r(epo)s')
         self.subparsers = self.parser.add_subparsers(
-            title='mepo commands',
-            dest='mepo_cmd')
+            title = 'mepo commands',
+            dest = 'mepo_cmd')
 
     def parse(self):
         self.__checkout()
@@ -23,15 +23,17 @@ class MepoParser(object):
             'checkout',
             help = 'checkout repos defined in config file')
         checkout.add_argument(
-            '--config',
-            default='repolist.yml',
-            metavar = 'mepo-config-file')
+            '--cf',
+            metavar = 'config-file',
+            default = 'repolist.json',
+            help = 'default: %(default)s')
 
     def __status(self):
         status = self.subparsers.add_parser(
             'status',
-            help='run "git status" for each repo in config file')
-
+            help = 'run "git status" for each repo in config file')
+        status.add_argument('-v', '--verbose', action = 'store_true')
+        
     def __branch(self):
         branch = self.subparsers.add_parser(
             'branch',
