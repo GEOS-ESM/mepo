@@ -5,6 +5,7 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "mepo.d"))
 
 from status import status
+from branch import branch
 from checkout import checkout
 from cmdline.mepo_parser import MepoParser
 
@@ -18,5 +19,5 @@ if __name__ == '__main__':
     elif args.mepo_cmd == 'status':
         status.run(args)
 
-    # elif args.mepo_cmd == 'branch':
-    #     branch.run(args)
+    elif args.mepo_cmd == 'branch':
+        branch.run(args)

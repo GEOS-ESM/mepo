@@ -1,6 +1,7 @@
 import os
 import json
 import subprocess as sp
+
 from Mepo import MepoState
 
 def run(args):
@@ -23,11 +24,12 @@ def __check_status(repo, verbose=False):
 
 def __get_current_branch_or_tag(repo_path):
     try:
-        with open(os.devnull, 'w') as ferr:
-            b_t_name = sp.check_output('git describe --tags --exact-match'.split(), stderr = ferr)
+        b_t_name = sp.check_output('git symbolic-ref -q --short HEAD'.split())
     except sp.CalledProcessError:
         try:
-            b_t_name = sp.check_output('git symbolic-ref -q --short HEAD'.split())
+            cmd = 'git describe --tags --exact-match'.split()
+            with open(os.devnull, 'w') as ferr:
+                b_t_name = sp.check_output(cmd, stderr = ferr)
         except sp.CalledProcessError:
             raise Exception('Neither a tag nor a branch in %s' % repo_path)
     return b_t_name.strip()

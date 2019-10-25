@@ -1,17 +1,22 @@
-# Initialize mepo
-
 import os
 import csv
+import sys
 import json
+
+from collections import OrderedDict
 
 class MepoState(object):
 
-    mepo_state_dir = os.path.join(os.getcwd(), '.mepo')
-    mepo_state_file = os.path.join(mepo_state_dir, 'mepo-state.csv')
+    mepo_dir = os.path.join(os.getcwd(), '.mepo')
+    mepo_file = os.path.join(mepo_dir, 'mepo-state.csv')
+
+    @classmethod
+    def error(cls, msg):
+        sys.exit('ERROR: %s' % msg)
     
     @classmethod
     def exists(cls):
-        if os.path.exists(cls.mepo_state_file):
+        if os.path.exists(cls.mepo_file):
             return True
         else:
             return False
@@ -32,11 +37,11 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file):
         if cls.exists():
-            raise Exception("mepo state already exists")
-        os.mkdir(cls.mepo_state_dir)
+            cls.error('mepo already initialized')
+        os.mkdir(cls.mepo_dir)
         with open(project_config_file, 'r') as fin:
-            repolist = json.load(fin)
-        with open(cls.mepo_state_file, 'w') as fout:
+            repolist = json.load(fin, object_pairs_hook=OrderedDict)
+        with open(cls.mepo_file, 'w') as fout:
             csv_writer = csv.writer(fout, delimiter = ',', quotechar = '"')
             csv_writer.writerow(['name', 'origin', 'tag', 'branch', 'path'])
             cls.__somefunction(repolist, csv_writer)
@@ -44,9 +49,9 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise Exception("mepo state does not exist")
+            cls.error('mepo state does not exist')
         allrepos = []
-        with open(cls.mepo_state_file, 'r') as fin:
+        with open(cls.mepo_file, 'r') as fin:
             reader = csv.DictReader(fin, delimiter = ',')
             for row in reader:
                 allrepos.append(row)
