@@ -14,8 +14,13 @@ class MepoBranchParser(object):
     def __create(self):
         branch_create = self.branch_subparsers.add_parser(
             'create',
-            description='Create branch <branch-name> in all repos with changes')
+            description = 'Create branch <branch-name> in specified repos')
         branch_create.add_argument('branch_name', metavar='branch-name')
+        branch_create.add_argument(
+            'repos',
+            metavar='in-repos',
+            nargs = '+',
+            help = 'Repo(s) to create the branch in')
 
     def __push(self):
         branch_push = self.branch_subparsers.add_parser(

@@ -31,11 +31,11 @@ class MepoParser(object):
     def __status(self):
         status = self.subparsers.add_parser(
             'status',
-            help = 'run "git status" for each repo in config file')
+            help = 'check status of all repos')
         status.add_argument('-v', '--verbose', action = 'store_true')
         
     def __branch(self):
         branch = self.subparsers.add_parser(
             'branch',
-            help = 'create, push or pull a branch in all repos')
+            help = 'run "mepo branch -h" for available sub-commands')
         MepoBranchParser(branch)
