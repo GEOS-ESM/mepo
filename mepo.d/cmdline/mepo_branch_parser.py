@@ -9,6 +9,7 @@ class MepoBranchParser(object):
         self.__push()
         self.__pull()
         self.__switch()
+        self.__sync()
         
     def __create(self):
         branch_create = self.branch_subparsers.add_parser(
@@ -34,3 +35,10 @@ class MepoBranchParser(object):
             description='switch repository <repo-name> to branch <branch-name>')
         branch_switch.add_argument('repo_name', metavar='repo-name')
         branch_switch.add_argument('branch_name', metavar='branch-name')
+
+    def __sync(self):
+        branch_sync = self.branch_subparsers.add_parser(
+            'sync',
+            description = 'sync branch <branch-name> with remote')
+        branch_sync.add_argument('branch_name', metavar='branch-name')
+        
