@@ -4,7 +4,7 @@ import csv
 import json
 import subprocess as sp
 
-from Mepo import MepoState
+from mepo_state import MepoState
 
 def run(args):
     MepoState.initialize(args.cf)
@@ -30,6 +30,6 @@ def __checkout_components(repo):
     
 def __git_clone(url, branch_or_tag, local_path):
     cmd = 'git clone -b %s %s %s' % (branch_or_tag, url, local_path)
-    output_file = os.path.join(MepoState.mepo_state_dir, 'checkout.log')
+    output_file = os.path.join(MepoState.get_dir(), 'checkout.log')
     with open(output_file, 'a') as fnull:
         sp.check_call(cmd.split(), stderr=fnull)

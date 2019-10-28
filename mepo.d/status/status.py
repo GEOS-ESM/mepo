@@ -2,7 +2,7 @@ import os
 import json
 import subprocess as sp
 
-from Mepo import MepoState
+from mepo_state import MepoState
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -14,12 +14,14 @@ def __check_status(repo, verbose=False):
     orig_branch_or_tag = repo['branch'] or repo['tag']
     os.chdir(repo['path'])
     output = sp.check_output('git status -s'.split())
-    changes = ''
+    print('{:<14.14s} | {:<40.40s} | {:<33s}'.
+          format(
+              repo['name'],
+              os.path.relpath(repo['path'], cwd),
+              __get_current_branch_or_tag(repo['path'])))
     if (output):
-        changes = 'Y'
-    cur_branch_or_tag = __get_current_branch_or_tag(repo['path'])
-    print('{:<1s} | {:<14.14s} | {:<30.30s} | {:<30s}'.
-          format(changes, repo['name'], orig_branch_or_tag, cur_branch_or_tag))
+        for line in output.split('\n'):
+            print '   |', line.rstrip()
     os.chdir(cwd)
 
 def __get_current_branch_or_tag(repo_path):
