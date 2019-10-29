@@ -41,23 +41,24 @@ def convert_relpath_to_abs(repolist, keywd='Components'):
                     
 class MepoState(object):
 
-    __dirname = '.mepo'
-    __filename = 'state.pkl'
+    __state_dir_name = '.mepo'
+    __state_0_file_name = 'state.0.pkl'
+    __state_file_name = 'state.pkl'
 
     @classmethod
     def get_dir(cls):
         for mydir in get_parent_dirs():
-            mepo_dir = os.path.join(mydir, cls.__dirname)
-            if os.path.exists(mepo_dir):
-                return mepo_dir
-        raise OSError('mepo dir [.mepo] does not exist')
+            state_dir = os.path.join(mydir, cls.__state_dir_name)
+            if os.path.exists(state_dir):
+                return state_dir
+        raise OSError('mepo state dir [.mepo] does not exist')
 
     @classmethod
     def get_file(cls):
-        mepo_file = os.path.join(cls.get_dir(), cls.__filename)
-        if os.path.exists(mepo_file):
-            return mepo_file
-        raise OSError('mepo file [%s] does not exist' % mepo_file)
+        state_file = os.path.join(cls.get_dir(), cls.__state_file_name)
+        if os.path.exists(state_file):
+            return state_file
+        raise OSError('mepo state file [%s] does not exist' % state_file)
 
     @classmethod
     def exists(cls):
@@ -71,15 +72,17 @@ class MepoState(object):
     def initialize(cls, project_config_file):
         if cls.exists():
             sys.exit('ERROR: mepo state already exists')
-        new_mepo_dir = os.path.join(os.getcwd(), cls.__dirname)
-        new_mepo_file = os.path.join(new_mepo_dir, cls.__filename)
-        os.mkdir(new_mepo_dir)
+        new_state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
+        new_state_file = os.path.join(new_state_dir, cls.__state_0_file_name)
+        os.mkdir(new_state_dir)
         with open(project_config_file, 'r') as fin:
             repolist = json.load(fin, object_pairs_hook=OrderedDict)
         repolist = convert_relpath_to_abs(repolist)
         repolist_flattened = flatten_nested_dict(repolist)
-        with open(new_mepo_file, 'wb') as fout:
+        with open(new_state_file, 'wb') as fout:
             pickle.dump(repolist_flattened, fout, -1)
+        state_file = os.path.join(cls.__state_dir_name, cls.__state_file_name)
+        os.symlink(new_state_file, state_file)
         return repolist_flattened
         
     @classmethod
