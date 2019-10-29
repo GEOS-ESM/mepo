@@ -78,26 +78,14 @@ class MepoState(object):
             repolist = json.load(fin, object_pairs_hook=OrderedDict)
         repolist = convert_relpath_to_abs(repolist)
         repolist_flattened = flatten_nested_dict(repolist)
-        # with open(new_mepo_file, 'w') as fout:
-        #     csv_writer = csv.writer(fout, delimiter = ',', quotechar = '"')
-        #     csv_writer.writerow(KEYLIST)
-        #     write_state(repolist, csv_writer)
         with open(new_mepo_file, 'wb') as fout:
             pickle.dump(repolist_flattened, fout, -1)
+        return repolist_flattened
         
     @classmethod
     def read_state(cls):
         if not cls.exists():
             sys.exit('ERROR: mepo state does not exist')
-        # allrepos = OrderedDict()
-        # with open(cls.get_file(), 'r') as fin:
-        #     reader = csv.DictReader(fin, delimiter = ',')
-        #     for row in reader:
-        #         reponame = row['name']
-        #         allrepos[reponame] = dict()
-        #         for key in KEYLIST:
-        #             if key != 'name':
-        #                 allrepos[reponame].update({key: row[key]})
         with open(cls.get_file(), 'rb') as fin:
             allrepos = pickle.load(fin)
         return allrepos
