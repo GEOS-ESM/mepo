@@ -5,6 +5,8 @@ import json
 
 from collections import OrderedDict
 
+KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
+
 def get_parent_dirs():
     mypath = os.getcwd()
     parentdirs = [mypath]
@@ -13,7 +15,7 @@ def get_parent_dirs():
         parentdirs.append(mypath)
     return parentdirs
 
-def write_state(repolist, csv_writer):
+def write_state(repolist, csv_writer, level=0):
     myrepos = repolist['Components']
     for reponame in myrepos:
         repo = myrepos[reponame]
@@ -22,9 +24,9 @@ def write_state(repolist, csv_writer):
         tag = repo.get('tag')
         # TODO: Can't have both branch and tag
         local_path = os.path.join(os.getcwd(), repo['local'])
-        csv_writer.writerow([reponame, remote, tag, branch, local_path])
+        csv_writer.writerow([level, reponame, remote, tag, branch, local_path])
         if 'Components' in repo:
-            write_state(repo, csv_writer) # recurse
+            write_state(repo, csv_writer, level+1) # recurse
 
 class MepoState(object):
 
@@ -65,16 +67,20 @@ class MepoState(object):
             repolist = json.load(fin, object_pairs_hook=OrderedDict)
         with open(new_mepo_file, 'w') as fout:
             csv_writer = csv.writer(fout, delimiter = ',', quotechar = '"')
-            csv_writer.writerow(['name', 'origin', 'tag', 'branch', 'path'])
+            csv_writer.writerow(KEYLIST)
             write_state(repolist, csv_writer)
         
     @classmethod
     def read_state(cls):
         if not cls.exists():
             sys.exit('ERROR: mepo state does not exist')
-        allrepos = []
+        allrepos = OrderedDict()
         with open(cls.get_file(), 'r') as fin:
             reader = csv.DictReader(fin, delimiter = ',')
             for row in reader:
-                allrepos.append(row)
+                reponame = row['name']
+                allrepos[reponame] = dict()
+                for key in KEYLIST:
+                    if key != 'name':
+                        allrepos[reponame].update({key: row[key]})
         return allrepos
