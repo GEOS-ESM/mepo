@@ -32,5 +32,5 @@ def git_clone(url, version, local_path):
         sp.check_call(cmd.split(), stderr=fnull)
 
 def print_status(name, version, vtype, width):
-    FMT = '{:<{width}} | {:<1.1s} | {:<s}'
+    FMT = '{:<{width}} | ({:<1.1s}) {:<s}'
     print(FMT.format(name, vtype, version, width = width))
