@@ -6,16 +6,16 @@ from mepo_state import MepoState
 
 def run(args):
     allrepos = MepoState.read_state()
-    for repo in allrepos:
-        __check_status(repo, allrepos[repo])
+    for name, repo in allrepos.items():
+        __check_status(name, repo)
 
 def __check_status(name, repo, verbose=False):
     cwd = os.getcwd()
-    os.chdir(repo['path'])
+    os.chdir(repo['local'])
     output = sp.check_output('git status -s'.split())
     print('{:<14.14s} | {:<40.40s} | {:<33s}'.
-          format(name, os.path.relpath(repo['path'], cwd),
-                 __get_current_version(repo['path'])))
+          format(name, os.path.relpath(repo['local'], cwd),
+                 __get_current_version(repo['local'])))
     if (output):
         for line in output.split('\n'):
             print '   |', line.rstrip()

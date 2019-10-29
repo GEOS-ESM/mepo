@@ -3,6 +3,8 @@ import sys
 import csv
 import json
 
+import cPickle as pickle
+
 from collections import OrderedDict
 
 KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
@@ -15,23 +17,32 @@ def get_parent_dirs():
         parentdirs.append(mypath)
     return parentdirs
 
-def write_state(repolist, csv_writer, level=0):
-    myrepos = repolist['Components']
-    for reponame in myrepos:
-        repo = myrepos[reponame]
-        remote = repo['remote']
-        branch = repo.get('branch') # d.get(key) is None if key is not present
-        tag = repo.get('tag')
-        # TODO: Can't have both branch and tag
-        local_path = os.path.join(os.getcwd(), repo['local'])
-        csv_writer.writerow([level, reponame, remote, tag, branch, local_path])
-        if 'Components' in repo:
-            write_state(repo, csv_writer, level+1) # recurse
-
+def flatten_nested_dict(nestedd, flatd=None, keywd='Components', level=0):
+    if flatd is None:
+        flatd = OrderedDict()
+    for name, repo in nestedd[keywd].items():
+        flatd[name] = OrderedDict([('level', level)])
+        for key, value in repo.items():
+            if key == keywd:
+                flatten_nested_dict(repo, flatd, keywd, level+1) # recurse
+            else:
+                flatd[name][key] = value
+    return flatd
+            
+def convert_relpath_to_abs(repolist, keywd='Components'):
+    for name, repo in repolist[keywd].items():
+        for key, value in repo.items():
+            if key == keywd:
+                convert_relpath_to_abs(repo)
+            else:
+                if key == 'local':
+                    repo[key] = os.path.abspath(value)
+    return repolist
+                    
 class MepoState(object):
 
     __dirname = '.mepo'
-    __filename = 'state.csv'
+    __filename = 'state.pkl'
 
     @classmethod
     def get_dir(cls):
@@ -65,22 +76,28 @@ class MepoState(object):
         os.mkdir(new_mepo_dir)
         with open(project_config_file, 'r') as fin:
             repolist = json.load(fin, object_pairs_hook=OrderedDict)
-        with open(new_mepo_file, 'w') as fout:
-            csv_writer = csv.writer(fout, delimiter = ',', quotechar = '"')
-            csv_writer.writerow(KEYLIST)
-            write_state(repolist, csv_writer)
+        repolist = convert_relpath_to_abs(repolist)
+        repolist_flattened = flatten_nested_dict(repolist)
+        # with open(new_mepo_file, 'w') as fout:
+        #     csv_writer = csv.writer(fout, delimiter = ',', quotechar = '"')
+        #     csv_writer.writerow(KEYLIST)
+        #     write_state(repolist, csv_writer)
+        with open(new_mepo_file, 'wb') as fout:
+            pickle.dump(repolist_flattened, fout, -1)
         
     @classmethod
     def read_state(cls):
         if not cls.exists():
             sys.exit('ERROR: mepo state does not exist')
-        allrepos = OrderedDict()
-        with open(cls.get_file(), 'r') as fin:
-            reader = csv.DictReader(fin, delimiter = ',')
-            for row in reader:
-                reponame = row['name']
-                allrepos[reponame] = dict()
-                for key in KEYLIST:
-                    if key != 'name':
-                        allrepos[reponame].update({key: row[key]})
+        # allrepos = OrderedDict()
+        # with open(cls.get_file(), 'r') as fin:
+        #     reader = csv.DictReader(fin, delimiter = ',')
+        #     for row in reader:
+        #         reponame = row['name']
+        #         allrepos[reponame] = dict()
+        #         for key in KEYLIST:
+        #             if key != 'name':
+        #                 allrepos[reponame].update({key: row[key]})
+        with open(cls.get_file(), 'rb') as fin:
+            allrepos = pickle.load(fin)
         return allrepos
