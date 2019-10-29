@@ -7,32 +7,30 @@ import subprocess as sp
 from mepo_state import MepoState
 
 def run(args):
-    MepoState.initialize(args.cf)
-    allrepos = MepoState.read_state()
-    print 'Checking out components...'
+    allrepos = MepoState.initialize(args.cf)
+    max_name_length = len(max(allrepos, key=len))
     for name, repo in allrepos.items():
-        __checkout_component(name, repo)
+        version, vtype = get_version(repo)
+        checkout_component(name, repo, version)
+        print_status(name, version, vtype, max_name_length)
 
-def __checkout_component(name, repo):
-    version, identifier = __get_version(repo)
-    __git_clone(repo['remote'], version, repo['local'])
-    print('{:<{width}} ({:<1s}) {:<s}'.
-          format(name, identifier, version, width=30))
+def checkout_component(name, repo, version):
+    git_clone(repo['remote'], version, repo['local'])
 
-def __get_version(repo):
-    if 'tag' not in repo and 'branch' not in repo:
-        raise Exception('Need to specify one of [tag, branch]')
-    if 'tag' in repo and 'branch' in repo:
-        raise Exception('Can specify only one of [tag, branch], not both')
-    identifier = 't'
+def get_version(repo):
+    vtype = 't'
     version = repo.get('tag')
     if version is None:
-        identifier = 'b'
+        vtype = 'b'
         version = repo.get('branch')
-    return (version, identifier)
+    return (version, vtype)
 
-def __git_clone(url, version, local_path):
+def git_clone(url, version, local_path):
     cmd = 'git clone -b %s %s %s' % (version, url, local_path)
     output_file = os.path.join(MepoState.get_dir(), 'checkout.log')
     with open(output_file, 'a') as fnull:
         sp.check_call(cmd.split(), stderr=fnull)
+
+def print_status(name, version, vtype, width):
+    FMT = '{:<{width}} | {:<1.1s} | {:<s}'
+    print(FMT.format(name, vtype, version, width = width))
