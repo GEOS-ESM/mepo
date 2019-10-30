@@ -2,7 +2,7 @@ import os
 import sys
 import subprocess as sp
 
-from mepo_state import MepoState
+from state.state import MepoState
 
 def run(repo_names, branch_name):
     allrepos = MepoState.read_state()

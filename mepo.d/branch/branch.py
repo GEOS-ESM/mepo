@@ -1,6 +1,7 @@
-from mepo_state import MepoState
 from create import create
 from switch import switch
+
+from state.state import MepoState
 
 def run(args):
     branch_cmd = args.mepo_branch_cmd

@@ -4,7 +4,7 @@ import csv
 import json
 import subprocess as sp
 
-from mepo_state import MepoState
+from state.state import MepoState
 
 def run(args):
     allrepos = MepoState.initialize(args.cf)
