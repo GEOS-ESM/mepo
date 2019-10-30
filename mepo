@@ -8,7 +8,7 @@ from clone import clone
 from status import status
 from checkout import checkout
 from branch import branch
-from cmdline.mepo_parser import MepoParser
+from cmdline.parser import MepoParser
 
 if __name__ == '__main__':
 
