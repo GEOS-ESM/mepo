@@ -1,4 +1,3 @@
-import sys
 import argparse
 
 class MepoParser(object):

@@ -1,6 +1,5 @@
 import os
 import sys
-import json
 import subprocess as sp
 
 from state.state import MepoState

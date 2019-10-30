@@ -1,6 +1,5 @@
 import os
 import sys
-import csv
 import json
 
 import cPickle as pickle
