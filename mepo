@@ -14,14 +14,20 @@ if __name__ == '__main__':
 
     args = MepoParser().parse()
 
-    if args.mepo_cmd == 'clone':
-        clone.run(args)
+    try:
+        
+        if args.mepo_cmd == 'clone':
+            clone.run(args)
+            
+        elif args.mepo_cmd == 'status':
+            status.run(args)
+            
+        elif args.mepo_cmd == 'checkout':
+            checkout.run(args)
+            
+        elif args.mepo_cmd == 'branch':
+            branch.run(args)
 
-    elif args.mepo_cmd == 'status':
-        status.run(args)
-
-    elif args.mepo_cmd == 'checkout':
-        checkout.run(args)
-
-    elif args.mepo_cmd == 'branch':
-        branch.run(args)
+    except Exception as e:
+        
+        sys.exit('ERROR: ' + str(e))

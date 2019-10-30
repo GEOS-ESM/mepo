@@ -1,5 +1,4 @@
 import os
-import sys
 import json
 
 import cPickle as pickle
@@ -68,7 +67,7 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file):
         if cls.exists():
-            sys.exit('ERROR: mepo state already exists')
+            raise Exception('mepo state already exists')
         new_state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
         new_state_file = os.path.join(new_state_dir, cls.__state_0_file_name)
         os.mkdir(new_state_dir)
@@ -85,7 +84,7 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            sys.exit('ERROR: mepo state does not exist')
+            raise Exception('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             allrepos = pickle.load(fin)
         return allrepos

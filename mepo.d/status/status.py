@@ -1,5 +1,4 @@
 import os
-import sys
 import subprocess as sp
 
 from state.state import MepoState
@@ -27,7 +26,7 @@ def get_current_version(name, repo):
     if version is None:
         version, vtype = get_repo_tag_name(repo_path)
         if version is None:
-            sys.exit('Could not find branch or tag name for %s' % name)
+            raise Exception('Could not find branch or tag name for %s' % name)
     return (version.strip(), vtype)
 
 def get_repo_branch_name(repo_path):
