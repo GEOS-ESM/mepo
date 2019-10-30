@@ -15,28 +15,24 @@ def run(args):
         print_status(name, relpath, version, vtype, output, max_name_length)
 
 def check_status(name, repo, verbose=False):
-    cwd = os.getcwd()
-    os.chdir(repo['local'])
-    output = sp.check_output('git status -s'.split())
-    os.chdir(cwd)
+    cmd = 'git -C %s status -s' % repo['local']
+    output = sp.check_output(cmd.split())
     return output
 
 def get_relative_path(repo):
     return os.path.relpath(repo['local'], os.getcwd())
 
 def get_current_version(name, repo):
-    cwd = os.getcwd()
-    os.chdir(repo['local'])
-    version, vtype = get_repo_branch_name()
+    repo_path = repo['local']
+    version, vtype = get_repo_branch_name(repo_path)
     if version is None:
-        version, vtype = get_repo_tag_name()
+        version, vtype = get_repo_tag_name(repo_path)
         if version is None:
             sys.exit('Could not find branch or tag name for %s' % name)
-    os.chdir(cwd)
     return (version.strip(), vtype)
 
-def get_repo_branch_name():
-    cmd = 'git symbolic-ref -q --short HEAD'
+def get_repo_branch_name(repo_path):
+    cmd = 'git -C %s symbolic-ref -q --short HEAD' % repo_path
     try:
         with open(os.devnull, 'w') as ferr:
             version = sp.check_output(cmd.split(), stderr = ferr)
@@ -44,13 +40,13 @@ def get_repo_branch_name():
     except sp.CalledProcessError:
         return (None, None)
 
-def get_repo_tag_name():
-    cmd = 'git describe --tags --exact-match'.split()
+def get_repo_tag_name(repo_path):
+    cmd = 'git -C %s describe --tags --exact-match' % repo_path
     try:
         with open(os.devnull, 'w') as ferr:
-            version = sp.check_output(cmd, stderr = ferr)
+            version = sp.check_output(cmd.split(), stderr = ferr)
         return (version, 't')
-    except sp.calledProcessError:
+    except sp.CalledProcessError:
         return (None, None)
 
 def print_status(name, relpath, version, vtype, output, width):

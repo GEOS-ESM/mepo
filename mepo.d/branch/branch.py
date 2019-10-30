@@ -14,9 +14,7 @@ def run(args):
             print(FMT.format('', line))
         
 def __git_branch(repo, all):
-    cwd = os.getcwd()
-    os.chdir(repo['local'])
-    cmd = 'git branch'
+    cmd = 'git -C %s branch' % repo['local']
     if all:
         cmd += ' -a'
     output = sp.check_output(cmd.split())

@@ -14,13 +14,10 @@ def run(args):
         __checkout_branch(reponame, allrepos[reponame], branch_name)
 
 def __checkout_branch(name, repo, branch):
-    cwd = os.getcwd()
-    os.chdir(repo['local'])
-    cmd = 'git checkout %s' % branch
+    cmd = 'git -C %s checkout %s' % (repo['local'], branch)
     try:
         with open(os.devnull, 'w') as ferr:
             sp.check_output(cmd.split(), stderr = sp.STDOUT)
-        os.chdir(cwd)
     except sp.CalledProcessError as err:
         print err.output.strip()
         sys.exit(err.returncode)
