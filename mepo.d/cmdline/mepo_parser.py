@@ -1,8 +1,6 @@
 import sys
 import argparse
 
-from mepo_branch_parser import MepoBranchParser
-
 class MepoParser(object):
 
     def __init__(self):
