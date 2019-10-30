@@ -15,6 +15,7 @@ class MepoParser(object):
     def parse(self):
         self.__clone()
         self.__status()
+        self.__checkout()
         self.__branch()
         return self.parser.parse_args()
     
@@ -33,6 +34,13 @@ class MepoParser(object):
             'status',
             description = 'Check status of all repos')
         
+    def __checkout(self):
+        checkout = self.subparsers.add_parser(
+            'checkout',
+            description = 'Switch to branch <branch-name> in repo <repo-name>')
+        checkout.add_argument('branch_name', metavar = 'branch-name')
+        checkout.add_argument('repo_name', metavar = 'repo-name', nargs = '+')
+
     def __branch(self):
         branch = self.subparsers.add_parser(
             'branch',
