@@ -44,5 +44,8 @@ class MepoParser(object):
     def __branch(self):
         branch = self.subparsers.add_parser(
             'branch',
-            description = 'Run "mepo branch -h" for available sub-commands')
-        MepoBranchParser(branch)
+            description = 'List branches in all repositories')
+        branch.add_argument(
+            '-a', '--all',
+            action = 'store_true',
+            help = 'list all (local & remote) branches')

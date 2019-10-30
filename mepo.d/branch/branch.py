@@ -1,13 +1,23 @@
-from create import create
-from switch import switch
+import os
+import subprocess as sp
 
 from state.state import MepoState
 
 def run(args):
-    branch_cmd = args.mepo_branch_cmd
-    branch_name = args.branch_name
-    repo_names = args.repo_name
-    if branch_cmd == 'create':
-        create.run(repo_names, branch_name)
-    else:
-        raise NotImplementedError('"mepo branch %s" has not yet been implemented' % branch_cmd)
+    allrepos = MepoState.read_state()
+    max_name_length = len(max(allrepos, key=len))
+    FMT = '{:<%s.%ss} | {:<s}' % (max_name_length, max_name_length)
+    for name, repo in allrepos.items():
+        output = __git_branch(repo, args.all)
+        print(FMT.format(name, output[0]))
+        for line in output[1:]:
+            print(FMT.format('', line))
+        
+def __git_branch(repo, all):
+    cwd = os.getcwd()
+    os.chdir(repo['local'])
+    cmd = 'git branch'
+    if all:
+        cmd += ' -a'
+    output = sp.check_output(cmd.split())
+    return output.strip().split('\n')
