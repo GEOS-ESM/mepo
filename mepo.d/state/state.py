@@ -5,8 +5,6 @@ import json
 
 import cPickle as pickle
 
-from collections import OrderedDict
-
 KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
 
 def get_parent_dirs():
@@ -19,9 +17,9 @@ def get_parent_dirs():
 
 def flatten_nested_dict(nestedd, flatd=None, keywd='Components', level=0):
     if flatd is None:
-        flatd = OrderedDict()
+        flatd = dict()
     for name, repo in nestedd[keywd].items():
-        flatd[name] = OrderedDict([('level', level)])
+        flatd[name] = dict(level = 0)
         for key, value in repo.items():
             if key == keywd:
                 flatten_nested_dict(repo, flatd, keywd, level+1) # recurse
@@ -76,7 +74,7 @@ class MepoState(object):
         new_state_file = os.path.join(new_state_dir, cls.__state_0_file_name)
         os.mkdir(new_state_dir)
         with open(project_config_file, 'r') as fin:
-            repolist = json.load(fin, object_pairs_hook=OrderedDict)
+            repolist = json.load(fin)
         repolist = convert_relpath_to_abs(repolist)
         repolist_flattened = flatten_nested_dict(repolist)
         with open(new_state_file, 'wb') as fout:
