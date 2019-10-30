@@ -21,7 +21,7 @@ class MepoParser(object):
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            help = 'clone repos defined in config file')
+            description = 'Clone repos defined in config file')
         clone.add_argument(
             '--cf',
             metavar = 'config-file',
@@ -31,10 +31,10 @@ class MepoParser(object):
     def __status(self):
         status = self.subparsers.add_parser(
             'status',
-            help = 'check status of all repos')
+            description = 'Check status of all repos')
         
     def __branch(self):
         branch = self.subparsers.add_parser(
             'branch',
-            help = 'run "mepo branch -h" for available sub-commands')
+            description = 'Run "mepo branch -h" for available sub-commands')
         MepoBranchParser(branch)
