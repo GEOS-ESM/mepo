@@ -13,16 +13,16 @@ class MepoParser(object):
             dest = 'mepo_cmd')
 
     def parse(self):
-        self.__checkout()
+        self.__clone()
         self.__status()
         self.__branch()
         return self.parser.parse_args()
     
-    def __checkout(self):
-        checkout = self.subparsers.add_parser(
-            'checkout',
-            help = 'checkout repos defined in config file')
-        checkout.add_argument(
+    def __clone(self):
+        clone = self.subparsers.add_parser(
+            'clone',
+            help = 'clone repos defined in config file')
+        clone.add_argument(
             '--cf',
             metavar = 'config-file',
             default = 'repolist.json',
