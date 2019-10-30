@@ -32,7 +32,6 @@ class MepoParser(object):
         status = self.subparsers.add_parser(
             'status',
             help = 'check status of all repos')
-        status.add_argument('-v', '--verbose', action = 'store_true')
         
     def __branch(self):
         branch = self.subparsers.add_parser(
