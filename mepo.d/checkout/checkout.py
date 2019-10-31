@@ -1,35 +1,21 @@
 import os
-import sys
-import csv
-import json
 import subprocess as sp
 
-from mepo_state import MepoState
+from state.state import MepoState
 
 def run(args):
-    MepoState.initialize(args.cf)
+    repo_name = args.repo_name
+    branch_name = args.branch_name
     allrepos = MepoState.read_state()
-    print 'Checking out components...'    
-    for repo in allrepos:
-        __checkout_components(repo)
+    for reponame in repo_name:
+        if reponame not in allrepos:
+            raise Exception('invlaid repo name [%s]' % reponame)
+        __checkout_branch(reponame, allrepos[reponame], branch_name)
 
-def __get_branch_or_tag(branch_name, tag_name):
-    if not branch_name and not tag_name:
-        raise Exception('Need to specify one of [tag, branch]')
-    if branch_name and tag_name:
-        raise Exception('Can specify only one of [tag, branch], not both')
-    if branch_name:
-        return (branch_name, 'b')
-    elif tag_name:
-        return (tag_name, 't')
-    
-def __checkout_components(repo):
-    branch_or_tag, identifier = __get_branch_or_tag(repo['branch'], repo['tag'])
-    __git_clone(repo['origin'], branch_or_tag, repo['path'])
-    print('     {:<30s} {:<3s}{:<40s}'.format(repo['name'][:30], identifier, branch_or_tag[:40]))
-    
-def __git_clone(url, branch_or_tag, local_path):
-    cmd = 'git clone -b %s %s %s' % (branch_or_tag, url, local_path)
-    output_file = os.path.join(MepoState.get_dir(), 'checkout.log')
-    with open(output_file, 'a') as fnull:
-        sp.check_call(cmd.split(), stderr=fnull)
+def __checkout_branch(name, repo, branch):
+    cmd = 'git -C %s checkout %s' % (repo['local'], branch)
+    try:
+        with open(os.devnull, 'w') as ferr:
+            sp.check_output(cmd.split(), stderr = sp.STDOUT)
+    except sp.CalledProcessError as err:
+        raise Exception(err.output.strip())

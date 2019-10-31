@@ -1,23 +1,29 @@
 #!/usr/bin/env python
 
 import os
+import traceback
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "mepo.d"))
 
+from clone import clone
 from status import status
-from branch import branch
 from checkout import checkout
-from cmdline.mepo_parser import MepoParser
+from branch import branch
+from diff import diff
+from cmdline.parser import MepoParser
 
 if __name__ == '__main__':
 
     args = MepoParser().parse()
+    d = {
+        'clone': clone,
+        'status': status,
+        'checkout': checkout,
+        'branch': branch,
+        'diff': diff,
+    }
 
-    if args.mepo_cmd == 'checkout':
-        checkout.run(args)
-
-    elif args.mepo_cmd == 'status':
-        status.run(args)
-
-    elif args.mepo_cmd == 'branch':
-        branch.run(args)
+    try:
+        d[args.mepo_cmd].run(args)
+    except Exception as e:
+        traceback.print_exc()

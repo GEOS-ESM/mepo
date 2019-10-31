@@ -1,37 +1,37 @@
 import os
-import json
 import subprocess as sp
 
-from mepo_state import MepoState
+from state.state import MepoState
+from common import utilities
+
+PATH_LEN = 40
 
 def run(args):
     allrepos = MepoState.read_state()
-    for repo in allrepos:
-        __check_status(repo)
+    max_name_length = len(max(allrepos, key=len))
+    for name, repo in allrepos.items():
+        version = utilities.get_current_version(name, repo)
+        relpath = get_relative_path(repo)
+        output = check_status(name, repo)
+        print_status(name, relpath, version, output, max_name_length)
 
-def __check_status(repo, verbose=False):
-    cwd = os.getcwd()
-    orig_branch_or_tag = repo['branch'] or repo['tag']
-    os.chdir(repo['path'])
-    output = sp.check_output('git status -s'.split())
-    print('{:<14.14s} | {:<40.40s} | {:<33s}'.
-          format(
-              repo['name'],
-              os.path.relpath(repo['path'], cwd),
-              __get_current_branch_or_tag(repo['path'])))
+def check_status(name, repo, verbose=False):
+    cmd = 'git -C %s status -s' % repo['local']
+    output = sp.check_output(cmd.split())
+    return output
+
+def get_relative_path(repo):
+    return os.path.relpath(repo['local'], os.getcwd())
+
+def print_status(name, relpath, version, output, width):
+    FMT0 = '{:<%s.%ss} | {:<%ss} | {:<s}' % (width, width, PATH_LEN)
+    FMT1 = '{:<%s.%ss} | {:<s}' % (width, width)
+    FMT2 = '{:^%s.%ss}   {:>%ss} | {:<s}' % (width, width, PATH_LEN)
+    if len(relpath) > PATH_LEN:
+        print(FMT1.format(name, relpath + ' ...'))
+        print(FMT2.format('', '...', version))
+    else:
+        print(FMT0.format(name, relpath, version))
     if (output):
-        for line in output.split('\n'):
+        for line in output.strip().split('\n'):
             print '   |', line.rstrip()
-    os.chdir(cwd)
-
-def __get_current_branch_or_tag(repo_path):
-    try:
-        b_t_name = sp.check_output('git symbolic-ref -q --short HEAD'.split())
-    except sp.CalledProcessError:
-        try:
-            cmd = 'git describe --tags --exact-match'.split()
-            with open(os.devnull, 'w') as ferr:
-                b_t_name = sp.check_output(cmd, stderr = ferr)
-        except sp.CalledProcessError:
-            raise Exception('Neither a tag nor a branch in %s' % repo_path)
-    return b_t_name.strip()
