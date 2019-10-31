@@ -18,6 +18,7 @@ class MepoParser(object):
         self.__checkout()
         self.__branch()
         self.__diff()
+        self.__where()
         return self.parser.parse_args()
     
     def __init(self):
@@ -55,3 +56,8 @@ class MepoParser(object):
         diff = self.subparsers.add_parser(
             'diff',
             description = 'List difference between current and original states')
+
+    def __where(self):
+        where = self.subparsers.add_parser(
+            'where',
+            description = 'Find relative location of all repos')
