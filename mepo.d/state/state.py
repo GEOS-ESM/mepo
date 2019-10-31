@@ -24,7 +24,7 @@ def flatten_nested_dict(nestedd, flatd=None, keywd='Components', level=0):
             else:
                 flatd[name][key] = value
     return flatd
-            
+
 def convert_relpath_to_abs(repolist, keywd='Components'):
     for name, repo in repolist[keywd].items():
         for key, value in repo.items():
@@ -34,7 +34,7 @@ def convert_relpath_to_abs(repolist, keywd='Components'):
                 if key == 'local':
                     repo[key] = os.path.abspath(value)
     return repolist
-                    
+
 class MepoState(object):
 
     __state_dir_name = '.mepo'
@@ -68,19 +68,13 @@ class MepoState(object):
     def initialize(cls, project_config_file):
         if cls.exists():
             raise Exception('mepo state already exists')
-        new_state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
-        new_state_file = os.path.join(new_state_dir, cls.__state_0_file_name)
-        os.mkdir(new_state_dir)
         with open(project_config_file, 'r') as fin:
             repolist = json.load(fin)
         repolist = convert_relpath_to_abs(repolist)
         repolist_flattened = flatten_nested_dict(repolist)
-        with open(new_state_file, 'wb') as fout:
-            pickle.dump(repolist_flattened, fout, -1)
-        state_file = os.path.join(cls.__state_dir_name, cls.__state_file_name)
-        os.symlink(new_state_file, state_file)
+        cls.write_state(repolist_flattened)
         return repolist_flattened
-        
+
     @classmethod
     def read_state(cls):
         if not cls.exists():
@@ -88,3 +82,13 @@ class MepoState(object):
         with open(cls.get_file(), 'rb') as fin:
             allrepos = pickle.load(fin)
         return allrepos
+
+    @classmethod
+    def write_state(cls, state_details):
+        new_state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
+        os.mkdir(new_state_dir)
+        new_state_file = os.path.join(new_state_dir, cls.__state_0_file_name)
+        with open(new_state_file, 'wb') as fout:
+            pickle.dump(state_details, fout, -1)
+        state_file = os.path.join(cls.__state_dir_name, cls.__state_file_name)
+        os.symlink(new_state_file, state_file)
