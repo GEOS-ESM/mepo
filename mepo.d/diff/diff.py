@@ -26,7 +26,7 @@ def print_diff(name, orig, cur, name_width):
     FMT_VAL = (name_width, name_width, VER_LEN)
     FMT0 = '{:<%s.%ss} | {:<%ss} | {:<s}' % FMT_VAL
     FMT1 = '{:<%s.%ss} | {:<%ss}' % FMT_VAL
-    FMT2 = '{:<%s.%ss}   {:>%ss} | {:<s}' % FMT_VAL
+    FMT2 = '{:<%s.%ss} | {:>%ss} | {:<s}' % FMT_VAL
     if len(orig) > VER_LEN:
         print(FMT1.format(name, orig + ' ...'))
         print(FMT2.format('', '...', cur))

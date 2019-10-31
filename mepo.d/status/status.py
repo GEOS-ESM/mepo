@@ -26,7 +26,7 @@ def get_relative_path(repo):
 def print_status(name, relpath, version, output, width):
     FMT0 = '{:<%s.%ss} | {:<%ss} | {:<s}' % (width, width, PATH_LEN)
     FMT1 = '{:<%s.%ss} | {:<s}' % (width, width)
-    FMT2 = '{:^%s.%ss}   {:>%ss} | {:<s}' % (width, width, PATH_LEN)
+    FMT2 = '{:^%s.%ss} | {:>%ss} | {:<s}' % (width, width, PATH_LEN)
     if len(relpath) > PATH_LEN:
         print(FMT1.format(name, relpath + ' ...'))
         print(FMT2.format('', '...', version))
