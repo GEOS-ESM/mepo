@@ -24,7 +24,7 @@ class MepoParser(object):
             'clone',
             description = 'Clone repos defined in config file')
         clone.add_argument(
-            '--cf',
+            '--config',
             metavar = 'config-file',
             default = 'repolist.json',
             help = 'default: %(default)s')
