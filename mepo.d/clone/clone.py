@@ -4,30 +4,27 @@ import subprocess as sp
 from state.state import MepoState
 
 def run(args):
-    allrepos = MepoState.initialize(args.config)
-    max_name_length = len(max(allrepos, key=len))
+    allrepos = MepoState.read_state()
     for name, repo in allrepos.items():
-        version, vtype = get_version(repo)
-        clone_component(name, repo, version)
-        print_status(name, version, vtype, max_name_length)
+        ver_type, ver_name = get_version(repo)
+        clone_component(repo, ver_name)
+        v_name_type = '(%s) %s' % (ver_type, ver_name)
+        print('{:<{width}} | {:<s}'.
+              format(name, v_name_type, width = len(max(allrepos, key=len))))
 
-def clone_component(name, repo, version):
+def clone_component(repo, version):
     git_clone(repo['remote'], version, repo['local'])
 
 def get_version(repo):
     vtype = 't'
-    version = repo.get('tag')
-    if version is None:
+    vname = repo.get('tag')
+    if vname is None:
         vtype = 'b'
-        version = repo.get('branch')
-    return (version, vtype)
+        vname = repo.get('branch')
+    return (vtype, vname)
 
 def git_clone(url, version, local_path):
     cmd = 'git clone -b %s %s %s' % (version, url, local_path)
     output_file = os.path.join(MepoState.get_dir(), 'clone.log')
     with open(output_file, 'a') as fnull:
         sp.check_call(cmd.split(), stderr=fnull)
-
-def print_status(name, version, vtype, width):
-    FMT = '{:<{width}} | ({:<1.1s}) {:<s}'
-    print(FMT.format(name, vtype, version, width = width))

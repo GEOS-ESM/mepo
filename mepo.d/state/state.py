@@ -3,37 +3,7 @@ import json
 
 import cPickle as pickle
 
-KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
-
-def get_parent_dirs():
-    mypath = os.getcwd()
-    parentdirs = [mypath]
-    while mypath != '/':
-        mypath = os.path.dirname(mypath)
-        parentdirs.append(mypath)
-    return parentdirs
-
-def flatten_nested_dict(nestedd, flatd=None, keywd='Components', level=0):
-    if flatd is None:
-        flatd = dict()
-    for name, repo in nestedd[keywd].items():
-        flatd[name] = dict(level = 0)
-        for key, value in repo.items():
-            if key == keywd:
-                flatten_nested_dict(repo, flatd, keywd, level+1) # recurse
-            else:
-                flatd[name][key] = value
-    return flatd
-
-def convert_relpath_to_abs(repolist, keywd='Components'):
-    for name, repo in repolist[keywd].items():
-        for key, value in repo.items():
-            if key == keywd:
-                convert_relpath_to_abs(repo)
-            else:
-                if key == 'local':
-                    repo[key] = os.path.abspath(value)
-    return repolist
+import utilities as utils
 
 class MepoState(object):
 
@@ -43,7 +13,7 @@ class MepoState(object):
 
     @classmethod
     def get_dir(cls):
-        for mydir in get_parent_dirs():
+        for mydir in utils.get_parent_dirs():
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
                 return state_dir
@@ -70,10 +40,9 @@ class MepoState(object):
             raise Exception('mepo state already exists')
         with open(project_config_file, 'r') as fin:
             repolist = json.load(fin)
-        repolist = convert_relpath_to_abs(repolist)
-        repolist_flattened = flatten_nested_dict(repolist)
+        repolist = utils.relpath_to_abs(repolist)
+        repolist_flattened = utils.flatten_nested_dict(repolist)
         cls.write_state(repolist_flattened)
-        return repolist_flattened
 
     @classmethod
     def read_state(cls):

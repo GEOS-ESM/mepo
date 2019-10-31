@@ -5,6 +5,7 @@ import traceback
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "mepo.d"))
 
+from init import init
 from clone import clone
 from status import status
 from checkout import checkout
@@ -16,6 +17,7 @@ if __name__ == '__main__':
 
     args = MepoParser().parse()
     d = {
+        'init': init,
         'clone': clone,
         'status': status,
         'checkout': checkout,

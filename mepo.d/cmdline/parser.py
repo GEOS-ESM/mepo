@@ -12,6 +12,7 @@ class MepoParser(object):
             dest = 'mepo_cmd')
 
     def parse(self):
+        self.__init()
         self.__clone()
         self.__status()
         self.__checkout()
@@ -19,15 +20,20 @@ class MepoParser(object):
         self.__diff()
         return self.parser.parse_args()
     
-    def __clone(self):
-        clone = self.subparsers.add_parser(
-            'clone',
-            description = 'Clone repos defined in config file')
-        clone.add_argument(
+    def __init(self):
+        init = self.subparsers.add_parser(
+            'init',
+            description = 'Initialize mepo')
+        init.add_argument(
             '--config',
             metavar = 'config-file',
             default = 'repolist.json',
             help = 'default: %(default)s')
+
+    def __clone(self):
+        clone = self.subparsers.add_parser(
+            'clone',
+            description = 'Clone repos defined in config file')
 
     def __status(self):
         status = self.subparsers.add_parser(
