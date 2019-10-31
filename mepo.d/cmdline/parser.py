@@ -14,6 +14,7 @@ class MepoParser(object):
         self.__status()
         self.__checkout()
         self.__branch()
+        self.__diff()
         return self.parser.parse_args()
     
     def __clone(self):
@@ -46,3 +47,8 @@ class MepoParser(object):
             '-a', '--all',
             action = 'store_true',
             help = 'list all (local & remote) branches')
+
+    def __diff(self):
+        diff = self.subparsers.add_parser(
+            'diff',
+            description = 'List difference between current and original states')
