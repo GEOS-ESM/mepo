@@ -4,7 +4,7 @@ import subprocess as sp
 from state.state import MepoState
 
 def run(args):
-    allrepos = MepoState.initialize(args.cf)
+    allrepos = MepoState.initialize(args.config)
     max_name_length = len(max(allrepos, key=len))
     for name, repo in allrepos.items():
         version, vtype = get_version(repo)
