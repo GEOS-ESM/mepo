@@ -1,5 +1,7 @@
 import argparse
 
+from branch_parser import MepoBranchParser
+
 class MepoParser(object):
 
     def __init__(self):
@@ -40,14 +42,9 @@ class MepoParser(object):
         checkout.add_argument('repo_name', metavar = 'repo-name', nargs = '+')
 
     def __branch(self):
-        branch = self.subparsers.add_parser(
-            'branch',
-            description = 'List branches in all repositories')
-        branch.add_argument(
-            '-a', '--all',
-            action = 'store_true',
-            help = 'list all (local & remote) branches')
-
+        branch = self.subparsers.add_parser('branch')
+        MepoBranchParser(branch)
+        
     def __diff(self):
         diff = self.subparsers.add_parser(
             'diff',
