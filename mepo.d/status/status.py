@@ -15,11 +15,11 @@ def run(args):
 def check_status(name, repo, verbose=False):
     cmd = 'git -C %s status -s' % repo['local']
     output = sp.check_output(cmd.split())
-    return output
+    return output.rstrip()
 
 def print_status(name, version, output, width):
     FMT0 = '{:<%s.%ss} | {:<s}' % (width, width)
     print(FMT0.format(name, version))
     if (output):
-        for line in output.strip().split('\n'):
+        for line in output.split('\n'):
             print '   |', line.rstrip()

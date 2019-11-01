@@ -40,9 +40,9 @@ class MepoState(object):
             raise Exception('mepo state already exists')
         with open(project_config_file, 'r') as fin:
             repolist = json.load(fin)
-        repolist = utils.relpath_to_abs(repolist)
-        repolist_flattened = utils.flatten_nested_dict(repolist)
-        cls.write_state(repolist_flattened)
+        repolist_flat = utils.flatten_nested_odict(repolist)
+        repolist_flat_abspath = utils.relpath_to_abs(repolist_flat)
+        cls.write_state(repolist_flat_abspath)
 
     @classmethod
     def read_state(cls):

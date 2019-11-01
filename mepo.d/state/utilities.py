@@ -1,4 +1,5 @@
 import os
+from collections import OrderedDict
 
 KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
 
@@ -10,24 +11,19 @@ def get_parent_dirs():
         parentdirs.append(mypath)
     return parentdirs
 
-def flatten_nested_dict(nestedd, flatd=None, keywd='Components', level=0):
-    if flatd is None:
-        flatd = dict()
-    for name, repo in nestedd[keywd].items():
-        flatd[name] = dict(level = 0)
+def flatten_nested_odict(nested, flat=None, keywd='Components', level=0):
+    if flat is None:
+        flat = OrderedDict()
+    for name, repo in nested[keywd].iteritems():
+        flat[name] = OrderedDict([('level', level)])
         for key, value in repo.items():
             if key == keywd:
-                flatten_nested_dict(repo, flatd, keywd, level+1) # recurse
+                flatten_nested_odict(repo, flat, keywd, level+1) # recurse
             else:
-                flatd[name][key] = value
-    return flatd
+                flat[name][key] = value
+    return flat
 
-def relpath_to_abs(nestedd, keywd='Components'):
-    for name, repo in nestedd[keywd].items():
-        for key, value in repo.items():
-            if key == keywd:
-                relpath_to_abs(repo)
-            else:
-                if key == 'local':
-                    repo[key] = os.path.abspath(value)
-    return nestedd
+def relpath_to_abs(flat):
+    for name, repo in flat.iteritems():
+        flat[name]['local'] = os.path.abspath(flat[name]['local'])
+    return flat
