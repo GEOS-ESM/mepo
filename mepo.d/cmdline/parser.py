@@ -19,8 +19,9 @@ class MepoParser(object):
         self.__branch()
         self.__diff()
         self.__where()
+        self.__whereis()
         return self.parser.parse_args()
-    
+
     def __init(self):
         init = self.subparsers.add_parser(
             'init',
@@ -40,7 +41,7 @@ class MepoParser(object):
         status = self.subparsers.add_parser(
             'status',
             description = 'Check status of all repos')
-        
+
     def __checkout(self):
         checkout = self.subparsers.add_parser(
             'checkout',
@@ -51,7 +52,7 @@ class MepoParser(object):
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
         MepoBranchParser(branch)
-        
+
     def __diff(self):
         diff = self.subparsers.add_parser(
             'diff',
@@ -60,4 +61,10 @@ class MepoParser(object):
     def __where(self):
         where = self.subparsers.add_parser(
             'where',
-            description = 'Find relative location of all repos')
+            description = 'Where am I w.r.t. other repos')
+
+    def __whereis(self):
+        whereis = self.subparsers.add_parser(
+            'whereis',
+            description = 'Get the location of repo <repo-name>')
+        whereis.add_argument('repo_name', metavar = 'repo-name')
