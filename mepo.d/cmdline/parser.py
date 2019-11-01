@@ -20,6 +20,7 @@ class MepoParser(object):
         self.__diff()
         self.__where()
         self.__whereis()
+        self.__history()
         return self.parser.parse_args()
 
     def __init(self):
@@ -68,3 +69,8 @@ class MepoParser(object):
             'whereis',
             description = 'Get the location of repo <repo-name>')
         whereis.add_argument('repo_name', metavar = 'repo-name')
+
+    def __history(self):
+        history = self.subparsers.add_parser(
+            'history',
+            description = 'Get a history of mepo commands that were run')

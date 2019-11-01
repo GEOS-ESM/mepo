@@ -13,6 +13,7 @@ from command.branch import branch
 from command.diff import diff
 from command.where import where
 from command.whereis import whereis
+from command.history import history
 
 from cmdline.parser import MepoParser
 
@@ -28,6 +29,7 @@ if __name__ == '__main__':
         'diff': diff,
         'where': where,
         'whereis': whereis,
+        'history': history,
     }
 
     try:
