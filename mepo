@@ -5,13 +5,13 @@ import traceback
 import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "mepo.d"))
 
-from init import init
-from clone import clone
-from status import status
-from checkout import checkout
-from branch import branch
-from diff import diff
-from where import where
+from command.init import init
+from command.clone import clone
+from command.status import status
+from command.checkout import checkout
+from command.branch import branch
+from command.diff import diff
+from command.where import where
 from cmdline.parser import MepoParser
 
 if __name__ == '__main__':
