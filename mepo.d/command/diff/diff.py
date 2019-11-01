@@ -1,8 +1,8 @@
 import os
 import subprocess as sp
 
-from common import utilities
 from state.state import MepoState
+from command.common import utilities
 
 VER_LEN = 40
 

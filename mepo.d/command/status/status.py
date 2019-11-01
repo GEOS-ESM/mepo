@@ -2,7 +2,7 @@ import os
 import subprocess as sp
 
 from state.state import MepoState
-from common import utilities
+from command.common import utilities
 
 def run(args):
     allrepos = MepoState.read_state()
