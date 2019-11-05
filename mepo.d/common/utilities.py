@@ -23,4 +23,3 @@ def __parse_detached_head_info(output):
         vname = tmp
     vname += ' (DH)'
     return (vtype, vname)
-    

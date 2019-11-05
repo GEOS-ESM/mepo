@@ -3,35 +3,25 @@
 import os
 import traceback
 import sys
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "mepo.d"))
-
-from command.init import init
-from command.clone import clone
-from command.status import status
-from command.checkout import checkout
-from command.branch import branch
-from command.diff import diff
-from command.where import where
-from command.whereis import whereis
-from command.history import history
+MEPO_D = os.path.join(os.path.dirname(__file__), 'mepo.d')
+sys.path.insert(0, MEPO_D)
+from importlib import import_module
 
 from cmdline.parser import MepoParser
+
+def get_list_of_mepo_commands():
+    cmd_dir = os.path.join(MEPO_D, 'command')
+    return [name for name in os.listdir(cmd_dir) if not name.startswith('__init__')]
 
 if __name__ == '__main__':
 
     args = MepoParser().parse()
-    d = {
-        'init': init,
-        'clone': clone,
-        'status': status,
-        'checkout': checkout,
-        'branch': branch,
-        'diff': diff,
-        'where': where,
-        'whereis': whereis,
-        'history': history,
-    }
 
+    # Dispatch table
+    cmd_list = get_list_of_mepo_commands()
+    d = {cmd: import_module('command.{}.{}'.format(cmd, cmd)) for cmd in cmd_list}
+
+    # Execute run method of mepo command
     try:
         d[args.mepo_cmd].run(args)
     except Exception as e:
