@@ -21,6 +21,7 @@ class MepoParser(object):
         self.__where()
         self.__whereis()
         self.__history()
+        self.__stage()
         return self.parser.parse_args()
 
     def __init(self):
@@ -74,3 +75,13 @@ class MepoParser(object):
         history = self.subparsers.add_parser(
             'history',
             description = 'Get a history of mepo commands that were run')
+
+    def __stage(self):
+        stage = self.subparsers.add_parser(
+            'stage',
+            description = 'Stage files for committing')
+        stage.add_argument(
+            'file',
+            nargs = '*',
+            default = ''
+        )
