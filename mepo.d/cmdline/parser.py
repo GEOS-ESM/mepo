@@ -28,7 +28,7 @@ class MepoParser(object):
     def __init(self):
         init = self.subparsers.add_parser(
             'init',
-            description = 'Initialize mepo')
+            description = 'Initialize mepo based on <config-file')
         init.add_argument(
             'config',
             metavar = 'config-file',
@@ -39,12 +39,12 @@ class MepoParser(object):
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            description = 'Clone repos defined in config file')
+            description = 'Clone repositories defined in config file')
 
     def __status(self):
         status = self.subparsers.add_parser(
             'status',
-            description = 'Check status of all repos')
+            description = 'Check current status of all repositories')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(
@@ -60,17 +60,18 @@ class MepoParser(object):
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',
-            description = 'Compare current and original states')
+            description = 'Compare current and original states of all repositories')
 
     def __where(self):
         where = self.subparsers.add_parser(
             'where',
-            description = 'Where am I w.r.t. other repos')
+            description = 'Where are other repositories w.r.t. my location')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(
             'whereis',
-            description = 'Get the location of repo <repo-name>')
+            description = 'Get the location of repository <repo-name> '
+            'relative to my current location')
         whereis.add_argument('repo_name', metavar = 'repo-name')
 
     def __history(self):
@@ -82,20 +83,22 @@ class MepoParser(object):
         stage = self.subparsers.add_parser(
             'stage',
             description = 'Stage files for committing. '
-            'If a repo is specified, files are staged only in that repo.')
+            'If a repository is specified, files are staged only in that repository.')
         stage.add_argument(
             'repo',
             nargs = '*',
-            default = None
-        )
+            help = 'Repository',
+            default = None)
 
     def __unstage(self):
         unstage = self.subparsers.add_parser(
             'unstage',
             description = 'Un-stage staged files. '
-            'If a repo is specified, files are un-staged only in that repo.')
-        unstage.add_argument(
-            'repo',
-            nargs = '*',
-            default = None
-        )
+            'If a repository is specified, files are un-staged only in that repository.')
+        unstage.add_argument('repo', nargs = '*', default = None)
+
+    def __save(self):
+        save = self.subparsers.add_parser(
+            'save',
+            description = 'Save current state in a json config file')
+        save.add_argument('repo')
