@@ -22,6 +22,7 @@ class MepoParser(object):
         self.__whereis()
         self.__history()
         self.__stage()
+        self.__unstage()
         return self.parser.parse_args()
 
     def __init(self):
@@ -83,6 +84,17 @@ class MepoParser(object):
             description = 'Stage files for committing. '
             'If a repo is specified, files are staged only in that repo.')
         stage.add_argument(
+            'repo',
+            nargs = '*',
+            default = None
+        )
+
+    def __unstage(self):
+        unstage = self.subparsers.add_parser(
+            'unstage',
+            description = 'Un-stage staged files. '
+            'If a repo is specified, files are un-staged only in that repo.')
+        unstage.add_argument(
             'repo',
             nargs = '*',
             default = None

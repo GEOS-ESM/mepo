@@ -4,25 +4,22 @@ import subprocess as sp
 from state.state import MepoState
 
 def run(args):
-    repolist = args.repo
     allrepos = MepoState.read_state()
-    _sanity_check(repolist, allrepos)
-    if not repolist:
-        repolist = allrepos.keys()
-    for name, repo in allrepos.iteritems():
-        if name not in repolist:
-            continue
-        file_list = _get_files_to_stage(repo)
-        print name
-        for myfile in file_list:
+    repolist = _get_repos_to_be_staged(args.repo, allrepos)
+    for name in repolist:
+        repo = allrepos[name]
+        for myfile in _get_files_to_stage(repo):
             _stage_file(myfile, repo)
-            print '   staged: {}'.format(myfile)
+            print '+ {}: {}'.format(name, myfile)
 
-def _sanity_check(repolist, allrepos):
-    for reponame in repolist:
+def _get_repos_to_be_staged(specified_repos, allrepos):
+    for reponame in specified_repos:
         if reponame not in allrepos:
             raise Exception('Unknown repo name [{}]'.format(reponame))
-    
+    if not specified_repos:
+        specified_repos = allrepos.keys()
+    return specified_repos
+        
 def _stage_file(myfile, repo):
     cmd = 'git -C %s add %s' % (repo['local'], myfile)
     sp.check_output(cmd.split())
