@@ -29,8 +29,9 @@ class MepoParser(object):
             'init',
             description = 'Initialize mepo')
         init.add_argument(
-            '--config',
+            'config',
             metavar = 'config-file',
+            nargs = '?',
             default = 'repolist.json',
             help = 'default: %(default)s')
 
