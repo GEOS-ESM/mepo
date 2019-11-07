@@ -10,11 +10,11 @@ def run(args):
     allrepos = MepoState.read_state()
     max_name_length = len(max(allrepos, key=len))
     for name, repo in allrepos.items():
-        original = get_original_version(name, repo)
+        original = _get_original_version(name, repo)
         current = utilities.get_current_version(name, repo)
-        print_diff(name, original, current, max_name_length)
+        _print_cmp(name, original, current, max_name_length)
 
-def get_original_version(name, repo):
+def _get_original_version(name, repo):
     version = repo.get('tag')
     version_type = 't'
     if version is None:
@@ -22,7 +22,7 @@ def get_original_version(name, repo):
         version_type = 'b'
     return '(%s) %s' % (version_type, version)
 
-def print_diff(name, orig, cur, name_width):
+def _print_cmp(name, orig, cur, name_width):
     FMT_VAL = (name_width, name_width, VER_LEN)
     FMT0 = '{:<%s.%ss} | {:<%ss} | {:<s}' % FMT_VAL
     FMT1 = '{:<%s.%ss} | {:<%ss}' % FMT_VAL

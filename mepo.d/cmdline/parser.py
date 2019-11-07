@@ -17,7 +17,7 @@ class MepoParser(object):
         self.__status()
         self.__checkout()
         self.__branch()
-        self.__diff()
+        self.__compare()
         self.__where()
         self.__whereis()
         self.__history()
@@ -55,10 +55,10 @@ class MepoParser(object):
         branch = self.subparsers.add_parser('branch')
         MepoBranchParser(branch)
 
-    def __diff(self):
-        diff = self.subparsers.add_parser(
-            'diff',
-            description = 'List difference between current and original states')
+    def __compare(self):
+        compare = self.subparsers.add_parser(
+            'compare',
+            description = 'Compare current and original states')
 
     def __where(self):
         where = self.subparsers.add_parser(
