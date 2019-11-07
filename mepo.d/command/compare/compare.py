@@ -2,7 +2,7 @@ import os
 import subprocess as sp
 
 from state.state import MepoState
-from common import utilities
+from utilities import version
 
 VER_LEN = 40
 
@@ -10,17 +10,9 @@ def run(args):
     allrepos = MepoState.read_state()
     max_name_length = len(max(allrepos, key=len))
     for name, repo in allrepos.items():
-        original = _get_original_version(name, repo)
-        current = utilities.get_current_version(name, repo)
-        _print_cmp(name, original, current, max_name_length)
-
-def _get_original_version(name, repo):
-    version = repo.get('tag')
-    version_type = 't'
-    if version is None:
-        version = repo.get('branch')
-        version_type = 'b'
-    return '(%s) %s' % (version_type, version)
+        orig_ver = version.get_original_s(repo)
+        cur_ver = version.get_current_s(repo)
+        _print_cmp(name, orig_ver, cur_ver, max_name_length)
 
 def _print_cmp(name, orig, cur, name_width):
     FMT_VAL = (name_width, name_width, VER_LEN)
