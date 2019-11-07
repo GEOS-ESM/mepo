@@ -80,9 +80,10 @@ class MepoParser(object):
     def __stage(self):
         stage = self.subparsers.add_parser(
             'stage',
-            description = 'Stage files for committing')
+            description = 'Stage files for committing. '
+            'If a repo is specified, files are staged only in that repo.')
         stage.add_argument(
-            'file',
+            'repo',
             nargs = '*',
-            default = ''
+            default = None
         )

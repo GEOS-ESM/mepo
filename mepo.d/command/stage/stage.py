@@ -4,33 +4,41 @@ import subprocess as sp
 from state.state import MepoState
 
 def run(args):
+    repolist = args.repo
     allrepos = MepoState.read_state()
+    _sanity_check(repolist, allrepos)
+    if not repolist:
+        repolist = allrepos.keys()
     for name, repo in allrepos.iteritems():
-        file_list = __check_status(name, repo).lstrip()
-        file_list = __remove_ansi_escape_seq(file_list)
-        if file_list:
-            print name
-            __stage_files(file_list, repo)
+        if name not in repolist:
+            continue
+        file_list = _get_files_to_stage(repo)
+        print name
+        for myfile in file_list:
+            _stage_file(myfile, repo)
+            print '   staged: {}'.format(myfile)
 
-def __check_status(name, repo):
-    cmd = 'git -C %s status -s' % repo['local']
-    output = sp.check_output(cmd.split())
-    return output.rstrip()
+def _sanity_check(repolist, allrepos):
+    for reponame in repolist:
+        if reponame not in allrepos:
+            raise Exception('Unknown repo name [{}]'.format(reponame))
+    
+def _stage_file(myfile, repo):
+    cmd = 'git -C %s add %s' % (repo['local'], myfile)
+    sp.check_output(cmd.split())
 
-def __stage_files(file_list, repo):
-    for line in file_list.split('\n'):
-        myfile = line.strip().split()[1]
-        cmd = 'git -C %s add %s' % (repo['local'], myfile)
-        sp.check_output(cmd.split())
-        print '    staged %s' % myfile
+def _get_files_to_stage(repo):
+    file_list = list()
+    file_list.extend(_get_modified_files(repo))
+    file_list.extend(_get_untracked_files(repo))
+    return file_list
 
-def __remove_ansi_escape_seq(instr):
-    # 7-bit C1 ANSI sequences
-    ansi_escape = re.compile(r'''
-       \x1B    # ESC
-       [@-_]   # 7-bit C1 Fe
-       [0-?]*  # Parameter bytes
-       [ -/]*  # Intermediate bytes
-       [@-~]   # Final byte
-    ''', re.VERBOSE)
-    return ansi_escape.sub('', instr)
+def _get_modified_files(repo):
+    cmd = 'git -C {} diff --name-only'.format(repo['local'])
+    output = sp.check_output(cmd.split()).strip()
+    return output.split('\n') if output else []
+
+def _get_untracked_files(repo):
+    cmd = 'git -C {} ls-files --others --exclude-standard'.format(repo['local'])
+    output = sp.check_output(cmd.split()).strip()
+    return output.split('\n') if output else []
