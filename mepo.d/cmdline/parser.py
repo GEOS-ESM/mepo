@@ -89,14 +89,23 @@ class MepoParser(object):
         stage = self.subparsers.add_parser(
             'stage',
             description = 'Stage modified & untracked files in the specified repo(s)')
-        stage.add_argument('repo', nargs = '+', help = 'Repository to stage file in')
+        stage.add_argument(
+            'repo_name',
+            metavar = 'repo-name',
+            nargs = '+',
+            help = 'Repository to stage file in')
 
     def __unstage(self):
         unstage = self.subparsers.add_parser(
             'unstage',
             description = 'Un-stage staged files. '
             'If a repository is specified, files are un-staged only in that repository.')
-        unstage.add_argument('repo', nargs = '*', help = 'Repository', default = None)
+        unstage.add_argument(
+            'repo_name',
+            metavar = 'repo-name',
+            nargs = '*',
+            help = 'Repository',
+            default = None)
 
     def __save(self):
         save = self.subparsers.add_parser(

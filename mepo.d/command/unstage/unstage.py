@@ -5,7 +5,7 @@ from state.state import MepoState
 
 def run(args):
     allrepos = MepoState.read_state()
-    repolist = _get_repos_to_be_staged(args.repo, allrepos)
+    repolist = _get_repos_to_be_staged(args.repo_name, allrepos)
     for name in repolist:
         repo = allrepos[name]
         for myfile in _get_files_to_unstage(repo):

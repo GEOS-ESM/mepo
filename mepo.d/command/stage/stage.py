@@ -6,8 +6,8 @@ from utilities import version
 
 def run(args):
     allrepos = MepoState.read_state()
-    _throw_error_if_reponame_is_invalid(args.repo, allrepos)
-    repos_stage = {name: allrepos[name] for name in args.repo}
+    _throw_error_if_reponame_is_invalid(args.repo_name, allrepos)
+    repos_stage = {name: allrepos[name] for name in args.repo_name}
     _throw_error_if_repo_has_detached_head(repos_stage)
     for name, repo in repos_stage.iteritems():
         for myfile in _get_files_to_stage(repo):
