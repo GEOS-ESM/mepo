@@ -14,6 +14,7 @@ class MepoParser(object):
     def parse(self):
         self.__init()
         self.__clone()
+        self.__list()
         self.__status()
         self.__checkout()
         self.__branch()
@@ -40,6 +41,11 @@ class MepoParser(object):
         clone = self.subparsers.add_parser(
             'clone',
             description = 'Clone repositories defined in config file')
+
+    def __list(self):
+        listrepos = self.subparsers.add_parser(
+            'list',
+            description = 'List all repositories that are being tracked')
 
     def __status(self):
         status = self.subparsers.add_parser(
