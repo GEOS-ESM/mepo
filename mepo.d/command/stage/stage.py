@@ -6,23 +6,20 @@ from utilities import version
 
 def run(args):
     allrepos = MepoState.read_state()
-    reponames_stage = _get_reponames_to_stage_in(args.repo, allrepos)
-    repos_stage = {name: allrepos[name] for name in reponames_stage}
-    _throw_error_if_any_repo_has_detached_head(repos_stage)
+    _throw_error_if_reponame_is_invalid(args.repo, allrepos)
+    repos_stage = {name: allrepos[name] for name in args.repo}
+    _throw_error_if_repo_has_detached_head(repos_stage)
     for name, repo in repos_stage.iteritems():
         for myfile in _get_files_to_stage(repo):
             _stage_file(myfile, repo)
             print '+ {}: {}'.format(name, myfile)
 
-def _get_reponames_to_stage_in(specified_repos, allrepos):
+def _throw_error_if_reponame_is_invalid(specified_repos, allrepos):
     for reponame in specified_repos:
         if reponame not in allrepos:
             raise Exception('Unknown repo name [{}]'.format(reponame))
-    if not specified_repos:
-        specified_repos = allrepos.keys()
-    return specified_repos
 
-def _throw_error_if_any_repo_has_detached_head(repos):
+def _throw_error_if_repo_has_detached_head(repos):
     reponames_detached_head = _get_reponames_with_detached_head(repos)
     if reponames_detached_head:
         raise Exception('Cannot stage in repos {} with Detached HEAD'.format(
