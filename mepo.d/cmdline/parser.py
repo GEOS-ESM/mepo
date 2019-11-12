@@ -19,7 +19,6 @@ class MepoParser(object):
         self.__checkout()
         self.__branch()
         self.__compare()
-        self.__where()
         self.__whereis()
         self.__history()
         self.__stage()
@@ -68,17 +67,13 @@ class MepoParser(object):
             'compare',
             description = 'Compare current and original states of all repositories')
 
-    def __where(self):
-        where = self.subparsers.add_parser(
-            'where',
-            description = 'Where are other repositories w.r.t. my location')
-
     def __whereis(self):
         whereis = self.subparsers.add_parser(
             'whereis',
             description = 'Get the location of repository <repo-name> '
-            'relative to my current location')
-        whereis.add_argument('repo_name', metavar = 'repo-name')
+            'relative to my current location. If <repo-name> is not present, '
+            'get the relative locations of all repositories.')
+        whereis.add_argument('repo_name', metavar = 'repo-name', nargs = '?', default = None)
 
     def __history(self):
         history = self.subparsers.add_parser(
