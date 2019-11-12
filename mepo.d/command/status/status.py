@@ -2,15 +2,15 @@ import os
 import subprocess as sp
 
 from state.state import MepoState
-from common import utilities
+from utilities import version
 
 def run(args):
     allrepos = MepoState.read_state()
     max_name_length = len(max(allrepos, key=len))
     for name, repo in allrepos.items():
-        version = utilities.get_current_version(name, repo)
+        current_version = version.get_current_s(repo)
         output = check_status(name, repo)
-        print_status(name, version, output, max_name_length)
+        print_status(name, current_version, output, max_name_length)
 
 def check_status(name, repo, verbose=False):
     cmd = 'git -C %s status -s' % repo['local']

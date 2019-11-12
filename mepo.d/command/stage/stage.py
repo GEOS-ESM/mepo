@@ -2,35 +2,53 @@ import re
 import subprocess as sp
 
 from state.state import MepoState
+from utilities import version
 
 def run(args):
     allrepos = MepoState.read_state()
-    for name, repo in allrepos.iteritems():
-        file_list = __check_status(name, repo).lstrip()
-        file_list = __remove_ansi_escape_seq(file_list)
-        if file_list:
-            print name
-            __stage_files(file_list, repo)
+    _throw_error_if_reponame_is_invalid(args.repo_name, allrepos)
+    repos_stage = {name: allrepos[name] for name in args.repo_name}
+    _throw_error_if_repo_has_detached_head(repos_stage)
+    for name, repo in repos_stage.iteritems():
+        for myfile in _get_files_to_stage(repo):
+            _stage_file(myfile, repo)
+            print '+ {}: {}'.format(name, myfile)
 
-def __check_status(name, repo):
-    cmd = 'git -C %s status -s' % repo['local']
-    output = sp.check_output(cmd.split())
-    return output.rstrip()
+def _throw_error_if_reponame_is_invalid(specified_repos, allrepos):
+    for reponame in specified_repos:
+        if reponame not in allrepos:
+            raise Exception('Unknown repo name [{}]'.format(reponame))
 
-def __stage_files(file_list, repo):
-    for line in file_list.split('\n'):
-        myfile = line.strip().split()[1]
-        cmd = 'git -C %s add %s' % (repo['local'], myfile)
-        sp.check_output(cmd.split())
-        print '    staged %s' % myfile
+def _throw_error_if_repo_has_detached_head(repos):
+    reponames_detached_head = _get_reponames_with_detached_head(repos)
+    if reponames_detached_head:
+        raise Exception('Cannot stage in repos {} with Detached HEAD'.format(
+            reponames_detached_head))
 
-def __remove_ansi_escape_seq(instr):
-    # 7-bit C1 ANSI sequences
-    ansi_escape = re.compile(r'''
-       \x1B    # ESC
-       [@-_]   # 7-bit C1 Fe
-       [0-?]*  # Parameter bytes
-       [ -/]*  # Intermediate bytes
-       [@-~]   # Final byte
-    ''', re.VERBOSE)
-    return ansi_escape.sub('', instr)
+def _get_reponames_with_detached_head(repos):
+    reponames_with_detached_head = list()
+    for name, repo in repos.iteritems():
+        c_vname, c_vtype, c_detached_head = version.get_current(repo)
+        if c_detached_head == 'DH':
+            reponames_with_detached_head.append(name)
+    return reponames_with_detached_head
+
+def _get_files_to_stage(repo):
+    file_list = list()
+    file_list.extend(_get_modified_files(repo))
+    file_list.extend(_get_untracked_files(repo))
+    return file_list
+
+def _get_modified_files(repo):
+    cmd = 'git -C {} diff --name-only'.format(repo['local'])
+    output = sp.check_output(cmd.split()).strip()
+    return output.split('\n') if output else []
+
+def _get_untracked_files(repo):
+    cmd = 'git -C {} ls-files --others --exclude-standard'.format(repo['local'])
+    output = sp.check_output(cmd.split()).strip()
+    return output.split('\n') if output else []
+
+def _stage_file(myfile, repo):
+    cmd = 'git -C %s add %s' % (repo['local'], myfile)
+    sp.check_output(cmd.split())

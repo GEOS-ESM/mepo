@@ -12,9 +12,6 @@ _get_mepo_commands() {
 }
 
 _mepo_completions() {
-    if [ "${#COMP_WORDS[@]}" != "2" ]; then
-        return
-    fi
     mepo_commands=$(_get_mepo_commands)
     COMPREPLY=($(compgen -W "${mepo_commands}" "${COMP_WORDS[1]}"))
 }
