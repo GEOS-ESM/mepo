@@ -54,10 +54,13 @@ class MepoParser(object):
     def __checkout(self):
         checkout = self.subparsers.add_parser(
             'checkout',
-            description = 'Switch to branch <branch-name> in repo <repo-name>')
+            description = 'Switch to branch <branch-name> in repo <repo-name>. '
+            'Specifying -b causes the branch <branch-name> to be created in '
+            'the specified repos')
         checkout.add_argument('branch_name', metavar = 'branch-name')
         checkout.add_argument('repo_name', metavar = 'repo-name', nargs = '+')
-
+        checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
+        
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
         MepoBranchParser(branch)
