@@ -26,5 +26,5 @@ def _unstage_file(myfile, repo):
 
 def _get_files_to_unstage(repo):
     cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
-    output = sp.check_output(cmd.split()).strip()
+    output = sp.check_output(cmd.split()).decode().strip()
     return output.split('\n') if output else []

@@ -41,12 +41,12 @@ def _get_files_to_stage(repo):
 
 def _get_modified_files(repo):
     cmd = 'git -C {} diff --name-only'.format(repo['local'])
-    output = sp.check_output(cmd.split()).strip()
+    output = sp.check_output(cmd.split()).decode().strip()
     return output.split('\n') if output else []
 
 def _get_untracked_files(repo):
     cmd = 'git -C {} ls-files --others --exclude-standard'.format(repo['local'])
-    output = sp.check_output(cmd.split()).strip()
+    output = sp.check_output(cmd.split()).decode().strip()
     return output.split('\n') if output else []
 
 def _stage_file(myfile, repo):
