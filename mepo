@@ -9,6 +9,10 @@ from importlib import import_module
 
 from cmdline.parser import MepoParser
 
+def version_check():
+    if sys.version_info < (3, 6, 0):
+        raise Exception('Python version needs to be at least 3.6.0')
+
 def get_list_of_mepo_commands():
     cmd_dir = os.path.join(MEPO_D, 'command')
     excluded = ['__pycache__']
@@ -16,6 +20,7 @@ def get_list_of_mepo_commands():
 
 if __name__ == '__main__':
 
+    version_check()
     args = MepoParser().parse()
 
     # Dispatch table
