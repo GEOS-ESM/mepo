@@ -1,8 +1,8 @@
 import argparse
 
-from cmdline.branch_parser import MepoBranchParser
+from cmdline.branch_parser import MepoBranchArgParser
 
-class MepoParser(object):
+class MepoArgParser(object):
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
@@ -64,7 +64,7 @@ class MepoParser(object):
         
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
-        MepoBranchParser(branch)
+        MepoBranchArgParser(branch)
 
     def __compare(self):
         compare = self.subparsers.add_parser(
