@@ -3,9 +3,10 @@ import argparse
 class MepoBranchParser(object):
 
     def __init__(self, branch):
-        self.branch_subparsers = branch.add_subparsers(
-            title = 'mepo branch sub-commands',
-            dest = 'mepo_branch_cmd')
+        self.branch_subparsers = branch.add_subparsers()
+        self.branch_subparsers.title = 'mepo branch sub-commands'
+        self.branch_subparsers.dest = 'mepo_branch_cmd'
+        self.branch_subparsers.required = True
         self.__list()
         self.__create()
         self.__delete()

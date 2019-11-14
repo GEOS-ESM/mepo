@@ -1,16 +1,17 @@
 import argparse
 
-from branch_parser import MepoBranchParser
+from cmdline.branch_parser import MepoBranchParser
 
 class MepoParser(object):
 
     def __init__(self):
         self.parser = argparse.ArgumentParser(
             description = 'Tool to manage (m)ultiple r(epo)s')
-        self.subparsers = self.parser.add_subparsers(
-            title = 'mepo commands',
-            dest = 'mepo_cmd')
-
+        self.subparsers = self.parser.add_subparsers()
+        self.subparsers.title = 'mepo commands'
+        self.subparsers.required = True
+        self.subparsers.dest = 'mepo_cmd'
+        
     def parse(self):
         self.__init()
         self.__clone()

@@ -1,10 +1,10 @@
 import os
 import sys
 import json
-import cPickle as pickle
+import pickle
 
-import utilities as utils
-from history import MepoHistory
+import state.utilities as utils
+from state.history import MepoHistory
 
 class MepoState(object):
 

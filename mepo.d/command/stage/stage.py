@@ -9,10 +9,10 @@ def run(args):
     _throw_error_if_reponame_is_invalid(args.repo_name, allrepos)
     repos_stage = {name: allrepos[name] for name in args.repo_name}
     _throw_error_if_repo_has_detached_head(repos_stage)
-    for name, repo in repos_stage.iteritems():
+    for name, repo in repos_stage.items():
         for myfile in _get_files_to_stage(repo):
             _stage_file(myfile, repo)
-            print '+ {}: {}'.format(name, myfile)
+            print('+ {}: {}'.format(name, myfile))
 
 def _throw_error_if_reponame_is_invalid(specified_repos, allrepos):
     for reponame in specified_repos:
@@ -27,7 +27,7 @@ def _throw_error_if_repo_has_detached_head(repos):
 
 def _get_reponames_with_detached_head(repos):
     reponames_with_detached_head = list()
-    for name, repo in repos.iteritems():
+    for name, repo in repos.items():
         c_vname, c_vtype, c_detached_head = version.get_current(repo)
         if c_detached_head == 'DH':
             reponames_with_detached_head.append(name)

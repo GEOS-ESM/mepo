@@ -10,7 +10,7 @@ def get_current_s(repo):
     
 def get_current(repo):
     cmd = 'git -C %s show -s --pretty=%%D HEAD' % repo['local']
-    output = sp.check_output(cmd.split()).rstrip()
+    output = sp.check_output(cmd.split()).decode().rstrip()
     if output.startswith('HEAD ->'): # an actual branch
         vtype = 'b'
         vname = output.split(',')[0].split('->')[1].strip()

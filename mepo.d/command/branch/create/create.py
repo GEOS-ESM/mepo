@@ -13,5 +13,5 @@ def run(args):
 def __create_branch(reponame, repo, branch):
     cmd = 'git -C %s branch %s' % (repo['local'], branch)
     sp.check_output(cmd.split())
-    print '+ %s: %s' % (reponame, branch)
+    print('+ {}: {}'.format(reponame, branch))
     

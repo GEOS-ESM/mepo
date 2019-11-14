@@ -17,4 +17,4 @@ def __git_branch(repo, all):
     cmd = 'git -C %s branch' % repo['local']
     if all:
         cmd += ' -a'
-    return sp.check_output(cmd.split())
+    return sp.check_output(cmd.split()).decode()

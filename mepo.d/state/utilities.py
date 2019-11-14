@@ -14,7 +14,7 @@ def get_parent_dirs():
 def flatten_nested_odict(nested, flat=None, keywd='Components', level=0):
     if flat is None:
         flat = OrderedDict()
-    for name, repo in nested[keywd].iteritems():
+    for name, repo in nested[keywd].items():
         flat[name] = OrderedDict([('level', level)])
         for key, value in repo.items():
             if key == keywd:
@@ -24,6 +24,6 @@ def flatten_nested_odict(nested, flat=None, keywd='Components', level=0):
     return flat
 
 def relpath_to_abs(flat):
-    for name, repo in flat.iteritems():
+    for name, repo in flat.items():
         flat[name]['local'] = os.path.abspath(flat[name]['local'])
     return flat

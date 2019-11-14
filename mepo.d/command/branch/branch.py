@@ -2,9 +2,9 @@ import subprocess as sp
 
 from state.state import MepoState
 
-from brlist import brlist
-from create import create
-from delete import delete
+from command.branch.brlist import brlist
+from command.branch.create import create
+from command.branch.delete import delete
 
 def run(args):
     d = {

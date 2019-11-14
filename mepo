@@ -11,7 +11,8 @@ from cmdline.parser import MepoParser
 
 def get_list_of_mepo_commands():
     cmd_dir = os.path.join(MEPO_D, 'command')
-    return [name for name in os.listdir(cmd_dir) if not name.startswith('__init__')]
+    excluded = ['__pycache__']
+    return [name for name in os.listdir(cmd_dir) if name not in excluded]
 
 if __name__ == '__main__':
 
