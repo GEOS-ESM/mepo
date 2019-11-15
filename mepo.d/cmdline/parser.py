@@ -110,10 +110,13 @@ class MepoArgParser(object):
     def __commit(self):
         commit = self.subparsers.add_parser(
             'commit',
-            description = 'Commit staged files')
+            description = 'Commit staged files in the specified repositories')
+        commit.add_argument('message', metavar = 'message')
         commit.add_argument(
-            'message',
-            metavar = 'commit-message')
+            'repo_name',
+            metavar = 'repo-name',
+            nargs = '+',
+            help = 'Repository to stage file in')
 
     def __save(self):
         save = self.subparsers.add_parser(

@@ -4,13 +4,14 @@ from state.state import MepoState
 
 def run(args):
     allrepos = MepoState.read_state()
-    for name, repo in allrepos.items():
+    repos_commit = {name: allrepos[name] for name in args.repo_name}
+    for name, repo in repos_commit.items():
         staged_files = _get_staged_files(repo)
         if staged_files:
             _commit_files(args.message, repo)
             for myfile in staged_files:
                 print('+ {}: {}'.format(name, myfile))
-            
+
 def _get_staged_files(repo):
     cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
     output = sp.check_output(cmd.split()).decode().strip()
