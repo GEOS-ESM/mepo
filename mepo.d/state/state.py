@@ -1,6 +1,6 @@
 import os
 import sys
-import json
+import yaml
 import pickle
 
 import state.utilities as utils
@@ -40,7 +40,7 @@ class MepoState(object):
         if cls.exists():
             raise Exception('mepo state already exists')
         with open(project_config_file, 'r') as fin:
-            repolist = json.load(fin)
+            repolist = yaml.safe_load(fin)
         repolist_flat = utils.flatten_nested_odict(repolist)
         repolist_flat_abspath = utils.relpath_to_abs(repolist_flat)
         cls.write_state(repolist_flat_abspath)

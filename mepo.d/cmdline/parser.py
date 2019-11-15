@@ -35,7 +35,7 @@ class MepoArgParser(object):
             'config',
             metavar = 'config-file',
             nargs = '?',
-            default = 'repolist.json',
+            default = 'repolist.yaml',
             help = 'default: %(default)s')
 
     def __clone(self):
@@ -118,5 +118,5 @@ class MepoArgParser(object):
     def __save(self):
         save = self.subparsers.add_parser(
             'save',
-            description = 'Save current state in a json config file')
+            description = 'Save current state in a yaml config file')
         save.add_argument('repo')
