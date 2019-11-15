@@ -24,6 +24,7 @@ class MepoArgParser(object):
         self.__history()
         self.__stage()
         self.__unstage()
+        self.__commit()
         return self.parser.parse_args()
 
     def __init(self):
@@ -105,6 +106,14 @@ class MepoArgParser(object):
             nargs = '*',
             help = 'Repository',
             default = None)
+
+    def __commit(self):
+        commit = self.subparsers.add_parser(
+            'commit',
+            description = 'Commit staged files')
+        commit.add_argument(
+            'message',
+            metavar = 'commit-message')
 
     def __save(self):
         save = self.subparsers.add_parser(
