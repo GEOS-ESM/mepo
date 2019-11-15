@@ -1,9 +1,11 @@
 import subprocess as sp
 
 from state.state import MepoState
+from utilities import verify
 
 def run(args):
     allrepos = MepoState.read_state()
+    verify.valid_repos(args.repo_name, allrepos.keys())
     repos_commit = {name: allrepos[name] for name in args.repo_name}
     for name, repo in repos_commit.items():
         staged_files = _get_staged_files(repo)

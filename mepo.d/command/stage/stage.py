@@ -1,22 +1,18 @@
 import subprocess as sp
 
 from state.state import MepoState
+from utilities import verify
 from utilities import version
 
 def run(args):
     allrepos = MepoState.read_state()
-    _throw_error_if_reponame_is_invalid(args.repo_name, allrepos)
+    verify.valid_repos(args.repo_name, allrepos.keys())
     repos_stage = {name: allrepos[name] for name in args.repo_name}
     _throw_error_if_repo_has_detached_head(repos_stage)
     for name, repo in repos_stage.items():
         for myfile in _get_files_to_stage(repo):
             _stage_file(myfile, repo)
             print('+ {}: {}'.format(name, myfile))
-
-def _throw_error_if_reponame_is_invalid(specified_repos, allrepos):
-    for reponame in specified_repos:
-        if reponame not in allrepos:
-            raise Exception('Unknown repo name [{}]'.format(reponame))
 
 def _throw_error_if_repo_has_detached_head(repos):
     reponames_detached_head = _get_reponames_with_detached_head(repos)

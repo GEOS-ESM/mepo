@@ -25,6 +25,7 @@ class MepoArgParser(object):
         self.__stage()
         self.__unstage()
         self.__commit()
+        self.__push()
         return self.parser.parse_args()
 
     def __init(self):
@@ -113,6 +114,16 @@ class MepoArgParser(object):
             description = 'Commit staged files in the specified repositories')
         commit.add_argument('message', metavar = 'message')
         commit.add_argument(
+            'repo_name',
+            metavar = 'repo-name',
+            nargs = '+',
+            help = 'Repository to stage file in')
+
+    def __push(self):
+        push = self.subparsers.add_parser(
+            'push',
+            description = 'Push local commits to remote')
+        push.add_argument(
             'repo_name',
             metavar = 'repo-name',
             nargs = '+',
