@@ -1,7 +1,5 @@
 import os
 
-KEYLIST = ['level', 'name', 'origin', 'tag', 'branch', 'path']
-
 def get_parent_dirs():
     mypath = os.getcwd()
     parentdirs = [mypath]
@@ -10,14 +8,14 @@ def get_parent_dirs():
         parentdirs.append(mypath)
     return parentdirs
 
-def flatten_nested_odict(nested, flat=None, keywd='Components', level=0):
+def flatten_nested_odict(nested, flat=None, keywd='Components', parent=None):
     if flat is None:
         flat = dict()
     for name, repo in nested[keywd].items():
-        flat[name] = {'level': level}
+        flat[name] = {'parent': parent}
         for key, value in repo.items():
             if key == keywd:
-                flatten_nested_odict(repo, flat, keywd, level+1) # recurse
+                flatten_nested_odict(repo, flat, keywd, parent=name) # recurse
             else:
                 flat[name][key] = value
     return flat
