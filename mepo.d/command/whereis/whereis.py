@@ -1,10 +1,12 @@
 import os
 
 from state.state import MepoState
+from utilities import verify
 
 def run(args):
     allrepos = MepoState.read_state()
     if args.repo_name:
+        verify.valid_repos([args.repo_name], allrepos.keys())
         relpath = _get_relative_path(allrepos[args.repo_name])
         print(relpath)
     else:
