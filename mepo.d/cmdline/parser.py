@@ -11,7 +11,7 @@ class MepoArgParser(object):
         self.subparsers.title = 'mepo commands'
         self.subparsers.required = True
         self.subparsers.dest = 'mepo_cmd'
-        
+
     def parse(self):
         self.__init()
         self.__clone()
@@ -26,6 +26,7 @@ class MepoArgParser(object):
         self.__unstage()
         self.__commit()
         self.__push()
+        self.__pull()
         return self.parser.parse_args()
 
     def __init(self):
@@ -63,7 +64,7 @@ class MepoArgParser(object):
         checkout.add_argument('branch_name', metavar = 'branch-name')
         checkout.add_argument('repo_name', metavar = 'repo-name', nargs = '+')
         checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
-        
+
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
         MepoBranchArgParser(branch)
@@ -124,6 +125,16 @@ class MepoArgParser(object):
             'push',
             description = 'Push local commits to remote')
         push.add_argument(
+            'repo_name',
+            metavar = 'repo-name',
+            nargs = '+',
+            help = 'Repository to stage file in')
+
+    def __pull(self):
+        pull = self.subparsers.add_parser(
+            'pull',
+            description = 'Update local repo(s) to match remote')
+        pull.add_argument(
             'repo_name',
             metavar = 'repo-name',
             nargs = '+',
