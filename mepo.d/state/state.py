@@ -5,6 +5,7 @@ import pickle
 
 import state.utilities as utils
 from state.history import MepoHistory
+from config.config_file import ConfigFile
 
 class MepoState(object):
 
@@ -39,8 +40,7 @@ class MepoState(object):
     def initialize(cls, project_config_file):
         if cls.exists():
             raise Exception('mepo state already exists')
-        with open(project_config_file, 'r') as fin:
-            repolist = yaml.safe_load(fin)
+        repolist = ConfigFile(project_config_file).read_file()
         repolist_flat = utils.flatten_nested_odict(repolist)
         repolist_flat_abspath = utils.relpath_to_abs(repolist_flat)
         cls.write_state(repolist_flat_abspath)
