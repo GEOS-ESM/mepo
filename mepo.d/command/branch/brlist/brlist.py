@@ -1,6 +1,5 @@
-import subprocess as sp
-
 from state.state import MepoState
+from utilities import shellcmd
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -17,4 +16,4 @@ def __git_branch(repo, all):
     cmd = 'git -C %s branch' % repo['local']
     if all:
         cmd += ' -a'
-    return sp.check_output(cmd.split()).decode()
+    return shellcmd.run(cmd.split(), output=True)

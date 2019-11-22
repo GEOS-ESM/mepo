@@ -1,4 +1,4 @@
-import subprocess as sp
+from utilities import shellcmd
 
 from state.state import MepoState
 
@@ -11,4 +11,4 @@ def run(args):
 
 def _push_repo(repo):
     cmd = 'git -C {} push -u {}'.format(repo['local'], repo['remote'])
-    sp.check_output(cmd.split())
+    shellcmd.run(cmd.split())

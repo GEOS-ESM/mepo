@@ -1,8 +1,7 @@
-import subprocess as sp
-
 from state.state import MepoState
 from utilities import verify
 from utilities import version
+from utilities import shellcmd
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -36,14 +35,14 @@ def _get_files_to_stage(repo):
 
 def _get_modified_files(repo):
     cmd = 'git -C {} diff --name-only'.format(repo['local'])
-    output = sp.check_output(cmd.split()).decode().strip()
+    output = shellcmd.run(cmd.split(), output=True).strip()
     return output.split('\n') if output else []
 
 def _get_untracked_files(repo):
     cmd = 'git -C {} ls-files --others --exclude-standard'.format(repo['local'])
-    output = sp.check_output(cmd.split()).decode().strip()
+    output = shellcmd.run(cmd.split(), output=True).strip()
     return output.split('\n') if output else []
 
 def _stage_file(myfile, repo):
     cmd = 'git -C %s add %s' % (repo['local'], myfile)
-    sp.check_output(cmd.split())
+    shellcmd.run(cmd.split())

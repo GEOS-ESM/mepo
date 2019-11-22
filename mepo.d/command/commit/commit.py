@@ -1,7 +1,6 @@
-import subprocess as sp
-
 from state.state import MepoState
 from utilities import verify
+from utilities import shellcmd
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -16,9 +15,9 @@ def run(args):
 
 def _get_staged_files(repo):
     cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
-    output = sp.check_output(cmd.split()).decode().strip()
+    output = shellcmd.run(cmd.split(), output=True).strip()
     return output.split('\n') if output else []
 
 def _commit_files(commit_message, repo):
     cmd = ['git', '-C', repo['local'], 'commit', '-m', commit_message]
-    sp.check_output(cmd)
+    shellcmd.run(cmd)

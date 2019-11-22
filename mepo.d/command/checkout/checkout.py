@@ -1,7 +1,7 @@
 import os
-import subprocess as sp
 
 from state.state import MepoState
+from utilities import shellcmd
 
 def run(args):
     repo_name = args.repo_name
@@ -17,13 +17,9 @@ def run(args):
 
 def _checkout_branch(name, repo, branch):
     cmd = 'git -C %s checkout %s' % (repo['local'], branch)
-    try:
-        with open(os.devnull, 'w') as ferr:
-            sp.check_output(cmd.split(), stderr = sp.STDOUT)
-    except sp.CalledProcessError as err:
-        raise Exception(err.output.strip())
+    shellcmd.run(cmd.split(), output=True).strip()
 
 def _create_branch(reponame, repo, branch):
     cmd = 'git -C %s branch %s' % (repo['local'], branch)
-    sp.check_output(cmd.split())
+    shellcmd.run(cmd.split())
     print('+ {}: {}'.format(reponame, branch))

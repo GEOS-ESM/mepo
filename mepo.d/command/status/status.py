@@ -1,8 +1,8 @@
 import os
-import subprocess as sp
 
 from state.state import MepoState
 from utilities import version
+from utilities import shellcmd
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -14,7 +14,7 @@ def run(args):
 
 def check_status(name, repo, verbose=False):
     cmd = 'git -C %s status -s' % repo['local']
-    output = sp.check_output(cmd.split()).decode()
+    output = shellcmd.run(cmd.split(), output=True)
     return output.rstrip()
 
 def print_status(name, version, output, width):

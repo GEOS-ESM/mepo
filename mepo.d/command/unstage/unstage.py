@@ -1,5 +1,5 @@
 import re
-import subprocess as sp
+from utilities import shellcmd
 
 from state.state import MepoState
 
@@ -22,9 +22,9 @@ def _get_repos_to_be_staged(specified_repos, allrepos):
 
 def _unstage_file(myfile, repo):
     cmd = 'git -C {} reset -- {}'.format(repo['local'], myfile)
-    sp.check_output(cmd.split())
+    shellcmd.run(cmd.split())
 
 def _get_files_to_unstage(repo):
     cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
-    output = sp.check_output(cmd.split()).decode().strip()
+    output = shellcmd.run(cmd.split(), output=True).strip()
     return output.split('\n') if output else []

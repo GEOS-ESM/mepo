@@ -1,7 +1,5 @@
-import sys
-import subprocess as sp
-
 from state.state import MepoState
+from utilities import shellcmd
 
 def run(args):
     allrepos = MepoState.read_state()
@@ -12,5 +10,5 @@ def run(args):
 
 def _delete_branch(reponame, repo, branch):
     cmd = 'git -C %s branch -d %s' % (repo['local'], branch)
-    sp.check_output(cmd.split())
+    shellcmd.run(cmd.split())
     print('- {}: {}'.format(reponame, branch))
