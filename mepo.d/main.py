@@ -16,5 +16,5 @@ def main():
     cmd_list = get_available_mepo_commands()
     d = {cmd: import_module('command.{}.{}'.format(cmd, cmd)) for cmd in cmd_list}
     
-    # Execute run method of specified mepo command
+    # Execute run method of specified mepo command, e.g. d['list'].run(args)
     d[args.mepo_cmd].run(args)
