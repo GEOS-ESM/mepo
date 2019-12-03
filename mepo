@@ -1,33 +1,20 @@
 #!/usr/bin/env python
 
-import sys
 import os
+import sys
 import traceback
-from importlib import import_module
 
+# Version check
 if sys.version_info < (3, 6, 0):
     sys.exit('ERROR: Python version needs to be >= 3.6.0')
 
+# Add mepo.d to path
 MEPO_D = os.path.join(os.path.dirname(__file__), 'mepo.d')
 sys.path.insert(0, MEPO_D)
 
-from cmdline.parser import MepoArgParser
-
-def get_list_of_mepo_commands():
-    cmd_dir = os.path.join(MEPO_D, 'command')
-    excluded = ['__pycache__']
-    return [name for name in os.listdir(cmd_dir) if name not in excluded]
-
-if __name__ == '__main__':
-
-    args = MepoArgParser().parse()
-
-    # Dispatch table
-    cmd_list = get_list_of_mepo_commands()
-    d = {cmd: import_module('command.{}.{}'.format(cmd, cmd)) for cmd in cmd_list}
-
-    # Execute run method of mepo command
-    try:
-        d[args.mepo_cmd].run(args)
-    except Exception as e:
-        traceback.print_exc()
+# Call top level function
+from main import main
+try:
+    main()
+except Exception as e:
+    traceback.print_exc()
