@@ -4,6 +4,8 @@ from cmdline.branch_parser import MepoBranchArgParser
 
 class MepoArgParser(object):
 
+    __slots__ = ['parser', 'subparsers']
+
     def __init__(self):
         self.parser = argparse.ArgumentParser(
             description = 'Tool to manage (m)ultiple r(epo)s')
@@ -26,7 +28,6 @@ class MepoArgParser(object):
         self.__unstage()
         self.__commit()
         self.__push()
-        self.__pull()
         return self.parser.parse_args()
 
     def __init(self):
@@ -125,16 +126,6 @@ class MepoArgParser(object):
             'push',
             description = 'Push local commits to remote')
         push.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
-            nargs = '+',
-            help = 'Repository to stage file in')
-
-    def __pull(self):
-        pull = self.subparsers.add_parser(
-            'pull',
-            description = 'Update local repo(s) to match remote')
-        pull.add_argument(
             'repo_name',
             metavar = 'repo-name',
             nargs = '+',
