@@ -22,8 +22,8 @@ def _throw_error_if_repo_has_detached_head(repos):
 def _get_reponames_with_detached_head(repos):
     reponames_with_detached_head = list()
     for name, repo in repos.items():
-        c_vname, c_vtype, c_detached_head = version.get_current(repo)
-        if c_detached_head == 'DH':
+        current = version.get_current(repo)
+        if current.detached_head == 'DH':
             reponames_with_detached_head.append(name)
     return reponames_with_detached_head
 

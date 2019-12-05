@@ -1,5 +1,8 @@
 import os
 import subprocess as sp
+from collections import namedtuple
+
+Version = namedtuple('Version', ['name', 'type', 'detached_head'])
 
 def get_current_s(repo):
     vname, vtype, detached_head = get_current(repo)
@@ -20,11 +23,11 @@ def get_current(repo):
         detached_head = 'DH'
     else:
         vtype = vname = detached_head = '?'
-    return (vname, vtype, detached_head)
+    return Version(vname, vtype, detached_head)
 
 def get_original_s(repo):
-    vname, vtype = get_original(repo)
-    return '({}) {}'.format(vtype, vname)
+    original = get_original(repo)
+    return '({}) {}'.format(original.type, original.name)
     
 def get_original(repo):
     vname = repo.get('branch')
@@ -32,7 +35,8 @@ def get_original(repo):
     if vname is None:
         vname = repo.get('tag')
         vtype = 't'
-    return (vname, vtype)
+    # Original clones are always in detached head state
+    return Version(vname, vtype, 'DH')
 
 def _parse_detached_head_info(output):
     tmp = output.split(',')[1].strip()

@@ -8,9 +8,9 @@ from utilities import shellcmd
 def run(args):
     allrepos = MepoState.read_state()
     for name, repo in allrepos.items():
-        ver_name, ver_type = version.get_original(repo)
-        ver_name_type = '({}) {}'.format(ver_type, ver_name)
-        _clone_component(repo, ver_name, ver_type)
+        original = version.get_original(repo)
+        ver_name_type = '({}) {}'.format(original.type, original.name)
+        _clone_component(repo, original.name, original.type)
         if 'sparse' in repo:
             _sparse_checkout(repo)
             ver_name_type += ' (sparse)'
