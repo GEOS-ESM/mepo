@@ -1,0 +1,8 @@
+ESMA_cmake             | (t) v1.0.10 (DH)
+ecbuild                | (b) origin/feature/FindMKL-portability-improvement (DH)
+ESMA_env               | (t) v1.4.0 (DH)
+FMS                    | (t) geos/orphan/v1.0.2 (DH)
+FVdycoreCubed_GridComp | (t) v1.0.7 (DH)
+fvdycore               | (t) geos/v1.0.2 (DH)
+GMAO_Shared            | (t) v1.0.12 (DH)
+MAPL                   | (t) v1.1.9 (DH)

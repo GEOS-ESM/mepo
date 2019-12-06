@@ -1,0 +1,1 @@
+ESMA_cmake ecbuild ESMA_env FMS FVdycoreCubed_GridComp fvdycore GMAO_Shared MAPL 
