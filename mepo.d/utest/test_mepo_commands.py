@@ -33,7 +33,8 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
-        cls.fixture_dir = os.path.join(THIS_DIR, 'tmp', cls.fixture)
+        cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
+        cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
@@ -69,7 +70,7 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         os.chdir(THIS_DIR)
-        shutil.rmtree(cls.fixture_dir)
+        shutil.rmtree(cls.tmpdir)
 
 if __name__ == '__main__':
     unittest.main()
