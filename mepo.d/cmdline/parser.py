@@ -35,7 +35,7 @@ class MepoArgParser(object):
             'init',
             description = 'Initialize mepo based on <config-file')
         init.add_argument(
-            'config',
+            'config_file',
             metavar = 'config-file',
             nargs = '?',
             default = 'repolist.yaml',
