@@ -23,7 +23,6 @@ class MepoArgParser(object):
         self.__branch()
         self.__compare()
         self.__whereis()
-        self.__history()
         self.__stage()
         self.__unstage()
         self.__commit()
@@ -82,11 +81,6 @@ class MepoArgParser(object):
             'relative to my current location. If <repo-name> is not present, '
             'get the relative locations of all repositories.')
         whereis.add_argument('repo_name', metavar = 'repo-name', nargs = '?', default = None)
-
-    def __history(self):
-        history = self.subparsers.add_parser(
-            'history',
-            description = 'Get a history of mepo commands that were run')
 
     def __stage(self):
         stage = self.subparsers.add_parser(

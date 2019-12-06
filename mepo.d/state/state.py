@@ -4,7 +4,6 @@ import yaml
 import pickle
 
 import state.utilities as utils
-from state.history import MepoHistory
 from config.config_file import ConfigFile
 
 class MepoState(object):
@@ -44,11 +43,9 @@ class MepoState(object):
         repolist_flat = utils.flatten_nested_odict(repolist)
         repolist_flat_abspath = utils.relpath_to_abs(repolist_flat)
         cls.write_state(repolist_flat_abspath)
-        MepoHistory.write_history(cls.get_dir())
 
     @classmethod
     def read_state(cls):
-        MepoHistory.write_history(cls.get_dir())
         if not cls.exists():
             raise Exception('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
