@@ -5,7 +5,7 @@ from state.state import MepoState
 from utilities import version
 from utilities import colors
 
-VER_LEN = 40
+VER_LEN = 30
 
 def run(args):
     allrepos = MepoState.read_state()
