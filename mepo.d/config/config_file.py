@@ -34,3 +34,9 @@ class ConfigFile(object):
     def read_cfg(self):
         '''Read python config file and return a dict containing contents'''
         raise NotImplementedError('Reading of cfg file has not yet been implemented')
+
+    def write_yaml(self, d):
+        '''Dump dict d into a yaml file'''
+        import yaml
+        with open(self.__filename, 'w') as fout:
+            yaml.dump(d, fout, sort_keys = False)

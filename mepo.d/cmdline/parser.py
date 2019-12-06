@@ -27,6 +27,7 @@ class MepoArgParser(object):
         self.__unstage()
         self.__commit()
         self.__push()
+        self.__save()
         return self.parser.parse_args()
 
     def __init(self):
@@ -129,4 +130,9 @@ class MepoArgParser(object):
         save = self.subparsers.add_parser(
             'save',
             description = 'Save current state in a yaml config file')
-        save.add_argument('repo')
+        save.add_argument(
+            'config_file',
+            metavar = 'config-file',
+            nargs = '?',
+            default = 'repolist-new.yaml',
+            help = 'default: %(default)s')

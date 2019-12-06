@@ -3,7 +3,7 @@ import sys
 import yaml
 import pickle
 
-import state.utilities as utils
+import utilities.path as utilspath
 from config.config_file import ConfigFile
 
 class MepoState(object):
@@ -14,11 +14,16 @@ class MepoState(object):
 
     @classmethod
     def get_dir(cls):
-        for mydir in utils.get_parent_dirs():
+        for mydir in utilspath.get_parent_dirs():
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
                 return state_dir
         raise OSError('mepo state dir [.mepo] does not exist')
+
+    @classmethod
+    def get_root_dir(cls):
+        '''Return directory that contains .mepo'''
+        return os.path.dirname(cls.get_dir())
 
     @classmethod
     def get_file(cls):
@@ -40,9 +45,8 @@ class MepoState(object):
         if cls.exists():
             raise Exception('mepo state already exists')
         repolist = ConfigFile(project_config_file).read_file()
-        repolist_flat = utils.flatten_nested_odict(repolist)
-        repolist_flat_abspath = utils.relpath_to_abs(repolist_flat)
-        cls.write_state(repolist_flat_abspath)
+        repolist_abspath = utilspath.relpath_to_abs(repolist)
+        cls.write_state(repolist_abspath)
 
     @classmethod
     def read_state(cls):
