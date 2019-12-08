@@ -11,6 +11,7 @@ def run(args):
     allrepos_rel = utilspath.abspath_to_rel(allrepos, MepoState.get_root_dir())
     ConfigFile(args.config_file).write_yaml(allrepos_rel)
     print("State saved to '{}'".format(args.config_file))
+    MepoState.write_state(allrepos_rel)
 
 def _update_repo(repo):
     curr_ver = version.get_current(repo)
