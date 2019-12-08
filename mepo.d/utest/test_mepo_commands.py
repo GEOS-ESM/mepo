@@ -39,7 +39,7 @@ class TestMepoCommands(unittest.TestCase):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
         cls.__copy_config_file()
-        args.config = 'repolist.yaml'
+        args.config_file = 'repolist.yaml'
         os.chdir(cls.fixture_dir)
         mepo_init.run(args)
         args.config = None
