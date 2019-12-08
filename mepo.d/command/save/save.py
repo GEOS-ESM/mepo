@@ -7,21 +7,27 @@ from config.config_file import ConfigFile
 def run(args):
     allrepos = MepoState.read_state()
     for name, repo in allrepos.items():
-        repo = _update_repo(repo)
+        _update_repo(repo)
+    MepoState.write_state(allrepos)
     allrepos_rel = utilspath.abspath_to_rel(allrepos, MepoState.get_root_dir())
     ConfigFile(args.config_file).write_yaml(allrepos_rel)
     print("State saved to '{}'".format(args.config_file))
-    MepoState.write_state(allrepos_rel)
 
 def _update_repo(repo):
     curr_ver = version.get_current(repo)
     orig_ver = version.get_original(repo)
-    if curr_ver != orig_ver:
-        assert curr_ver.type == 'b' # current version should be a branch
+    if _save_conditions_are_met(curr_ver, orig_ver):
         _verify_local_and_remote_commit_ids_match(repo)
         repo['branch'] = curr_ver.name
         repo.pop('tag', None)
-    return repo
+
+def _save_conditions_are_met(curr_ver, orig_ver):
+    result = False
+    if curr_ver != orig_ver:
+        assert curr_ver.type == 'b'
+        if curr_ver.detached_head != 'DH': # SPECIAL HANDLING
+            result = True
+    return result
 
 def _verify_local_and_remote_commit_ids_match(repo):
     curr_ver = version.get_current(repo)
