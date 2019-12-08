@@ -10,7 +10,7 @@ def get_parent_dirs():
 
 def relpath_to_abs(repolist):
     for name, repo in repolist.items():
-        repolist[name]['local'] = os.path.abspath(repolist[name]['local'])
+        repo['local'] = os.path.abspath(repo['local'])
     return repolist
 
 def abspath_to_rel(repolist, start):
