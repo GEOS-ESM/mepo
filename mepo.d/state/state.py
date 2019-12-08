@@ -71,7 +71,7 @@ class MepoState(object):
         new_state_file = os.path.join(state_dir, state_file_name)
         with open(new_state_file, 'wb') as fout:
             pickle.dump(state_details, fout, -1)
-        state_fileptr = os.path.join(cls.__state_dir_name, cls.__state_fileptr_name)
+        state_fileptr = os.path.join(state_dir, cls.__state_fileptr_name)
         if os.path.isfile(state_fileptr):
             os.remove(state_fileptr)
         os.symlink(new_state_file, state_fileptr)
