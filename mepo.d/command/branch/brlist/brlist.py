@@ -12,7 +12,7 @@ def run(args):
             print(FMT.format('', line))
 
 def __git_branch(repo, all):
-    cmd = 'git -C %s branch' % repo['local']
+    cmd = 'git -C {} branch'.format(repo['local'])
     if all:
         cmd += ' -a'
     return shellcmd.run(cmd.split(), output=True)

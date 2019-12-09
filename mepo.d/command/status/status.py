@@ -13,7 +13,7 @@ def run(args):
         print_status(name, current_version, output, max_name_length)
 
 def check_status(name, repo, verbose=False):
-    cmd = 'git -C %s status -s' % repo['local']
+    cmd = 'git -C {} status -s'.format(repo['local'])
     output = shellcmd.run(cmd.split(), output=True)
     return output.rstrip()
 

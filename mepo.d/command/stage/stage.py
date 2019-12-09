@@ -44,5 +44,5 @@ def _get_untracked_files(repo):
     return output.split('\n') if output else []
 
 def _stage_file(myfile, repo):
-    cmd = 'git -C %s add %s' % (repo['local'], myfile)
+    cmd = 'git -C {} add {}'.format(repo['local'], myfile)
     shellcmd.run(cmd.split())
