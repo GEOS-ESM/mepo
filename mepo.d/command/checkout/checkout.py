@@ -10,7 +10,7 @@ def run(args):
     allrepos = MepoState.read_state()
     for reponame in repo_name:
         if reponame not in allrepos:
-            raise Exception('invlaid repo name [%s]' % reponame)
+            raise Exception('invalid repo name [%s]' % reponame)
         if create:
             _create_branch(reponame, allrepos[reponame], branch_name)
         _checkout_branch(reponame, allrepos[reponame], branch_name)
