@@ -21,6 +21,7 @@ class MepoArgParser(object):
         self.__status()
         self.__checkout()
         self.__branch()
+        self.__develop()
         self.__compare()
         self.__whereis()
         self.__stage()
@@ -70,6 +71,12 @@ class MepoArgParser(object):
         branch = self.subparsers.add_parser('branch')
         MepoBranchArgParser(branch)
 
+    def __develop(self):
+        develop = self.subparsers.add_parser(
+            'develop',
+            description = "Checkout current version of 'develop' branches of specified repos")
+        develop.add_argument('repo_name', metavar = 'repo-name', nargs = '+', default = None)
+        
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',
