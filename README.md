@@ -1,5 +1,5 @@
 # mepo
-`mepo` is a tool to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for projects that involve multiple repositories. A typical workflow, when using `mepo`, can be
+`mepo` is a tool to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for projects that involve multiple repositories. A typical `mepo` workflow (using the fixture GEOSgcm and its compoments, fvdycore, MAPL, FMS) can be
 
 ### Clone
 #### Clone fixture
