@@ -5,15 +5,15 @@ from utilities import version
 from utilities import shellcmd
 
 def run(args):
-    allrepos = MepoState.read_state()
-    max_name_length = len(max(allrepos, key=len))
-    for name, repo in allrepos.items():
-        current_version = version.get_current_s(repo)
-        output = check_status(name, repo)
+    allcomps = MepoState.read_state()
+    max_name_length = len(max(allcomps, key=len))
+    for name, comp in allcomps.items():
+        current_version = version.get_current_s(comp)
+        output = check_status(comp['local'])
         print_status(name, current_version, output, max_name_length)
 
-def check_status(name, repo, verbose=False):
-    cmd = 'git -C {} status -s'.format(repo['local'])
+def check_status(local_path, verbose=False):
+    cmd = 'git -C {} status -s'.format(local_path)
     output = shellcmd.run(cmd.split(), output=True)
     return output.rstrip()
 

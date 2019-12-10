@@ -4,19 +4,19 @@ from state.state import MepoState
 from utilities import verify
 
 def run(args):
-    allrepos = MepoState.read_state()
-    if args.repo_name:
-        verify.valid_repos([args.repo_name], allrepos.keys())
-        relpath = _get_relative_path(allrepos[args.repo_name])
+    allcomps = MepoState.read_state()
+    if args.comp_name:
+        verify.valid_components([args.comp_name], allcomps)
+        relpath = _get_relative_path(allcomps[args.comp_name]['local'])
         print(relpath)
     else:
-        max_name_length = len(max(allrepos, key=len))
-        for name, repo in allrepos.items():
-            relpath = _get_relative_path(repo)
+        max_name_length = len(max(allcomps, key=len))
+        for name, comp in allcomps.items():
+            relpath = _get_relative_path(comp['local'])
             _print_where(name, relpath, max_name_length)
         
-def _get_relative_path(repo):
-    return os.path.relpath(repo['local'], os.getcwd())
+def _get_relative_path(local_path):
+    return os.path.relpath(local_path, os.getcwd())
 
 def _print_where(name, relpath, width):
     FMT0 = '{:<%s.%ss} | {:<s}' % (width, width)

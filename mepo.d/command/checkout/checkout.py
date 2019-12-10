@@ -3,11 +3,11 @@ from utilities import shellcmd
 from utilities import verify
 
 def run(args):
-    allrepos = MepoState.read_state()
-    verify.valid_repos(args.repo_name, allrepos.keys())
-    repos_co = {name: allrepos[name] for name in args.repo_name}
-    for name, repo in repos_co.items():
-        local_path = repo['local']
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps.keys())
+    comps_co = {name: allcomps[name] for name in args.comp_name}
+    for name, comp in comps_co.items():
+        local_path = comp['local']
         branch_name = args.branch_name
         if args.b:
             _create_branch(local_path, branch_name)

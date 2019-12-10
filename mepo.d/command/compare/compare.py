@@ -1,6 +1,3 @@
-import os
-import subprocess as sp
-
 from state.state import MepoState
 from utilities import version
 from utilities import colors
@@ -8,11 +5,11 @@ from utilities import colors
 VER_LEN = 30
 
 def run(args):
-    allrepos = MepoState.read_state()
-    max_name_length = len(max(allrepos, key=len))
-    for name, repo in allrepos.items():
-        orig_ver = version.get_original_s(repo)
-        cur_ver = version.get_current_s(repo)
+    allcomps = MepoState.read_state()
+    max_name_length = len(max(allcomps, key=len))
+    for name, comp in allcomps.items():
+        orig_ver = version.get_original_s(comp)
+        cur_ver = version.get_current_s(comp)
         _print_cmp(name, orig_ver, cur_ver, max_name_length)
 
 def _print_cmp(name, orig, cur, name_width):

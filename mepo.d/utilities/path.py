@@ -8,12 +8,12 @@ def get_parent_dirs():
         parentdirs.append(mypath)
     return parentdirs
 
-def relpath_to_abs(repolist):
-    for name, repo in repolist.items():
-        repo['local'] = os.path.abspath(repo['local'])
-    return repolist
+def relpath_to_abs(complist):
+    for name, comp in complist.items():
+        comp['local'] = os.path.abspath(comp['local'])
+    return complist
 
-def abspath_to_rel(repolist, start):
-    for name, repo in repolist.items():
-        repolist[name]['local'] = './' + os.path.relpath(repolist[name]['local'], start)
-    return repolist
+def abspath_to_rel(complist, start):
+    for name, comp in complist.items():
+        complist[name]['local'] = './' + os.path.relpath(complist[name]['local'], start)
+    return complist

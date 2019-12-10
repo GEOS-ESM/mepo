@@ -24,7 +24,7 @@ class TestMepoCommands(unittest.TestCase):
 
     @classmethod
     def __copy_config_file(cls):
-        src = os.path.join(cls.input_dir, 'repolist.yaml')
+        src = os.path.join(cls.input_dir, 'components.yaml')
         dst = os.path.join(cls.fixture_dir)
         shutil.copy(src, dst)
 
@@ -39,7 +39,7 @@ class TestMepoCommands(unittest.TestCase):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
         cls.__copy_config_file()
-        args.config_file = 'repolist.yaml'
+        args.config_file = 'components.yaml'
         os.chdir(cls.fixture_dir)
         mepo_init.run(args)
         args.config = None

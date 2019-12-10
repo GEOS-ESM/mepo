@@ -3,14 +3,14 @@ from utilities import verify
 from utilities import shellcmd
 
 def run(args):
-    allrepos = MepoState.read_state()
-    verify.valid_repos(args.repo_name, allrepos.keys())
-    repos_dev = {name: allrepos[name] for name in args.repo_name}
-    for name, repo in repos_dev.items():
-        if 'develop' not in repo:
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps.keys())
+    comps_dev = {name: allcomps[name] for name in args.comp_name}
+    for name, comp in comps_dev.items():
+        if 'develop' not in comp:
             raise Exception("'develop' branch not specified for {}".format(name))
-        local_path = repo['local']
-        _checkout_branch(local_path, repo['develop'])
+        local_path = comp['local']
+        _checkout_branch(local_path, comp['develop'])
         _sync_branch_with_remote(local_path)
 
 def _checkout_branch(local_path, branch):

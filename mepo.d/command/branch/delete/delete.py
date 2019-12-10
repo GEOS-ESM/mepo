@@ -1,14 +1,18 @@
 from state.state import MepoState
 from utilities import shellcmd
+from utilities import verify
 
 def run(args):
-    allrepos = MepoState.read_state()
-    for reponame in args.repo_name:
-        if reponame not in allrepos:
-            raise Exception('invalid repo name [{}]'.format(reponame))
-        _delete_branch(reponame, allrepos[reponame], args.branch_name)
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps)
+    comps_del = {name: allcomps[name] for name in args.comp_name}
+    for name, comp in comps_del.items():
+        _delete_branch(comp['local'], args.branch_name, args.force)
+        print('- {}: {}'.format(name, args.branch_name))
 
-def _delete_branch(reponame, repo, branch):
-    cmd = 'git -C {} branch -d {}'.format(repo['local'], branch)
+def _delete_branch(local_path, branch, force):
+    dash_d = '-d'
+    if force:
+        dash_d = '-D'
+    cmd = 'git -C {} branch {} {}'.format(local_path, dash_d, branch)
     shellcmd.run(cmd.split())
-    print('- {}: {}'.format(reponame, branch))

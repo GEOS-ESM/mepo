@@ -34,37 +34,37 @@ class MepoArgParser(object):
     def __init(self):
         init = self.subparsers.add_parser(
             'init',
-            description = 'Initialize mepo based on <config-file')
+            description = 'Initialize mepo based on <config-file>')
         init.add_argument(
             'config_file',
             metavar = 'config-file',
             nargs = '?',
-            default = 'repolist.yaml',
+            default = 'components.yaml',
             help = 'default: %(default)s')
 
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            description = 'Clone repositories defined in config file')
+            description = "Clone repositories. Command 'mepo init' should have already been run")
 
     def __list(self):
-        listrepos = self.subparsers.add_parser(
+        listcomps = self.subparsers.add_parser(
             'list',
-            description = 'List all repositories that are being tracked')
+            description = 'List all components that are being tracked')
 
     def __status(self):
         status = self.subparsers.add_parser(
             'status',
-            description = 'Check current status of all repositories')
+            description = 'Check current status of all components')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(
             'checkout',
-            description = 'Switch to branch <branch-name> in repo <repo-name>. '
+            description = 'Switch to branch <branch-name> in component <comp-name>. '
             'Specifying -b causes the branch <branch-name> to be created in '
-            'the specified repos')
+            'the specified component(s).')
         checkout.add_argument('branch_name', metavar = 'branch-name')
-        checkout.add_argument('repo_name', metavar = 'repo-name', nargs = '+')
+        checkout.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
 
     def __branch(self):
@@ -74,64 +74,64 @@ class MepoArgParser(object):
     def __develop(self):
         develop = self.subparsers.add_parser(
             'develop',
-            description = "Checkout current version of 'develop' branches of specified repos")
-        develop.add_argument('repo_name', metavar = 'repo-name', nargs = '+', default = None)
+            description = "Checkout current version of 'develop' branches of specified components")
+        develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
         
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',
-            description = 'Compare current and original states of all repositories')
+            description = 'Compare current and original states of all components')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(
             'whereis',
-            description = 'Get the location of repository <repo-name> '
-            'relative to my current location. If <repo-name> is not present, '
-            'get the relative locations of all repositories.')
-        whereis.add_argument('repo_name', metavar = 'repo-name', nargs = '?', default = None)
+            description = 'Get the location of component <comp-name> '
+            'relative to my current location. If <comp-name> is not present, '
+            'get the relative locations of ALL components.')
+        whereis.add_argument('comp_name', metavar = 'comp-name', nargs = '?', default = None)
 
     def __stage(self):
         stage = self.subparsers.add_parser(
             'stage',
-            description = 'Stage modified & untracked files in the specified repo(s)')
+            description = 'Stage modified & untracked files in the specified component(s)')
         stage.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '+',
-            help = 'Repository to stage file in')
+            help = 'Component to stage file in')
 
     def __unstage(self):
         unstage = self.subparsers.add_parser(
             'unstage',
             description = 'Un-stage staged files. '
-            'If a repository is specified, files are un-staged only in that repository.')
+            'If a component is specified, files are un-staged only for that component.')
         unstage.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '*',
-            help = 'Repository',
+            help = 'Component',
             default = None)
 
     def __commit(self):
         commit = self.subparsers.add_parser(
             'commit',
-            description = 'Commit staged files in the specified repositories')
+            description = 'Commit staged files in the specified components')
         commit.add_argument('message', metavar = 'message')
         commit.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '+',
-            help = 'Repository to stage file in')
+            help = 'Component to stage file in')
 
     def __push(self):
         push = self.subparsers.add_parser(
             'push',
             description = 'Push local commits to remote')
         push.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '+',
-            help = 'Repository to stage file in')
+            help = 'Component to push to remote')
 
     def __save(self):
         save = self.subparsers.add_parser(
@@ -141,5 +141,5 @@ class MepoArgParser(object):
             'config_file',
             metavar = 'config-file',
             nargs = '?',
-            default = 'repolist-new.yaml',
+            default = 'components-new.yaml',
             help = 'default: %(default)s')

@@ -44,17 +44,17 @@ class MepoState(object):
     def initialize(cls, project_config_file):
         if cls.exists():
             raise Exception('mepo state already exists')
-        repolist = ConfigFile(project_config_file).read_file()
-        repolist_abspath = utilspath.relpath_to_abs(repolist)
-        cls.write_state(repolist_abspath)
+        complist = ConfigFile(project_config_file).read_file()
+        complist_abspath = utilspath.relpath_to_abs(complist)
+        cls.write_state(complist_abspath)
 
     @classmethod
     def read_state(cls):
         if not cls.exists():
             raise Exception('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
-            allrepos = pickle.load(fin)
-        return allrepos
+            allcomps = pickle.load(fin)
+        return allcomps
 
     @classmethod
     def write_state(cls, state_details):
