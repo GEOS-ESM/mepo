@@ -17,7 +17,7 @@ TIP: run `mepo list` for a list of components
 TIP: run `mepo whereis <component>` for the location of the component
 
 ### Create and checkout new feature branches
-For example, create and checkout (from detached head) feature branch `feature/<username>/feature-dev` in repos `MAPL`, `fvdycore` and `FMS`
+For example, create and checkout (from detached head) feature branch `feature/<username>/feature-dev` in components `MAPL`, `fvdycore` and `FMS`
 ```shell
 mepo checkout -b feature/<username>/feature-dev fvdycore MAPL FMS
 ```
