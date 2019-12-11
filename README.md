@@ -1,4 +1,4 @@
-# mepo [![Actions Status](https://github.com/pchakraborty/mepo/workflows/Unit%20testing%20of%20mepo/badge.svg)](https://github.com/{owner}/{repo}/actions)
+# mepo [![Actions Status](https://github.com/pchakraborty/mepo/workflows/Unit%20testing%20of%20mepo/badge.svg)](https://github.com/pchakraborty/mepo/actions)
 `mepo` is a tool to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. A typical `mepo` workflow, using the fixture [GEOSgcm](https://github.com/GEOS-ESM/GEOSgcm) and its compoments, [fvdycore](https://github.com/GEOS-ESM/GFDL_atmos_cubed_sphere), [MAPL](https://github.com/GEOS-ESM/MAPL), can be
 
 ### Clone
