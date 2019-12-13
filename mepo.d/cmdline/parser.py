@@ -95,6 +95,10 @@ class MepoArgParser(object):
             'stage',
             description = 'Stage modified & untracked files in the specified component(s)')
         stage.add_argument(
+            '--untracked',
+            action = 'store_true',
+            help = 'stage untracked files as well')
+        stage.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',

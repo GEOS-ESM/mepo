@@ -2,6 +2,7 @@ from state.state import MepoState
 from utilities import version
 from utilities import shellcmd
 from utilities import path as utilspath
+from repository.git import GitRepository
 from config.config_file import ConfigFile
 
 def run(args):
@@ -24,29 +25,18 @@ def _update_comp(comp):
 def _save_conditions_are_met(curr_ver, orig_ver):
     result = False
     if curr_ver != orig_ver:
-        assert curr_ver.type == 'b'
-        if curr_ver.detached_head != 'DH': # SPECIAL HANDLING
+        assert curr_ver.type == 'b', '{}'.format(curr_ver)
+        if not curr_ver.detached: # SPECIAL HANDLING
             result = True
     return result
 
 def _verify_local_and_remote_commit_ids_match(comp):
     curr_ver = version.get_current(comp)
-    remote_id = _get_remote_latest_commit_id(comp, curr_ver.name)
-    local_id = _get_local_latest_commit_id(comp)
+    git = GitRepository(comp['remote'], comp['local'])
+    remote_id = git.get_remote_latest_commit_id(curr_ver.name)
+    local_id = git.get_local_latest_commit_id()
     failmsg = "{} (remote commit) != {} (local commit) for {}:{}. Did you try 'mepo push'?"
     if remote_id != local_id:
         name = comp['remote'].split('/')[-1].split('.')[0]
         msg = failmsg.format(remote_id, local_id, name, curr_ver.name)
         raise Exception(msg)
-
-def _get_remote_latest_commit_id(comp, branch):
-    cmd = 'git -C {} ls-remote {} refs/heads/{}'.format(comp['local'], comp['remote'], branch)
-    output = shellcmd.run(cmd.split(), output=True).strip()
-    if not output:
-        errmsg = 'Branch {} does not exist on {}'.format(branch, comp['remote'])
-        raise Exception(errmsg)
-    return output.split()[0]
-
-def _get_local_latest_commit_id(comp):
-    cmd = 'git -C {} rev-parse HEAD'.format(comp['local'])
-    return shellcmd.run(cmd.split(), output=True).strip()
