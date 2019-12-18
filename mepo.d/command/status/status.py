@@ -1,16 +1,15 @@
 from state.state import MepoState
-from utilities import version
-from utilities import shellcmd
 from repository.git import GitRepository
+from utilities.version import version_to_string
 
 def run(args):
     allcomps = MepoState.read_state()
-    max_name_length = len(max(allcomps, key=len))
-    for name, comp in allcomps.items():
-        git = GitRepository(comp['remote'], comp['local'])
-        curr_ver = version.get_current_s(comp)
+    max_namelen = len(max([comp.name for comp in allcomps], key=len))
+    for comp in allcomps:
+        git = GitRepository(comp.remote, comp.local)
+        curr_ver = version_to_string(git.get_version())
         output = git.check_status()
-        print_status(name, curr_ver, output, max_name_length)
+        print_status(comp.name, curr_ver, output, max_namelen)
 
 def print_status(name, version, output, width):
     FMT0 = '{:<%s.%ss} | {:<s}' % (width, width)

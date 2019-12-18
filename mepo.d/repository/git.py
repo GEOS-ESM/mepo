@@ -1,6 +1,5 @@
 import os
 import shutil
-from collections import namedtuple
 
 from utilities import shellcmd
 

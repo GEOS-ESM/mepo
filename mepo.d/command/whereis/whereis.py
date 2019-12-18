@@ -5,19 +5,16 @@ from utilities import verify
 
 def run(args):
     allcomps = MepoState.read_state()
-    if args.comp_name:
+    if args.comp_name: # single comp name is specified, print relpath
         verify.valid_components([args.comp_name], allcomps)
-        relpath = _get_relative_path(allcomps[args.comp_name]['local'])
-        print(relpath)
-    else:
-        max_name_length = len(max(allcomps, key=len))
-        for name, comp in allcomps.items():
-            relpath = _get_relative_path(comp['local'])
-            _print_where(name, relpath, max_name_length)
+        for comp in allcomps:
+            if comp.name == args.comp_name:
+                print(_get_relative_path(comp.local))
+    else: # print relpaths of all comps
+        max_namelen = len(max([x.name for x in allcomps], key=len))
+        FMT = '{:<%s.%ss} | {:<s}' % (max_namelen, max_namelen)
+        for comp in allcomps:
+            print(FMT.format(comp.name, _get_relative_path(comp.local)))
         
 def _get_relative_path(local_path):
     return os.path.relpath(local_path, os.getcwd())
-
-def _print_where(name, relpath, width):
-    FMT0 = '{:<%s.%ss} | {:<s}' % (width, width)
-    print(FMT0.format(name, relpath))

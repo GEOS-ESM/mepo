@@ -23,4 +23,3 @@ def run(args):
 
     # Execute run method of specified mepo command, e.g. d['list'].run(args)
     d[args.mepo_cmd].run(args)
-    
