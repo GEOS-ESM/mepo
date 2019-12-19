@@ -1,33 +1,33 @@
 ESMA_cmake:
   local: ./@cmake
-  remote: git@github.com:GEOS-ESM/ESMA_cmake.git
+  remote: https://github.com/GEOS-ESM/ESMA_cmake.git
   tag: v1.0.10
 ecbuild:
   branch: feature/FindMKL-portability-improvement
   local: ./@cmake/@ecbuild
-  remote: git@github.com:GEOS-ESM/ecbuild.git
+  remote: https://github.com/GEOS-ESM/ecbuild.git
 ESMA_env:
   local: ./@env
-  remote: git@github.com:GEOS-ESM/ESMA_env.git
+  remote: https://github.com/GEOS-ESM/ESMA_env.git
   tag: v1.4.0
 FMS:
   local: ./src/Shared/@FMS
-  remote: git@github.com:GEOS-ESM/FMS.git
+  remote: https://github.com/GEOS-ESM/FMS.git
   tag: geos/orphan/v1.0.2
 FVdycoreCubed_GridComp:
   local: ./src/Components/@FVdycoreCubed_GridComp
-  remote: git@github.com:GEOS-ESM/FVdycoreCubed_GridComp.git
+  remote: https://github.com/GEOS-ESM/FVdycoreCubed_GridComp.git
   tag: v1.0.7
 fvdycore:
   local: ./src/Components/@FVdycoreCubed_GridComp/@fvdycore
-  remote: git@github.com:GEOS-ESM/GFDL_atmos_cubed_sphere.git
+  remote: https://github.com/GEOS-ESM/GFDL_atmos_cubed_sphere.git
   tag: geos/v1.0.2
 GMAO_Shared:
   local: ./src/Shared/@GMAO_Shared
-  remote: git@github.com:GEOS-ESM/GMAO_Shared.git
+  remote: https://github.com/GEOS-ESM/GMAO_Shared.git
   tag: v1.0.12
   sparse: ./config/GMAO_Shared.sparse
 MAPL:
   local: ./src/Shared/@MAPL
-  remote: git@github.com:GEOS-ESM/MAPL.git
+  remote: https://github.com/GEOS-ESM/MAPL.git
   tag: v1.1.9

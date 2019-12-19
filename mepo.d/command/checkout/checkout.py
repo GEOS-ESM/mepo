@@ -1,25 +1,15 @@
-import os
-
 from state.state import MepoState
-from utilities import shellcmd
+from utilities import verify
+from repository.git import GitRepository
 
 def run(args):
-    repo_name = args.repo_name
-    create = args.b
-    branch_name = args.branch_name
-    allrepos = MepoState.read_state()
-    for reponame in repo_name:
-        if reponame not in allrepos:
-            raise Exception('invlaid repo name [%s]' % reponame)
-        if create:
-            _create_branch(reponame, allrepos[reponame], branch_name)
-        _checkout_branch(reponame, allrepos[reponame], branch_name)
-
-def _checkout_branch(name, repo, branch):
-    cmd = 'git -C %s checkout %s' % (repo['local'], branch)
-    shellcmd.run(cmd.split(), output=True).strip()
-
-def _create_branch(reponame, repo, branch):
-    cmd = 'git -C %s branch %s' % (repo['local'], branch)
-    shellcmd.run(cmd.split())
-    print('+ {}: {}'.format(reponame, branch))
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps)
+    comps2checkout = [x for x in allcomps if x.name in args.comp_name]
+    for comp in comps2checkout:
+        git = GitRepository(comp.remote, comp.local)
+        branch = args.branch_name
+        if args.b:
+            git.create_branch(branch)
+            print('+ {}: {}'.format(comp.name, branch))
+        git.checkout(branch)

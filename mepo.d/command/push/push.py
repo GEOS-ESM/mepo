@@ -1,14 +1,13 @@
-from utilities import shellcmd
-
+from utilities import verify
 from state.state import MepoState
+from repository.git import GitRepository
 
 def run(args):
-    allrepos = MepoState.read_state()
-    repos_push = {name: allrepos[name] for name in args.repo_name}
-    for name, repo in repos_push.items():
-        _push_repo(repo)
-        print('----------\nPushed: {}\n----------\n'.format(name))
-
-def _push_repo(repo):
-    cmd = 'git -C {} push -u {}'.format(repo['local'], repo['remote'])
-    shellcmd.run(cmd.split())
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps)
+    comps2push = [x for x in allcomps if x.name in args.comp_name]
+    for comp in comps2push:
+        git = GitRepository(comp.remote, comp.local)
+        output = git.push()
+        print('----------\nPushed: {}\n----------'.format(comp.name))
+        print(output)

@@ -1,23 +1,15 @@
 from state.state import MepoState
 from utilities import verify
-from utilities import shellcmd
+from repository.git import GitRepository
 
 def run(args):
-    allrepos = MepoState.read_state()
-    verify.valid_repos(args.repo_name, allrepos.keys())
-    repos_commit = {name: allrepos[name] for name in args.repo_name}
-    for name, repo in repos_commit.items():
-        staged_files = _get_staged_files(repo)
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps)
+    comps2commit = [x for x in allcomps if x.name in args.comp_name]
+    for comp in comps2commit:
+        git = GitRepository(comp.remote, comp.local)
+        staged_files = git.get_staged_files()
         if staged_files:
-            _commit_files(args.message, repo)
-            for myfile in staged_files:
-                print('+ {}: {}'.format(name, myfile))
-
-def _get_staged_files(repo):
-    cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
-    output = shellcmd.run(cmd.split(), output=True).strip()
-    return output.split('\n') if output else []
-
-def _commit_files(commit_message, repo):
-    cmd = ['git', '-C', repo['local'], 'commit', '-m', commit_message]
-    shellcmd.run(cmd)
+            git.commit_files(args.message)
+        for myfile in staged_files:
+            print('+ {}: {}'.format(comp.name, myfile))

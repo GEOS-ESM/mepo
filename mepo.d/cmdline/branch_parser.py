@@ -14,31 +14,34 @@ class MepoBranchArgParser(object):
     def __list(self):
         brlist = self.branch_subparsers.add_parser(
             'list',
-            description = 'List local branches of all repos')
+            description = 'List local branches of all components')
         brlist.add_argument(
             '-a', '--all',
             action = 'store_true',
-            help = 'list all (local+remote) branches of all repos')
+            help = 'list all (local+remote) branches of all components')
 
     def __create(self):
         create = self.branch_subparsers.add_parser(
             'create',
-            description = 'Create branch <branch-name> in repo <repo-name>')
+            description = 'Create branch <branch-name> in component <comp-name>')
         create.add_argument('branch_name', metavar = 'branch-name')
         create.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '+',
-            help = 'Repo(s) to create branches in')
+            help = 'Component to create branches in')
 
     def __delete(self):
         delete = self.branch_subparsers.add_parser(
             'delete',
-            description = 'Delete branch <branch-name> in repo <repo-name>')
+            description = 'Delete branch <branch-name> in component <comp-name>')
         delete.add_argument('branch_name', metavar = 'branch-name')
         delete.add_argument(
-            'repo_name',
-            metavar = 'repo-name',
+            'comp_name',
+            metavar = 'comp-name',
             nargs = '+',
-            help = 'Repo(s) to delete branches in')
-
+            help = 'Component to delete branches in')
+        delete.add_argument(
+            '--force',
+            action = 'store_true',
+            help = 'Delete branch even if it has not been fully merged')

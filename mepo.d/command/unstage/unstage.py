@@ -1,30 +1,21 @@
-import re
-from utilities import shellcmd
-
 from state.state import MepoState
+from utilities import shellcmd
+from utilities import verify
+from repository.git import GitRepository
 
 def run(args):
-    allrepos = MepoState.read_state()
-    repolist = _get_repos_to_be_staged(args.repo_name, allrepos)
-    for name in repolist:
-        repo = allrepos[name]
-        for myfile in _get_files_to_unstage(repo):
-            _unstage_file(myfile, repo)
-            print('- {}: {}'.format(name, myfile))
+    allcomps = MepoState.read_state()
+    comps2unstg = _get_comps_to_unstage(args.comp_name, allcomps)
+    for comp in comps2unstg:
+        git = GitRepository(comp.remote, comp.local)
+        staged_files = git.get_staged_files()
+        for myfile in staged_files:
+            git.unstage_file(myfile)
+            print('- {}: {}'.format(comp.name, myfile))
 
-def _get_repos_to_be_staged(specified_repos, allrepos):
-    for reponame in specified_repos:
-        if reponame not in allrepos:
-            raise Exception('Unknown repo name [{}]'.format(reponame))
-    if not specified_repos:
-        specified_repos = allrepos.keys()
-    return specified_repos
-
-def _unstage_file(myfile, repo):
-    cmd = 'git -C {} reset -- {}'.format(repo['local'], myfile)
-    shellcmd.run(cmd.split())
-
-def _get_files_to_unstage(repo):
-    cmd = 'git -C {} diff --name-only --staged'.format(repo['local'])
-    output = shellcmd.run(cmd.split(), output=True).strip()
-    return output.split('\n') if output else []
+def _get_comps_to_unstage(specified_comps, allcomps):
+    comps_to_unstage = allcomps
+    if specified_comps:
+        verify.valid_components(specified_comps, allcomps)
+        comps_to_unstage = [x for x in allcomps if x.name in specified_comps]
+    return comps_to_unstage

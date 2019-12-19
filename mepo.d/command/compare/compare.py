@@ -1,23 +1,22 @@
-import os
-import subprocess as sp
-
 from state.state import MepoState
-from utilities import version
 from utilities import colors
+from utilities.version import version_to_string
+from repository.git import GitRepository
 
 VER_LEN = 30
 
 def run(args):
-    allrepos = MepoState.read_state()
-    max_name_length = len(max(allrepos, key=len))
-    for name, repo in allrepos.items():
-        orig_ver = version.get_original_s(repo)
-        cur_ver = version.get_current_s(repo)
-        _print_cmp(name, orig_ver, cur_ver, max_name_length)
+    allcomps = MepoState.read_state()
+    max_namelen = len(max([x.name for x in allcomps], key=len))
+    for comp in allcomps:
+        git = GitRepository(comp.remote, comp.local)
+        curr_ver = version_to_string(git.get_version())
+        orig_ver = version_to_string(comp.version)
+        print_cmp(comp.name, orig_ver, curr_ver, max_namelen)
 
-def _print_cmp(name, orig, cur, name_width):
+def print_cmp(name, orig, curr, name_width):
     name_blank = ''
-    if orig not in cur:
+    if orig not in curr:
         name = colors.RED + name + colors.RESET
         name_blank = colors.RED + name_blank + colors.RESET
         name_width += len(colors.RED) + len(colors.RESET)
@@ -27,6 +26,6 @@ def _print_cmp(name, orig, cur, name_width):
     FMT2 = '{:<%s.%ss} | {:>%ss} | {:<s}' % FMT_VAL
     if len(orig) > VER_LEN:
         print(FMT1.format(name, orig + ' ...'))
-        print(FMT2.format(name_blank, '...', cur))
+        print(FMT2.format(name_blank, '...', curr))
     else:
-        print(FMT0.format(name, orig, cur))
+        print(FMT0.format(name, orig, curr))

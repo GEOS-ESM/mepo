@@ -1,15 +1,12 @@
 from state.state import MepoState
-from utilities import shellcmd
+from utilities import verify
+from repository.git import GitRepository
 
 def run(args):
-    allrepos = MepoState.read_state()
-    for reponame in args.repo_name:
-        if reponame not in allrepos:
-            raise Exception('invalid repo name [%s]' % reponame)
-        __create_branch(reponame, allrepos[reponame], args.branch_name)
-
-def __create_branch(reponame, repo, branch):
-    cmd = 'git -C %s branch %s' % (repo['local'], branch)
-    shellcmd.run(cmd.split())
-    print('+ {}: {}'.format(reponame, branch))
-    
+    allcomps = MepoState.read_state()
+    verify.valid_components(args.comp_name, allcomps)
+    comps2crtbr = [x for x in allcomps if x.name in args.comp_name]
+    for comp in comps2crtbr:
+        git = GitRepository(comp.remote, comp.local)
+        git.create_branch(args.branch_name)
+        print('+ {}: {}'.format(comp.name, args.branch_name))

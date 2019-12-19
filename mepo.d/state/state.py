@@ -4,17 +4,26 @@ import yaml
 import glob
 import pickle
 
-import utilities.path as utilspath
 from config.config_file import ConfigFile
+from state.component import MepoComponent
 
 class MepoState(object):
 
     __state_dir_name = '.mepo'
     __state_fileptr_name = 'state.pkl'
 
+    @staticmethod
+    def get_parent_dirs():
+        mypath = os.getcwd()
+        parentdirs = [mypath]
+        while mypath != '/':
+            mypath = os.path.dirname(mypath)
+            parentdirs.append(mypath)
+        return parentdirs
+
     @classmethod
     def get_dir(cls):
-        for mydir in utilspath.get_parent_dirs():
+        for mydir in cls.get_parent_dirs():
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
                 return state_dir
@@ -44,17 +53,19 @@ class MepoState(object):
     def initialize(cls, project_config_file):
         if cls.exists():
             raise Exception('mepo state already exists')
-        repolist = ConfigFile(project_config_file).read_file()
-        repolist_abspath = utilspath.relpath_to_abs(repolist)
-        cls.write_state(repolist_abspath)
+        input_components = ConfigFile(project_config_file).read_file()
+        complist = list()
+        for name, comp in input_components.items():
+            complist.append(MepoComponent().to_component(name, comp))
+        cls.write_state(complist)
 
     @classmethod
     def read_state(cls):
         if not cls.exists():
             raise Exception('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
-            allrepos = pickle.load(fin)
-        return allrepos
+            allcomps = pickle.load(fin)
+        return allcomps
 
     @classmethod
     def write_state(cls, state_details):
@@ -75,3 +86,4 @@ class MepoState(object):
         if os.path.isfile(state_fileptr):
             os.remove(state_fileptr)
         os.symlink(new_state_file, state_fileptr)
+

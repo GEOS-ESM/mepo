@@ -1,4 +1,5 @@
-def valid_repos(specified_repos, allrepos):
-    for reponame in specified_repos:
-        if reponame not in allrepos:
-            raise Exception('Unknown repo name [{}]'.format(reponame))
+def valid_components(specified_comp_names, allcomps):
+    allnames = [x.name for x in allcomps]
+    for compname in specified_comp_names:
+        if compname not in allnames:
+            raise Exception('Unknown component name [{}]'.format(compname))

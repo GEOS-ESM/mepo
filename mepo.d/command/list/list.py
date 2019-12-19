@@ -1,7 +1,7 @@
 from state.state import MepoState
 
 def run(args):
-    allrepos = MepoState.read_state()
-    for name in allrepos:
-        print(name, end=' ')
+    allcomps = MepoState.read_state()
+    for comp in allcomps:
+        print(comp.name, end=' ')
     print()
