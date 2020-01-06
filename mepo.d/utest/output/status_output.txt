@@ -1,3 +1,4 @@
+Checking status...
 ESMA_cmake             | (t) v1.0.10 (DH)
 ecbuild                | (b) origin/feature/FindMKL-portability-improvement (DH)
 ESMA_env               | (t) v1.4.0 (DH)
