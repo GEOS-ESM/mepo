@@ -2,6 +2,7 @@ import os
 import shutil
 
 from utilities import shellcmd
+from utilities import colors
 
 class GitRepository(object):
     """
@@ -54,8 +55,79 @@ class GitRepository(object):
         shellcmd.run(cmd.split())
 
     def check_status(self):
-        cmd = self.__git + ' status -s'
+        cmd = self.__git + ' status --porcelain=v2'
         output = shellcmd.run(cmd.split(), output=True)
+        if output.strip():
+            output_list = output.splitlines()
+
+            # Grab the file names first for pretty printing
+            file_name_list = [item.split()[-1] for item in output_list]
+            max_file_name_length = len(max(file_name_list, key=len))
+
+            verbose_output_list = []
+            for item in output_list:
+
+                index_field = item.split()[0]
+                if index_field == "2":
+                    new_file_name = colors.YELLOW + item.split()[-2] + colors.RESET
+
+                file_name = item.split()[-1]
+
+                short_status = item.split()[1]
+
+                #print("file: ", file_name, "short_status:", short_status, "index_field:", index_field)
+
+                if index_field == "?":
+                    verbose_status = colors.RED   + "untracked file" + colors.RESET
+
+                elif short_status == ".D":
+                    verbose_status = colors.RED   + "deleted, not staged" + colors.RESET
+                elif short_status == ".M":
+                    verbose_status = colors.RED   + "modified, not staged" + colors.RESET
+                elif short_status == ".A":
+                    verbose_status = colors.RED   + "added, not staged" + colors.RESET
+
+                elif short_status == "D.":
+                    verbose_status = colors.GREEN + "deleted, staged" + colors.RESET
+                elif short_status == "M.":
+                    verbose_status = colors.GREEN + "modified, staged" + colors.RESET
+                elif short_status == "A.":
+                    verbose_status = colors.GREEN + "added, staged" + colors.RESET
+
+                elif short_status == "MM":
+                    verbose_status = colors.GREEN + "modified, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "MD":
+                    verbose_status = colors.GREEN + "modified, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                elif short_status == "AM":
+                    verbose_status = colors.GREEN + "added, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "AD":
+                    verbose_status = colors.GREEN + "added, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                elif short_status == "R.":
+                    verbose_status = colors.GREEN + "renamed" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET
+                elif short_status == "RM":
+                    verbose_status = colors.GREEN + "renamed, staged" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "RD":
+                    verbose_status = colors.GREEN + "renamed, staged" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                elif short_status == "C.":
+                    verbose_status = colors.GREEN + "copied" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET
+                elif short_status == "CM":
+                    verbose_status = colors.GREEN + "copied, staged" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "CD":
+                    verbose_status = colors.GREEN + "copied, staged" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                else:
+                    verbose_status = colors.CYAN + "unknown" + colors.RESET + " (please contact mepo maintainer)"
+
+                verbose_status_string = "{file_name:>{file_name_length}}: {verbose_status}".format(
+                        file_name=file_name, file_name_length=max_file_name_length, 
+                        verbose_status=verbose_status)
+                verbose_output_list.append(verbose_status_string)
+
+            output = "\n".join(verbose_output_list)
+
         return output.rstrip()
 
     def __get_modified_files(self):
