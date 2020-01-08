@@ -7,5 +7,9 @@ function mepo-cd () {
         usage_
         return 1
     fi
-    cd $(mepo whereis $1)
+    if mepo whereis $1; then
+       cd $(mepo whereis $1)
+    else
+       return 1
+    fi
 }
