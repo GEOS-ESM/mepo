@@ -19,6 +19,7 @@ class MepoArgParser(object):
         self.__clone()
         self.__list()
         self.__status()
+        self.__diff()
         self.__checkout()
         self.__branch()
         self.__develop()
@@ -56,6 +57,11 @@ class MepoArgParser(object):
         status = self.subparsers.add_parser(
             'status',
             description = 'Check current status of all components')
+
+    def __diff(self):
+        diff = self.subparsers.add_parser(
+            'diff',
+            description = 'Diff all components')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(

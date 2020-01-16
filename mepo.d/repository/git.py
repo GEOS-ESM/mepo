@@ -43,6 +43,11 @@ class GitRepository(object):
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
 
+    def run_diff(self):
+        cmd = self.__git + ' diff --color'
+        output = shellcmd.run(cmd.split(),output=True)
+        return output.rstrip()
+
     def create_branch(self, branch_name):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())
