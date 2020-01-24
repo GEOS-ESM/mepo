@@ -21,8 +21,11 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self):
-        cmd = 'git clone --quiet {} {}'.format(self.__remote, self.__local)
+    def clone(self, recurse):
+        cmd = 'git clone '
+        if recurse:
+            cmd += '--recurse-submodules '
+        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):

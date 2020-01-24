@@ -4,7 +4,7 @@ from utilities.version import MepoVersion
 
 class MepoComponent(object):
 
-    __slots__ = ['name', 'local', 'remote', 'version', 'develop', 'sparse']
+    __slots__ = ['name', 'local', 'remote', 'version', 'develop', 'sparse', 'recurse_submodules']
 
     def __init__(self):
         self.name = None
@@ -13,6 +13,7 @@ class MepoComponent(object):
         self.version = None
         self.develop = None
         self.sparse = None
+        self.recurse_submodules = None
 
     def __repr__(self):
         return '{} - local: {}, remote: {}, version: {}, develop:{}'.format(
@@ -34,6 +35,7 @@ class MepoComponent(object):
         self.remote = comp_details['remote']
         self.develop = comp_details.get('develop', None) # develop is optional
         self.sparse = comp_details.get('sparse', None) # sparse is optional
+        self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
         self.__set_original_version(comp_details)
         return self
 
@@ -52,4 +54,6 @@ class MepoComponent(object):
             details['develop'] = self.develop
         if self.sparse:
             details['sparse'] = self.sparse
+        if self.recurse_submodules:
+            details['recurse_submodules'] = self.recurse_submodules
         return {self.name: details}
