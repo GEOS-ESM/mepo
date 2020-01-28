@@ -6,7 +6,8 @@ def run(args):
     max_namelen = len(max([comp.name for comp in allcomps], key=len))
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
-        git.clone()
+        recurse = comp.recurse_submodules
+        git.clone(recurse)
         if comp.sparse:
             git.sparsify(comp.sparse)
         git.checkout(comp.version.name)
