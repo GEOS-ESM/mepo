@@ -2,10 +2,11 @@ import pathlib
 
 class ConfigFile(object):
 
-    __slots__ = ['__filename', '__filetype']
+    __slots__ = ['__filename', '__filetype', '__develop']
     
-    def __init__(self, filename):
+    def __init__(self, filename, alternate_develop):
         self.__filename = filename
+        self.__develop = alternate_develop
         SUFFIX_LIST = ['.yaml', '.json', '.cfg']
         file_suffix = pathlib.Path(filename).suffix
         if file_suffix in SUFFIX_LIST:
@@ -22,6 +23,13 @@ class ConfigFile(object):
         import yaml
         with open(self.__filename, 'r') as fin:
             d = yaml.safe_load(fin)
+
+        # If there is a new develop, we need to change the keys
+        if self.__develop:
+            for component, component_config in d.items():
+                for setting, value in component_config.items():
+                    if setting == 'develop':
+                        component_config['develop'] = self.__develop
         return d
 
     def read_json(self):

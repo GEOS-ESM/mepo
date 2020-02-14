@@ -42,6 +42,10 @@ class MepoArgParser(object):
             nargs = '?',
             default = 'components.yaml',
             help = 'default: %(default)s')
+        init.add_argument(
+            '--develop',
+            nargs = 1,
+            help = 'develop branch to use in all repositories (default from components.yaml')
 
     def __clone(self):
         clone = self.subparsers.add_parser(

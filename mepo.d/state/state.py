@@ -6,6 +6,8 @@ import pickle
 
 from config.config_file import ConfigFile
 from state.component import MepoComponent
+from utilities import colors
+from utilities import meporc
 
 class MepoState(object):
 
@@ -50,10 +52,42 @@ class MepoState(object):
             return False
 
     @classmethod
-    def initialize(cls, project_config_file):
+    def initialize(cls, project_config_file, develop_from_argparse):
         if cls.exists():
             raise Exception('mepo state already exists')
-        input_components = ConfigFile(project_config_file).read_file()
+
+        default_meporc_file = os.path.expanduser('~/.meporc')
+        alternate_develop = None
+
+        # Now we look for alternate develop branches
+        # First if an argument was sent in...
+        if develop_from_argparse:
+            # An argparse nargs=1 provides a list
+            alternate_develop = develop_from_argparse[0]
+        # Then MEPORC wins...
+        elif 'MEPORC' in os.environ:
+            meporc_file = os.environ.get('MEPORC')
+            if os.path.isfile(meporc_file):
+                print("Found MEPORC in environment: [%s]" % meporc_file)
+                meporc_dict = meporc.parse(meporc_file)
+                if 'develop' in meporc_dict:
+                    alternate_develop = meporc_dict['develop']
+                else:
+                    raise OSError('develop field not in [%s]' % meporc_file)
+            else:
+                raise FileNotFoundError('MEPORC in environment but file [%s] does not exist' % meporc_file)
+        elif os.path.isfile(default_meporc_file):
+            print("Found ~/.meporc")
+            meporc_dict = meporc.parse(default_meporc_file)
+            if 'develop' in meporc_dict:
+                alternate_develop = meporc_dict['develop']
+            else:
+                raise OSError('develop field not in [%s]' % default_meporc_file)
+
+        if alternate_develop is not None:
+            new_develop_branch = colors.YELLOW + alternate_develop + colors.RESET
+            print("Changing develop branch to: {new_develop_branch}".format(new_develop_branch=new_develop_branch))
+        input_components = ConfigFile(project_config_file, alternate_develop).read_file()
         complist = list()
         for name, comp in input_components.items():
             complist.append(MepoComponent().to_component(name, comp))
