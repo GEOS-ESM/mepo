@@ -21,6 +21,7 @@ class MepoArgParser(object):
         self.__status()
         self.__diff()
         self.__checkout()
+        self.__checkout_if_exists()
         self.__branch()
         self.__develop()
         self.__compare()
@@ -72,6 +73,13 @@ class MepoArgParser(object):
         checkout.add_argument('branch_name', metavar = 'branch-name')
         checkout.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
+
+    def __checkout_if_exists(self):
+        checkout_if_exists = self.subparsers.add_parser(
+            'checkout-if-exists',
+            description = 'Switch to branch <branch-name> in any component where it is present. ')
+        checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
+        checkout_if_exists.add_argument('--verbose', action = 'store_true', help = 'verbose')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
