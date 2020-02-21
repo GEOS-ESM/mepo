@@ -62,6 +62,11 @@ class GitRepository(object):
         cmd = self.__git + ' branch {} {}'.format(delete, branch_name)
         shellcmd.run(cmd.split())
 
+    def verify_branch(self, branch_name):
+        cmd = self.__git + ' show-branch remotes/origin/{}'.format(branch_name)
+        status = shellcmd.run(cmd.split(),status=True)
+        return status
+
     def check_status(self):
         cmd = self.__git + ' status --porcelain=v2'
         output = shellcmd.run(cmd.split(), output=True)
