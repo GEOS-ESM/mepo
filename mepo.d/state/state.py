@@ -66,7 +66,6 @@ class MepoState(object):
                         fixture_url = get_current_remote_url()
                         resolved_remote = urljoin(fixture_url,rel_remote)
                         comp[key] = resolved_remote
-                        print("Resolved remote: ", resolved_remote)
             complist.append(MepoComponent().to_component(name, comp))
         cls.write_state(complist)
 
