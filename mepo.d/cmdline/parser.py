@@ -79,7 +79,7 @@ class MepoArgParser(object):
             'checkout-if-exists',
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
-        checkout_if_exists.add_argument('--verbose', action = 'store_true', help = 'verbose')
+        checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
