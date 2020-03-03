@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 
 from utilities import shellcmd
 from utilities import colors
@@ -173,8 +174,12 @@ class GitRepository(object):
         shellcmd.run(cmd.split())
 
     def commit_files(self, message):
-        cmd = ['git', '-C', self.__local, 'commit', '-m', message]
-        shellcmd.run(cmd)
+        if message:
+            cmd = ['git', '-C', self.__local, 'commit', '-m', message]
+            shellcmd.run(cmd)
+        else:
+            cmd = ['git', '-C', self.__local, 'commit']
+            subprocess.call(cmd)
 
     def push(self):
         cmd = self.__git + ' push -u {}'.format(self.__remote)

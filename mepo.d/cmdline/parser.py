@@ -134,7 +134,7 @@ class MepoArgParser(object):
         commit = self.subparsers.add_parser(
             'commit',
             description = 'Commit staged files in the specified components')
-        commit.add_argument('message', metavar = 'message')
+        commit.add_argument('-m', '--message', type=str, metavar = 'message', default=None)
         commit.add_argument(
             'comp_name',
             metavar = 'comp-name',
