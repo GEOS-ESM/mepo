@@ -63,6 +63,7 @@ class MepoArgParser(object):
         diff = self.subparsers.add_parser(
             'diff',
             description = 'Diff all components')
+        diff.add_argument('--name-only', action = 'store_true', help = 'Show only names of changed files')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(
@@ -79,7 +80,7 @@ class MepoArgParser(object):
             'checkout-if-exists',
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
-        checkout_if_exists.add_argument('--verbose', action = 'store_true', help = 'verbose')
+        checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
@@ -134,7 +135,7 @@ class MepoArgParser(object):
         commit = self.subparsers.add_parser(
             'commit',
             description = 'Commit staged files in the specified components')
-        commit.add_argument('message', metavar = 'message')
+        commit.add_argument('-m', '--message', type=str, metavar = 'message', default=None)
         commit.add_argument(
             'comp_name',
             metavar = 'comp-name',

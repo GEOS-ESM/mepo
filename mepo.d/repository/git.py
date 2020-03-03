@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 
 from utilities import shellcmd
 from utilities import colors
@@ -34,6 +35,7 @@ class GitRepository(object):
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(sparse_config, dst)
         cmd1 = self.__git + ' config core.sparseCheckout true'
         shellcmd.run(cmd1.split())
@@ -46,8 +48,10 @@ class GitRepository(object):
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
 
-    def run_diff(self):
+    def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
+        if args.name_only:
+            cmd += ' --name-only'
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
@@ -173,8 +177,12 @@ class GitRepository(object):
         shellcmd.run(cmd.split())
 
     def commit_files(self, message):
-        cmd = ['git', '-C', self.__local, 'commit', '-m', message]
-        shellcmd.run(cmd)
+        if message:
+            cmd = ['git', '-C', self.__local, 'commit', '-m', message]
+            shellcmd.run(cmd)
+        else:
+            cmd = ['git', '-C', self.__local, 'commit']
+            subprocess.call(cmd)
 
     def push(self):
         cmd = self.__git + ' push -u {}'.format(self.__remote)
