@@ -35,6 +35,7 @@ class GitRepository(object):
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(sparse_config, dst)
         cmd1 = self.__git + ' config core.sparseCheckout true'
         shellcmd.run(cmd1.split())
