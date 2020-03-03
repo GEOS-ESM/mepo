@@ -10,11 +10,18 @@ def run(args):
     allcomps = MepoState.read_state()
     max_namelen = len(max([x.name for x in allcomps], key=len))
     max_origlen = len(max([version_to_string(x.version) for x in allcomps], key=len))
+    print_header(max_namelen, max_origlen)
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
         curr_ver = version_to_string(git.get_version())
         orig_ver = version_to_string(comp.version)
         print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen)
+
+def print_header(max_namelen, max_origlen):
+    FMT_VAL = (max_namelen, max_namelen, max_origlen)
+    FMTHEAD = '{:<%s.%ss} | {:<%ss} | {:<s}' % FMT_VAL
+    print(FMTHEAD.format("Repo","Original","Current"))
+    print(FMTHEAD.format("-"*80,"-"*max_origlen,"-"*7))
 
 def print_cmp(name, orig, curr, name_width, orig_width):
     name_blank = ''

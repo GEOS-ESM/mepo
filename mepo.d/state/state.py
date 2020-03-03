@@ -6,8 +6,12 @@ import pickle
 
 from config.config_file import ConfigFile
 from state.component import MepoComponent
+from utilities import shellcmd
+from pathlib import Path
+from urllib.parse import urljoin
 from utilities import colors
 from utilities import meporc
+
 
 class MepoState(object):
 
@@ -90,6 +94,13 @@ class MepoState(object):
         input_components = ConfigFile(project_config_file, alternate_develop).read_file()
         complist = list()
         for name, comp in input_components.items():
+            for key, value in comp.items():
+                if key == "remote":
+                    if comp[key].startswith('..'):
+                        rel_remote = os.path.basename(comp[key])
+                        fixture_url = get_current_remote_url()
+                        resolved_remote = urljoin(fixture_url,rel_remote)
+                        comp[key] = resolved_remote
             complist.append(MepoComponent().to_component(name, comp))
         cls.write_state(complist)
 
@@ -121,3 +132,7 @@ class MepoState(object):
             os.remove(state_fileptr)
         os.symlink(new_state_file, state_fileptr)
 
+def get_current_remote_url():
+    cmd = 'git remote get-url origin'
+    output = shellcmd.run(cmd.split(), output=True).strip()
+    return output

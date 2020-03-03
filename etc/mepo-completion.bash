@@ -6,7 +6,9 @@ _get_mepo_commands() {
     local mepo_cmd_list=""
     local mepodir=$(dirname $(which mepo))
     for mydir in $(ls -d ${mepodir}/mepo.d/command/*/); do
-        mepo_cmd_list+=" $(basename $mydir)"
+        if [[ $mydir != *"__pycache__"* ]]; then
+            mepo_cmd_list+=" $(basename $mydir)"
+        fi
     done
     echo ${mepo_cmd_list}
 }
