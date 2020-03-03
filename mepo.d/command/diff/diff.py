@@ -1,6 +1,7 @@
 import sys
 import time
 import multiprocessing as mp
+import os
 
 from state.state import MepoState
 from repository.git import GitRepository
@@ -11,27 +12,25 @@ from shutil import get_terminal_size
 def run(args):
     print('Diffing...'); sys.stdout.flush()
     allcomps = MepoState.read_state()
-    pool = mp.Pool()
-    result = pool.map(check_component_diff, allcomps)
-    print_diff(allcomps, result)
 
-def check_component_diff(comp):
+    for comp in allcomps:
+        result = check_component_diff(comp, args)
+        if result:
+            print_diff(comp, args, result)
+
+def check_component_diff(comp, args):
     git = GitRepository(comp.remote, comp.local)
-    curr_ver = version_to_string(git.get_version())
-    return (curr_ver, git.run_diff())
+    return git.run_diff(args)
 
-def print_diff(allcomps, result):
+def print_diff(comp, args, output):
     columns, lines = get_terminal_size(fallback=(80,20))
     horiz_line = u'\u2500'*columns
-    width = len(max([comp.name for comp in allcomps], key=len))
-    for index, comp in enumerate(allcomps):
-        time.sleep(0.025)
-        current_version, output = result[index]
-        if (output):
-            #print(horiz_line)
-            print("{}:".format(comp.name))
-            print()
-            for line in output.split('\n'):
-                #print('   |', line.rstrip())
-                print(line.rstrip())
-            print(horiz_line)
+    print("{} (location: {}):".format(comp.name,_get_relative_path(comp.local)))
+    print()
+    for line in output.split('\n'):
+        #print('   |', line.rstrip())
+        print(line.rstrip())
+    print(horiz_line)
+
+def _get_relative_path(local_path):
+    return os.path.relpath(local_path, os.getcwd())

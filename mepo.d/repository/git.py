@@ -47,8 +47,10 @@ class GitRepository(object):
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
 
-    def run_diff(self):
+    def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
+        if args.name_only:
+            cmd += ' --name-only'
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
