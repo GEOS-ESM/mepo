@@ -14,7 +14,8 @@ def run(args):
 
     # Pop up an editor if a message is not provided
     if not args.message:
-        EDITOR = os.environ.get('EDITOR','vim') # Get the EDITOR
+        EDITOR = git_var('GIT_EDITOR')
+        print(EDITOR)
         initial_message = b"" # set up the file
 
         # Use delete=False to keep the file around as we send the file name to git commit -F
@@ -37,3 +38,16 @@ def run(args):
     if not args.message:
         tf.close()
         os.unlink(tf.name)
+
+def git_var(what):
+    "return GIT_EDITOR or GIT_PAGER, for instance"
+    proc = subprocess.Popen(['git', 'var', what], shell=False,
+        stdout=subprocess.PIPE)
+    output = proc.stdout.read()
+    status = proc.wait()
+    if status != 0:
+        raise Exception("git_var failed with [%]" % what)
+    output = output.rstrip(b'\n')
+    output = output.decode('utf8', errors='ignore') # or similar for py3k
+    return output
+
