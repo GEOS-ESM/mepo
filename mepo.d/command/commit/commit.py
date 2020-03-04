@@ -15,7 +15,6 @@ def run(args):
     # Pop up an editor if a message is not provided
     if not args.message:
         EDITOR = git_var('GIT_EDITOR')
-        print(EDITOR)
         initial_message = b"" # set up the file
 
         # Use delete=False to keep the file around as we send the file name to git commit -F
