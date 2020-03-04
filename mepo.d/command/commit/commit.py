@@ -39,7 +39,12 @@ def run(args):
         os.unlink(tf.name)
 
 def git_var(what):
-    "return GIT_EDITOR or GIT_PAGER, for instance"
+    '''
+    return GIT_EDITOR or GIT_PAGER, for instance
+
+    Found at https://stackoverflow.com/a/44174750/1876449
+
+    '''
     proc = subprocess.Popen(['git', 'var', what], shell=False,
         stdout=subprocess.PIPE)
     output = proc.stdout.read()
