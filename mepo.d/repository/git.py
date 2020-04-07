@@ -55,6 +55,12 @@ class GitRepository(object):
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
+    def fetch(self, args=None):
+        cmd = self.__git + ' fetch'
+        if args.all:
+            cmd += ' --all'
+        return shellcmd.run(cmd.split(), output=True)
+
     def create_branch(self, branch_name):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())

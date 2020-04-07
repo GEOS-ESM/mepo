@@ -4,7 +4,12 @@
 
 _get_mepo_commands() {
     local mepo_cmd_list=""
-    local mepodir=$(dirname $(which mepo))
+    if [[ "$OSTYPE" == "darwin"* ]]
+    then
+       local mepodir=$(dirname $(readlink $(which mepo)))
+    else
+       local mepodir=$(dirname $(readlink -f $(which mepo)))
+    fi
     for mydir in $(ls -d ${mepodir}/mepo.d/command/*/); do
         if [[ $mydir != *"__pycache__"* ]]; then
             mepo_cmd_list+=" $(basename $mydir)"
