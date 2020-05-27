@@ -7,6 +7,8 @@ def run(args):
     allcomps = MepoState.read_state()
     if args.comp_name: # single comp name is specified, print relpath
         if args.comp_name == "_root":
+            # _root is a "hidden" allowed argument for whereis to return
+            # the root dir of the project. Mainly used by mepo-cd
             print(MepoState.get_root_dir())
         else:
             verify.valid_components([args.comp_name], allcomps)
