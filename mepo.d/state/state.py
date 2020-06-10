@@ -13,6 +13,14 @@ from utilities import colors
 from utilities import meporc
 
 
+class MepoStateDoesNotExistError(Exception):
+    """Raised when the mepo state does not exist"""
+    pass
+
+class MepoStateAlreadyInitializedError(Exception):
+    """Raised when the mepo state has already been initialized"""
+    pass
+
 class MepoState(object):
 
     __state_dir_name = '.mepo'
@@ -58,7 +66,7 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file, develop_from_argparse):
         if cls.exists():
-            raise Exception('mepo state already exists')
+            raise MepoStateAlreadyInitializedError('mepo state already exists')
 
         default_meporc_file = os.path.expanduser('~/.meporc')
         alternate_develop = None
@@ -107,7 +115,7 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise Exception('mepo state does not exist')
+            raise MepoStateDoesNotExistError('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             allcomps = pickle.load(fin)
         return allcomps

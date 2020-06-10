@@ -55,6 +55,16 @@ class GitRepository(object):
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
+    def fetch(self, args=None):
+        cmd = self.__git + ' fetch'
+        if args.all:
+            cmd += ' --all'
+        if args.prune:
+            cmd += ' --prune'
+        if args.tags:
+            cmd += ' --tags'
+        return shellcmd.run(cmd.split(), output=True)
+
     def create_branch(self, branch_name):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())
@@ -176,13 +186,14 @@ class GitRepository(object):
         cmd = self.__git + ' reset -- {}'.format(myfile)
         shellcmd.run(cmd.split())
 
-    def commit_files(self, message):
-        if message:
+    def commit_files(self, message, tf_file=None):
+        if tf_file:
+            cmd = ['git', '-C', self.__local, 'commit', '-F', tf_file]
+        elif message:
             cmd = ['git', '-C', self.__local, 'commit', '-m', message]
-            shellcmd.run(cmd)
         else:
-            cmd = ['git', '-C', self.__local, 'commit']
-            subprocess.call(cmd)
+            raise Exception("This should not happen")
+        shellcmd.run(cmd)
 
     def push(self):
         cmd = self.__git + ' push -u {}'.format(self.__remote)

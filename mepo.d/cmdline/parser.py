@@ -20,6 +20,7 @@ class MepoArgParser(object):
         self.__list()
         self.__status()
         self.__diff()
+        self.__fetch()
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
@@ -51,7 +52,13 @@ class MepoArgParser(object):
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            description = "Clone repositories. Command 'mepo init' should have already been run")
+            description = "Clone repositories.")
+        clone.add_argument(
+            'config_file',
+            metavar = 'config-file',
+            nargs = '?',
+            default = 'components.yaml',
+            help = 'Configuration file (ignored if init already called, default: %(default)s)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
@@ -85,6 +92,16 @@ class MepoArgParser(object):
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
         checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
+
+    def __fetch(self):
+        fetch = self.subparsers.add_parser(
+            'fetch',
+            description = 'Download objects and refs from in component <comp-name>. '
+            'Specifying --all causes all remotes to be fetched.')
+        fetch.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
+        fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
+        fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
+        fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
