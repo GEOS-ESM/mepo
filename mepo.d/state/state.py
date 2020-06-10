@@ -10,6 +10,14 @@ from utilities import shellcmd
 from pathlib import Path
 from urllib.parse import urljoin
 
+class MepoStateDoesNotExistError(Exception):
+    """Raised when the mepo state does not exist"""
+    pass
+
+class MepoStateAlreadyInitializedError(Exception):
+    """Raised when the mepo state has already been initialized"""
+    pass
+
 class MepoState(object):
 
     __state_dir_name = '.mepo'
@@ -55,7 +63,7 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file):
         if cls.exists():
-            raise Exception('mepo state already exists')
+            raise MepoStateAlreadyInitializedError('mepo state already exists')
         input_components = ConfigFile(project_config_file).read_file()
         complist = list()
         for name, comp in input_components.items():
@@ -72,7 +80,7 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise Exception('mepo state does not exist')
+            raise MepoStateDoesNotExistError('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             allcomps = pickle.load(fin)
         return allcomps

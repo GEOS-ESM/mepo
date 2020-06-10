@@ -48,7 +48,13 @@ class MepoArgParser(object):
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            description = "Clone repositories. Command 'mepo init' should have already been run")
+            description = "Clone repositories.")
+        clone.add_argument(
+            'config_file',
+            metavar = 'config-file',
+            nargs = '?',
+            default = 'components.yaml',
+            help = 'Configuration file (ignored if init already called, default: %(default)s)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
