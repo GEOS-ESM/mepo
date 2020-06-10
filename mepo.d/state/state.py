@@ -8,15 +8,7 @@ from config.config_file import ConfigFile
 from state.component import MepoComponent
 from utilities import shellcmd
 from pathlib import Path
-from urllib.parse import urljoin
-
-class MepoStateDoesNotExistError(Exception):
-    """Raised when the mepo state does not exist"""
-    pass
-
-class MepoStateAlreadyInitializedError(Exception):
-    """Raised when the mepo state has already been initialized"""
-    pass
+from state.exceptions import StateDoesNotExistError, StateAlreadyInitializedError
 
 class MepoState(object):
 
@@ -63,24 +55,17 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file):
         if cls.exists():
-            raise MepoStateAlreadyInitializedError('mepo state already exists')
+            raise StateAlreadyInitializedError('mepo state already exists')
         input_components = ConfigFile(project_config_file).read_file()
         complist = list()
         for name, comp in input_components.items():
-            for key, value in comp.items():
-                if key == "remote":
-                    if comp[key].startswith('..'):
-                        rel_remote = os.path.basename(comp[key])
-                        fixture_url = get_current_remote_url()
-                        resolved_remote = urljoin(fixture_url,rel_remote)
-                        comp[key] = resolved_remote
             complist.append(MepoComponent().to_component(name, comp))
         cls.write_state(complist)
 
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise MepoStateDoesNotExistError('mepo state does not exist')
+            raise StateDoesNotExistError('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             allcomps = pickle.load(fin)
         return allcomps
@@ -104,8 +89,3 @@ class MepoState(object):
         if os.path.isfile(state_fileptr):
             os.remove(state_fileptr)
         os.symlink(new_state_file, state_fileptr)
-
-def get_current_remote_url():
-    cmd = 'git remote get-url origin'
-    output = shellcmd.run(cmd.split(), output=True).strip()
-    return output
