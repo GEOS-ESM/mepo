@@ -1,8 +1,18 @@
-from state.state import MepoState
+from state.state    import MepoState, MepoStateDoesNotExistError
 from repository.git import GitRepository
+from command.init   import init as mepo_init
 
 def run(args):
-    allcomps = MepoState.read_state()
+    # This tries to read the state and if not, calls init,
+    # loops back, and reads the state
+    while True:
+        try:
+            allcomps = MepoState.read_state()
+        except MepoStateDoesNotExistError:
+            mepo_init.run(args)
+            continue
+        break
+
     max_namelen = len(max([comp.name for comp in allcomps], key=len))
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
