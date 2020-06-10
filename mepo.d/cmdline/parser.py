@@ -90,6 +90,8 @@ class MepoArgParser(object):
             'Specifying --all causes all remotes to be fetched.')
         fetch.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
+        fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
+        fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')

@@ -59,6 +59,10 @@ class GitRepository(object):
         cmd = self.__git + ' fetch'
         if args.all:
             cmd += ' --all'
+        if args.prune:
+            cmd += ' --prune'
+        if args.tags:
+            cmd += ' --tags'
         return shellcmd.run(cmd.split(), output=True)
 
     def create_branch(self, branch_name):
