@@ -4,6 +4,7 @@ import subprocess
 
 from utilities import shellcmd
 from utilities import colors
+from urllib.parse import urljoin
 
 class GitRepository(object):
     """
@@ -26,7 +27,13 @@ class GitRepository(object):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
+        if self.__remote.startswith('..'):
+            rel_remote = os.path.basename(self.__remote)
+            fixture_url = get_current_remote_url()
+            remote = urljoin(fixture_url,rel_remote)
+        else:
+            remote = self.__remote
+        cmd += '--quiet {} {}'.format(remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):
@@ -59,6 +66,10 @@ class GitRepository(object):
         cmd = self.__git + ' fetch'
         if args.all:
             cmd += ' --all'
+        if args.prune:
+            cmd += ' --prune'
+        if args.tags:
+            cmd += ' --tags'
         return shellcmd.run(cmd.split(), output=True)
 
     def create_branch(self, branch_name):
@@ -228,4 +239,15 @@ class GitRepository(object):
             else:
                 name = tmp
                 tYpe = 'b'
+        elif output.startswith('HEAD'): # Assume hash
+            cmd = self.__git + ' rev-parse --short HEAD'
+            hash_out = shellcmd.run(cmd.split(), output=True)
+            detached = True
+            name = hash_out.rstrip()
+            tYpe = 'h'
         return (name, tYpe, detached)
+
+def get_current_remote_url():
+    cmd = 'git remote get-url origin'
+    output = shellcmd.run(cmd.split(), output=True).strip()
+    return output

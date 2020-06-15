@@ -24,6 +24,10 @@ class MepoComponent(object):
             # SPECIAL HANDLING of 'detached head' branches
             ver_name = 'origin/' + comp_details['branch']
             ver_type = 'b'
+        elif comp_details.get('hash', None):
+            # Hashes don't have to exist
+            ver_name = comp_details['hash'][:7]
+            ver_type = 'h'
         else:
             ver_name = comp_details['tag'] # 'tag' key has to exist
             ver_type = 't'

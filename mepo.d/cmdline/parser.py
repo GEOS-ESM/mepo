@@ -39,7 +39,7 @@ class MepoArgParser(object):
             'init',
             description = 'Initialize mepo based on <config-file>')
         init.add_argument(
-            'config_file',
+            '--config',
             metavar = 'config-file',
             nargs = '?',
             default = 'components.yaml',
@@ -48,7 +48,18 @@ class MepoArgParser(object):
     def __clone(self):
         clone = self.subparsers.add_parser(
             'clone',
-            description = "Clone repositories. Command 'mepo init' should have already been run")
+            description = "Clone repositories.")
+        clone.add_argument(
+            'repo_url',
+            nargs = '?',
+            default = None,
+            help = 'URL to clone')
+        clone.add_argument(
+            '--config',
+            metavar = 'config-file',
+            nargs = '?',
+            default = 'components.yaml',
+            help = 'Configuration file (ignored if init already called, default: %(default)s)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
@@ -90,6 +101,8 @@ class MepoArgParser(object):
             'Specifying --all causes all remotes to be fetched.')
         fetch.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
+        fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
+        fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
