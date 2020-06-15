@@ -239,6 +239,12 @@ class GitRepository(object):
             else:
                 name = tmp
                 tYpe = 'b'
+        elif output.startswith('HEAD'): # Assume hash
+            cmd = self.__git + ' rev-parse --short HEAD'
+            hash_out = shellcmd.run(cmd.split(), output=True)
+            detached = True
+            name = hash_out.rstrip()
+            tYpe = 'h'
         return (name, tYpe, detached)
 
 def get_current_remote_url():
