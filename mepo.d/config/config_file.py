@@ -1,5 +1,7 @@
 import pathlib
 
+from state.exceptions import SuffixNotRecognizedError
+
 class ConfigFile(object):
 
     __slots__ = ['__filename', '__filetype', '__develop']
@@ -12,7 +14,7 @@ class ConfigFile(object):
         if file_suffix in SUFFIX_LIST:
             self.__filetype = file_suffix[1:]
         else:
-            raise RuntimeError('suffix {} not supported'.format(file_suffix))
+            raise SuffixNotRecognizedError('suffix {} not supported'.format(file_suffix))
 
     def read_file(self):
         '''Call read_yaml, read_json etc. using dispatch pattern'''

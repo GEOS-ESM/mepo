@@ -39,10 +39,11 @@ class TestMepoCommands(unittest.TestCase):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
         cls.__copy_config_file()
-        args.config_file = 'components.yaml'
+        args.config = 'components.yaml'
         os.chdir(cls.fixture_dir)
         mepo_init.run(args)
         args.config = None
+        args.repo_url = None
         mepo_clone.run(args)
 
     def setUp(self):
