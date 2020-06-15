@@ -39,7 +39,7 @@ class MepoArgParser(object):
             'init',
             description = 'Initialize mepo based on <config-file>')
         init.add_argument(
-            'config_file',
+            '--config',
             metavar = 'config-file',
             nargs = '?',
             default = 'components.yaml',
@@ -50,7 +50,12 @@ class MepoArgParser(object):
             'clone',
             description = "Clone repositories.")
         clone.add_argument(
-            'config_file',
+            'repo_url',
+            nargs = '?',
+            default = None,
+            help = 'URL to clone')
+        clone.add_argument(
+            '--config',
             metavar = 'config-file',
             nargs = '?',
             default = 'components.yaml',
