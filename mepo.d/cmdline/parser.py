@@ -111,7 +111,9 @@ class MepoArgParser(object):
         MepoBranchArgParser(branch)
 
     def __stash(self):
-        stash = self.subparsers.add_parser('stash')
+        stash = self.subparsers.add_parser(
+                'stash',
+                description = "Runs stash commands.")
         MepoStashArgParser(stash)
 
     def __develop(self):

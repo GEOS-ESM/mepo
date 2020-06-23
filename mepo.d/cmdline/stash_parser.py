@@ -7,10 +7,27 @@ class MepoStashArgParser(object):
         self.stash.title = 'mepo stash sub-commands'
         self.stash.dest = 'mepo_stash_cmd'
         self.stash.required = True
+        self.__push()
         self.__list()
         self.__pop()
         self.__apply()
         
+    def __push(self):
+        stpush = self.stash.add_parser(
+            'push',
+            description = 'Push (create) stash in component <comp-name>')
+        stpush.add_argument(
+                '-m', '--message', 
+                type=str, 
+                metavar = 'message', 
+                default=None,
+                help = 'Message for the stash')
+        stpush.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '+',
+            help = 'Component to push stash in')
+
     def __list(self):
         stlist = self.stash.add_parser(
             'list',

@@ -67,6 +67,12 @@ class GitRepository(object):
         cmd = self.__git + ' stash apply'
         return shellcmd.run(cmd.split(), output=True)
 
+    def push_stash(self, message):
+        cmd = self.__git + ' stash push'
+        if message:
+            cmd += ' -m {}'.format(message)
+        return shellcmd.run(cmd.split(), output=True)
+
     def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
         if args.name_only:
