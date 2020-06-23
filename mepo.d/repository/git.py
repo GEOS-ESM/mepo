@@ -73,6 +73,13 @@ class GitRepository(object):
             cmd += ' -m {}'.format(message)
         return shellcmd.run(cmd.split(), output=True)
 
+    def show_stash(self, patch):
+        cmd = self.__git + ' stash show'
+        if patch:
+            cmd += ' -p --color'
+        output = shellcmd.run(cmd.split(),output=True)
+        return output.rstrip()
+
     def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
         if args.name_only:
