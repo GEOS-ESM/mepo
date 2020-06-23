@@ -11,6 +11,7 @@ class MepoStashArgParser(object):
         self.__list()
         self.__pop()
         self.__apply()
+        self.__show()
         
     def __push(self):
         stpush = self.stash.add_parser(
@@ -27,6 +28,20 @@ class MepoStashArgParser(object):
             metavar = 'comp-name',
             nargs = '+',
             help = 'Component to push stash in')
+
+    def __show(self):
+        stshow = self.stash.add_parser(
+            'show',
+            description = 'show stash in component <comp-name>')
+        stshow.add_argument(
+                '-p', '--patch',
+                action = 'store_true',
+                help = 'Message for the stash')
+        stshow.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '+',
+            help = 'Component to show stash in')
 
     def __list(self):
         stlist = self.stash.add_parser(
