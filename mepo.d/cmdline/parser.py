@@ -1,6 +1,7 @@
 import argparse
 
 from cmdline.branch_parser import MepoBranchArgParser
+from cmdline.stash_parser  import MepoStashArgParser
 
 class MepoArgParser(object):
 
@@ -24,6 +25,7 @@ class MepoArgParser(object):
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
+        self.__stash()
         self.__develop()
         self.__compare()
         self.__whereis()
@@ -107,6 +109,10 @@ class MepoArgParser(object):
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
         MepoBranchArgParser(branch)
+
+    def __stash(self):
+        stash = self.subparsers.add_parser('stash')
+        MepoStashArgParser(stash)
 
     def __develop(self):
         develop = self.subparsers.add_parser(
