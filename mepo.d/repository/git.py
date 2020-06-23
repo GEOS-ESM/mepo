@@ -55,6 +55,18 @@ class GitRepository(object):
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
 
+    def list_stash(self):
+        cmd = self.__git + ' stash list'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def pop_stash(self):
+        cmd = self.__git + ' stash pop'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def apply_stash(self):
+        cmd = self.__git + ' stash apply'
+        return shellcmd.run(cmd.split(), output=True)
+
     def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
         if args.name_only:
