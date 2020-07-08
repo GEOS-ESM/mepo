@@ -14,7 +14,12 @@ class GitRepository(object):
 
     def __init__(self, remote_url, local_path):
         self.__local = local_path
-        self.__remote = remote_url
+        if remote_url.startswith('..'):
+            rel_remote = os.path.basename(remote_url)
+            fixture_url = get_current_remote_url()
+            self.__remote = urljoin(fixture_url,rel_remote)
+        else:
+            self.__remote = remote_url
         self.__git = 'git -C {}'.format(local_path)
 
     def get_local_path(self):
@@ -27,13 +32,7 @@ class GitRepository(object):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        if self.__remote.startswith('..'):
-            rel_remote = os.path.basename(self.__remote)
-            fixture_url = get_current_remote_url()
-            remote = urljoin(fixture_url,rel_remote)
-        else:
-            remote = self.__remote
-        cmd += '--quiet {} {}'.format(remote, self.__local)
+        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):
