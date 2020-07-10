@@ -53,15 +53,21 @@ class MepoArgParser(object):
             description = "Clone repositories.")
         clone.add_argument(
             'repo_url',
+            metavar = 'URL',
             nargs = '?',
             default = None,
             help = 'URL to clone')
+        clone.add_argument(
+            'directory',
+            nargs = '?',
+            default = None,
+            help = "Directory to clone into (Only allowed with URL!)")
         clone.add_argument(
             '--branch','-b',
             metavar = 'name',
             nargs = '?',
             default = None,
-            help = 'Branch/tag of URL to initially clone (NOTE: Only useful with cloning url with mepo clone)')
+            help = 'Branch/tag of URL to initially clone (Only allowed with URL!)')
         clone.add_argument(
             '--config',
             metavar = 'config-file',
