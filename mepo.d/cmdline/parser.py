@@ -22,11 +22,14 @@ class MepoArgParser(object):
         self.__status()
         self.__diff()
         self.__fetch()
+        self.__fetch_all()
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
         self.__stash()
         self.__develop()
+        self.__pull()
+        self.__pull_all()
         self.__compare()
         self.__whereis()
         self.__stage()
@@ -118,6 +121,15 @@ class MepoArgParser(object):
         fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
+    def __fetch_all(self):
+        fetch_all = self.subparsers.add_parser(
+            'fetch-all',
+            description = 'Download objects and refs from all components. '
+            'Specifying --all causes all remotes to be fetched.')
+        fetch_all.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
+        fetch_all.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
+        fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+
     def __branch(self):
         branch = self.subparsers.add_parser('branch')
         MepoBranchArgParser(branch)
@@ -133,7 +145,18 @@ class MepoArgParser(object):
             'develop',
             description = "Checkout current version of 'develop' branches of specified components")
         develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
-        
+
+    def __pull(self):
+        pull = self.subparsers.add_parser(
+            'pull',
+            description = "Pull branches of specified components")
+        pull.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
+
+    def __pull_all(self):
+        pull_all = self.subparsers.add_parser(
+            'pull-all',
+            description = "Pull branches of all components (only those in non-detached HEAD state)")
+
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',

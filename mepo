@@ -12,10 +12,6 @@ if sys.version_info < (3, 6, 0):
 MEPO_D = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'mepo.d')
 sys.path.insert(0, MEPO_D)
 
-# Call top level function
-from main import main
-try:
+if __name__ == '__main__':
+    from main import main
     main()
-except Exception as e:
-    traceback.print_exc()
-    sys.exit(1)
