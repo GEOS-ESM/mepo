@@ -20,6 +20,7 @@ class MepoArgParser(object):
         self.__clone()
         self.__list()
         self.__status()
+        self.__revert()
         self.__diff()
         self.__fetch()
         self.__fetch_all()
@@ -87,6 +88,11 @@ class MepoArgParser(object):
         status = self.subparsers.add_parser(
             'status',
             description = 'Check current status of all components')
+
+    def __revert(self):
+        revert = self.subparsers.add_parser(
+            'revert',
+            description = 'Revert all components to last state.')
 
     def __diff(self):
         diff = self.subparsers.add_parser(
