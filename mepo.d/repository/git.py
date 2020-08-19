@@ -104,10 +104,6 @@ class GitRepository(object):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())
 
-    def create_tags(self, tag_name):
-        cmd = self.__git + ' tag {}'.format(branch_name)
-        shellcmd.run(cmd.split())
-
     def create_tag(self, tag_name, annotate, message, tf_file=None):
         if annotate:
             if tf_file:
