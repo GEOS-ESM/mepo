@@ -9,7 +9,7 @@ def run(args):
     FMT = '{:<%s.%ss} | {:<s}' % (max_namelen, max_namelen)
     for comp in comps2list:
         git = GitRepository(comp.remote, comp.local)
-        output = git.list_branch(args.all).rstrip().split('\n')
+        output = git.list_tags().rstrip().split('\n')
         print(FMT.format(comp.name, output[0]))
         for line in output[1:]:
             print(FMT.format('', line))

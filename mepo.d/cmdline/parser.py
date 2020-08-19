@@ -2,6 +2,7 @@ import argparse
 
 from cmdline.branch_parser import MepoBranchArgParser
 from cmdline.stash_parser  import MepoStashArgParser
+from cmdline.tag_parser    import MepoTagArgParser
 
 class MepoArgParser(object):
 
@@ -27,6 +28,7 @@ class MepoArgParser(object):
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
+        self.__tag()
         self.__stash()
         self.__develop()
         self.__pull()
@@ -137,14 +139,22 @@ class MepoArgParser(object):
         fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
     def __branch(self):
-        branch = self.subparsers.add_parser('branch')
+        branch = self.subparsers.add_parser(
+            'branch',
+            description = "Runs branch commands.")
         MepoBranchArgParser(branch)
 
     def __stash(self):
         stash = self.subparsers.add_parser(
-                'stash',
-                description = "Runs stash commands.")
+            'stash',
+            description = "Runs stash commands.")
         MepoStashArgParser(stash)
+
+    def __tag(self):
+        tag = self.subparsers.add_parser(
+            'tag',
+            description = "Runs tag commands.")
+        MepoTagArgParser(tag)
 
     def __develop(self):
         develop = self.subparsers.add_parser(
@@ -216,7 +226,11 @@ class MepoArgParser(object):
     def __push(self):
         push = self.subparsers.add_parser(
             'push',
-            description = 'Push local commits to remote')
+            description = 'Push local commits or tags to remote')
+        push.add_argument(
+            '--tags',
+            action = 'store_true',
+            help = 'push tags')
         push.add_argument(
             'comp_name',
             metavar = 'comp-name',
