@@ -14,11 +14,17 @@ class MepoBranchArgParser(object):
     def __list(self):
         brlist = self.branch_subparsers.add_parser(
             'list',
-            description = 'List local branches of all components')
+            description = 'List local branches.'
+            'If no component is specified, runs over all components')
         brlist.add_argument(
             '-a', '--all',
             action = 'store_true',
-            help = 'list all (local+remote) branches of all components')
+            help = 'list all (local+remote) branches')
+        brlist.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to list branches in')
 
     def __create(self):
         create = self.branch_subparsers.add_parser(
