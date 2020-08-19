@@ -18,11 +18,11 @@ class MepoStashArgParser(object):
             'push',
             description = 'Push (create) stash in component <comp-name>')
         stpush.add_argument(
-                '-m', '--message', 
-                type=str, 
-                metavar = 'message', 
-                default=None,
-                help = 'Message for the stash')
+            '-m', '--message', 
+            type=str, 
+            metavar = 'message', 
+            default=None,
+            help = 'Message for the stash')
         stpush.add_argument(
             'comp_name',
             metavar = 'comp-name',

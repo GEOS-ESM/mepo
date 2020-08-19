@@ -8,6 +8,6 @@ def run(args):
     comps2push = [x for x in allcomps if x.name in args.comp_name]
     for comp in comps2push:
         git = GitRepository(comp.remote, comp.local)
-        output = git.push()
+        output = git.push(args.tags)
         print('----------\nPushed: {}\n----------'.format(comp.name))
         print(output)

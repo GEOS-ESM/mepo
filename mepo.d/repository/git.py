@@ -54,6 +54,10 @@ class GitRepository(object):
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
 
+    def list_tags(self):
+        cmd = self.__git + ' tag'
+        return shellcmd.run(cmd.split(), output=True)
+
     def list_stash(self):
         cmd = self.__git + ' stash list'
         return shellcmd.run(cmd.split(), output=True)
@@ -100,11 +104,31 @@ class GitRepository(object):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())
 
+    def create_tags(self, tag_name):
+        cmd = self.__git + ' tag {}'.format(branch_name)
+        shellcmd.run(cmd.split())
+
+    def create_tag(self, tag_name, annotate, message, tf_file=None):
+        if annotate:
+            if tf_file:
+                cmd = ['git', '-C', self.__local, 'tag', '-a', '-F', tf_file, tag_name]
+            elif message:
+                cmd = ['git', '-C', self.__local, 'tag', '-a', '-m', message, tag_name]
+            else:
+                raise Exception("This should not happen")
+        else:
+            cmd = ['git', '-C', self.__local, 'tag', tag_name]
+        shellcmd.run(cmd)
+
     def delete_branch(self, branch_name, force):
         delete = '-d'
         if force:
             delete = '-D'
         cmd = self.__git + ' branch {} {}'.format(delete, branch_name)
+        shellcmd.run(cmd.split())
+
+    def delete_tag(self, tag_name):
+        cmd = self.__git + ' tag -d {}'.format(tag_name)
         shellcmd.run(cmd.split())
 
     def verify_branch(self, branch_name):
@@ -226,8 +250,11 @@ class GitRepository(object):
             raise Exception("This should not happen")
         shellcmd.run(cmd)
 
-    def push(self):
-        cmd = self.__git + ' push -u {}'.format(self.__remote)
+    def push(self,tags):
+        if tags:
+            cmd = self.__git + ' push --tags {}'.format(self.__remote)
+        else:
+            cmd = self.__git + ' push -u {}'.format(self.__remote)
         return shellcmd.run(cmd.split(), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch):
