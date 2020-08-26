@@ -100,7 +100,15 @@ class MepoArgParser(object):
         diff = self.subparsers.add_parser(
             'diff',
             description = 'Diff all components')
-        diff.add_argument('--name-only', action = 'store_true', help = 'Show only names of changed files')
+        diff.add_argument(
+            '--name-only',
+            action = 'store_true',
+            help = 'Show only names of changed files')
+        diff.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to list branches in')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(
