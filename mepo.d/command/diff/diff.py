@@ -6,17 +6,27 @@ import os
 from state.state import MepoState
 from repository.git import GitRepository
 from utilities.version import version_to_string
+from utilities import verify
 
 from shutil import get_terminal_size
 
 def run(args):
     print('Diffing...'); sys.stdout.flush()
-    allcomps = MepoState.read_state()
 
-    for comp in allcomps:
+    allcomps = MepoState.read_state()
+    comps2diff = _get_comps_to_diff(args.comp_name, allcomps)
+
+    for comp in comps2diff:
         result = check_component_diff(comp, args)
         if result:
             print_diff(comp, args, result)
+
+def _get_comps_to_diff(specified_comps, allcomps):
+    comps_to_diff = allcomps
+    if specified_comps:
+        verify.valid_components(specified_comps, allcomps)
+        comps_to_diff = [x for x in allcomps if x.name in specified_comps]
+    return comps_to_diff
 
 def check_component_diff(comp, args):
     git = GitRepository(comp.remote, comp.local)
