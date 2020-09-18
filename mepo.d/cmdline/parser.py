@@ -1,6 +1,8 @@
 import argparse
 
 from cmdline.branch_parser import MepoBranchArgParser
+from cmdline.stash_parser  import MepoStashArgParser
+from cmdline.tag_parser    import MepoTagArgParser
 
 class MepoArgParser(object):
 
@@ -19,12 +21,18 @@ class MepoArgParser(object):
         self.__clone()
         self.__list()
         self.__status()
+        self.__restore_state()
         self.__diff()
         self.__fetch()
+        self.__fetch_all()
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
+        self.__tag()
+        self.__stash()
         self.__develop()
+        self.__pull()
+        self.__pull_all()
         self.__compare()
         self.__whereis()
         self.__stage()
@@ -55,9 +63,21 @@ class MepoArgParser(object):
             description = "Clone repositories.")
         clone.add_argument(
             'repo_url',
+            metavar = 'URL',
             nargs = '?',
             default = None,
             help = 'URL to clone')
+        clone.add_argument(
+            'directory',
+            nargs = '?',
+            default = None,
+            help = "Directory to clone into (Only allowed with URL!)")
+        clone.add_argument(
+            '--branch','-b',
+            metavar = 'name',
+            nargs = '?',
+            default = None,
+            help = 'Branch/tag of URL to initially clone (Only allowed with URL!)')
         clone.add_argument(
             '--config',
             metavar = 'config-file',
@@ -75,11 +95,24 @@ class MepoArgParser(object):
             'status',
             description = 'Check current status of all components')
 
+    def __restore_state(self):
+        restore_state = self.subparsers.add_parser(
+            'restore-state',
+            description = 'Restores all components to the last saved state.')
+
     def __diff(self):
         diff = self.subparsers.add_parser(
             'diff',
             description = 'Diff all components')
-        diff.add_argument('--name-only', action = 'store_true', help = 'Show only names of changed files')
+        diff.add_argument(
+            '--name-only',
+            action = 'store_true',
+            help = 'Show only names of changed files')
+        diff.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to list branches in')
 
     def __checkout(self):
         checkout = self.subparsers.add_parser(
@@ -97,6 +130,7 @@ class MepoArgParser(object):
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
         checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
+        checkout_if_exists.add_argument('--dry-run','-n', action = 'store_true', help = 'Dry-run only (lists repos where branch exists)')
 
     def __fetch(self):
         fetch = self.subparsers.add_parser(
@@ -108,16 +142,50 @@ class MepoArgParser(object):
         fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
 
+    def __fetch_all(self):
+        fetch_all = self.subparsers.add_parser(
+            'fetch-all',
+            description = 'Download objects and refs from all components. '
+            'Specifying --all causes all remotes to be fetched.')
+        fetch_all.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
+        fetch_all.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
+        fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+
     def __branch(self):
-        branch = self.subparsers.add_parser('branch')
+        branch = self.subparsers.add_parser(
+            'branch',
+            description = "Runs branch commands.")
         MepoBranchArgParser(branch)
+
+    def __stash(self):
+        stash = self.subparsers.add_parser(
+            'stash',
+            description = "Runs stash commands.")
+        MepoStashArgParser(stash)
+
+    def __tag(self):
+        tag = self.subparsers.add_parser(
+            'tag',
+            description = "Runs tag commands.")
+        MepoTagArgParser(tag)
 
     def __develop(self):
         develop = self.subparsers.add_parser(
             'develop',
             description = "Checkout current version of 'develop' branches of specified components")
         develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
-        
+
+    def __pull(self):
+        pull = self.subparsers.add_parser(
+            'pull',
+            description = "Pull branches of specified components")
+        pull.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
+
+    def __pull_all(self):
+        pull_all = self.subparsers.add_parser(
+            'pull-all',
+            description = "Pull branches of all components (only those in non-detached HEAD state)")
+
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',
@@ -171,7 +239,11 @@ class MepoArgParser(object):
     def __push(self):
         push = self.subparsers.add_parser(
             'push',
-            description = 'Push local commits to remote')
+            description = 'Push local commits or tags to remote')
+        push.add_argument(
+            '--tags',
+            action = 'store_true',
+            help = 'push tags')
         push.add_argument(
             'comp_name',
             metavar = 'comp-name',

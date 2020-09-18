@@ -14,7 +14,12 @@ class GitRepository(object):
 
     def __init__(self, remote_url, local_path):
         self.__local = local_path
-        self.__remote = remote_url
+        if remote_url.startswith('..'):
+            rel_remote = os.path.basename(remote_url)
+            fixture_url = get_current_remote_url()
+            self.__remote = urljoin(fixture_url,rel_remote)
+        else:
+            self.__remote = remote_url
         self.__git = 'git -C {}'.format(local_path)
 
     def get_local_path(self):
@@ -27,13 +32,7 @@ class GitRepository(object):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        if self.__remote.startswith('..'):
-            rel_remote = os.path.basename(self.__remote)
-            fixture_url = get_current_remote_url()
-            remote = urljoin(fixture_url,rel_remote)
-        else:
-            remote = self.__remote
-        cmd += '--quiet {} {}'.format(remote, self.__local)
+        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):
@@ -54,6 +53,35 @@ class GitRepository(object):
         if all:
             cmd += ' -a'
         return shellcmd.run(cmd.split(), output=True)
+
+    def list_tags(self):
+        cmd = self.__git + ' tag'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def list_stash(self):
+        cmd = self.__git + ' stash list'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def pop_stash(self):
+        cmd = self.__git + ' stash pop'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def apply_stash(self):
+        cmd = self.__git + ' stash apply'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def push_stash(self, message):
+        cmd = self.__git + ' stash push'
+        if message:
+            cmd += ' -m {}'.format(message)
+        return shellcmd.run(cmd.split(), output=True)
+
+    def show_stash(self, patch):
+        cmd = self.__git + ' stash show'
+        if patch:
+            cmd += ' -p --color'
+        output = shellcmd.run(cmd.split(),output=True)
+        return output.rstrip()
 
     def run_diff(self, args=None):
         cmd = self.__git + ' diff --color'
@@ -76,11 +104,27 @@ class GitRepository(object):
         cmd = self.__git + ' branch {}'.format(branch_name)
         shellcmd.run(cmd.split())
 
+    def create_tag(self, tag_name, annotate, message, tf_file=None):
+        if annotate:
+            if tf_file:
+                cmd = ['git', '-C', self.__local, 'tag', '-a', '-F', tf_file, tag_name]
+            elif message:
+                cmd = ['git', '-C', self.__local, 'tag', '-a', '-m', message, tag_name]
+            else:
+                raise Exception("This should not happen")
+        else:
+            cmd = ['git', '-C', self.__local, 'tag', tag_name]
+        shellcmd.run(cmd)
+
     def delete_branch(self, branch_name, force):
         delete = '-d'
         if force:
             delete = '-D'
         cmd = self.__git + ' branch {} {}'.format(delete, branch_name)
+        shellcmd.run(cmd.split())
+
+    def delete_tag(self, tag_name):
+        cmd = self.__git + ' tag -d {}'.format(tag_name)
         shellcmd.run(cmd.split())
 
     def verify_branch(self, branch_name):
@@ -202,8 +246,11 @@ class GitRepository(object):
             raise Exception("This should not happen")
         shellcmd.run(cmd)
 
-    def push(self):
-        cmd = self.__git + ' push -u {}'.format(self.__remote)
+    def push(self,tags):
+        if tags:
+            cmd = self.__git + ' push --tags {}'.format(self.__remote)
+        else:
+            cmd = self.__git + ' push -u {}'.format(self.__remote)
         return shellcmd.run(cmd.split(), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch):

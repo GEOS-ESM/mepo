@@ -44,6 +44,8 @@ class TestMepoCommands(unittest.TestCase):
         mepo_init.run(args)
         args.config = None
         args.repo_url = None
+        args.branch = None
+        args.directory = None
         mepo_clone.run(args)
 
     def setUp(self):
