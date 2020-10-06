@@ -153,8 +153,6 @@ class GitRepository(object):
 
                 short_status = item.split()[1]
 
-                #print("file: ", file_name, "short_status:", short_status, "index_field:", index_field)
-
                 if index_field == "?":
                     verbose_status = colors.RED   + "untracked file" + colors.RESET
 
@@ -253,14 +251,32 @@ class GitRepository(object):
             cmd = self.__git + ' push -u {}'.format(self.__remote)
         return shellcmd.run(cmd.split(), output=True).strip()
 
-    def get_remote_latest_commit_id(self, branch):
-        cmd = self.__git + ' ls-remote {} refs/heads/{}'.format(self.__remote, branch)
-        output = shellcmd.run(cmd.split(), output=True).strip()
-        if not output:
-            msg = 'Branch {} does not exist on {}'.format(branch, self.__remote)
-            msg += " Have you run 'mepo push'?"
-            raise RuntimeError(msg)
-        return output.split()[0]
+    def get_remote_latest_commit_id(self, branch, commit_type):
+        if commit_type == 'h':
+            cmd = self.__git + ' cat-file -e {}'.format(branch)
+            status = shellcmd.run(cmd.split(), status=True)
+            if status != 0:
+                msg = 'Hash {} does not exist on {}'.format(branch, self.__remote)
+                msg += " Have you run 'mepo push'?"
+                raise RuntimeError(msg)
+            return branch
+        else:
+            # If we are a branch...
+            if commit_type == 'b':
+                msgtype = "Branch"
+                reftype = 'heads'
+            elif commit_type == 't':
+                msgtype = 'Tag'
+                reftype = 'tags'
+            else:
+                raise RuntimeError("Should not get here")
+            cmd = self.__git + ' ls-remote {} refs/{}/{}'.format(self.__remote, reftype, branch)
+            output = shellcmd.run(cmd.split(), output=True).strip()
+            if not output:
+                msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
+                msg += " Have you run 'mepo push'?"
+                raise RuntimeError(msg)
+            return output.split()[0]
 
     def get_local_latest_commit_id(self):
         cmd = self.__git + ' rev-parse HEAD'
@@ -287,7 +303,7 @@ class GitRepository(object):
                 name = tmp
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
-            cmd = self.__git + ' rev-parse --short HEAD'
+            cmd = self.__git + ' rev-parse HEAD'
             hash_out = shellcmd.run(cmd.split(), output=True)
             detached = True
             name = hash_out.rstrip()
