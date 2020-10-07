@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import uuid
 
 from utilities import shellcmd
 from utilities import colors
@@ -244,12 +245,29 @@ class GitRepository(object):
             raise Exception("This should not happen")
         shellcmd.run(cmd)
 
-    def push(self,tags):
+    def push(self,tags,hashes):
         if tags:
             cmd = self.__git + ' push --tags {}'.format(self.__remote)
+        elif hashes:
+            print("HASHES")
+            cmd = self.__git + ' rev-parse HEAD'
+            current_hash = shellcmd.run(cmd.split(), output=True).strip()
+            print(f'current_hash: {current_hash}')
+
+            tmp_branch=f'tmp/{current_hash}'
+            print(f'Pushing to {current_hash} to remote branch {tmp_branch} to {self.__remote}')
+            cmd = self.__git + ' push {} {}:refs/heads/{}'.format(self.__remote,current_hash,tmp_branch)
+            push_output = shellcmd.run(cmd.split(), output=True).strip()
+            print(push_output)
+
+            print(f'Deleting {tmp_branch} from remote')
+            cmd = self.__git + ' push {} --delete {}'.format(self.__remote,tmp_branch)
+            push_del_output = shellcmd.run(cmd.split(), output=True).strip()
+            print(push_del_output)
+
         else:
             cmd = self.__git + ' push -u {}'.format(self.__remote)
-        return shellcmd.run(cmd.split(), output=True).strip()
+            return shellcmd.run(cmd.split(), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch, commit_type):
         if commit_type == 'h':

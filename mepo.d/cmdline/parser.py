@@ -241,6 +241,10 @@ class MepoArgParser(object):
             action = 'store_true',
             help = 'push tags')
         push.add_argument(
+            '--hash',
+            action = 'store_true',
+            help = 'push hash')
+        push.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',
