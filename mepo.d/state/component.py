@@ -26,7 +26,7 @@ class MepoComponent(object):
             ver_type = 'b'
         elif comp_details.get('hash', None):
             # Hashes don't have to exist
-            ver_name = comp_details['hash'][:7]
+            ver_name = comp_details['hash']
             ver_type = 'h'
         else:
             ver_name = comp_details['tag'] # 'tag' key has to exist
@@ -49,7 +49,9 @@ class MepoComponent(object):
         details['remote'] = self.remote
         if self.version.type == 't':
             details['tag'] = self.version.name
-        else: # if not tag, version has to be a branch
+        elif self.version.type == 'h':
+            details['hash'] = self.version.name
+        else: # if not tag or hash, version has to be a branch
             if self.version.detached: # SPECIAL HANDLING of 'detached head' branches
                 details['branch'] = self.version.name.replace('origin/', '')
             else:
