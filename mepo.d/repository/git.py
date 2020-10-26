@@ -114,7 +114,6 @@ class GitRepository(object):
         shellcmd.run(cmd.split())
 
     def create_tag(self, tag_name, annotate, message, tf_file=None):
-        repo_path = get_full_local_path(self)
         if annotate:
             if tf_file:
                 cmd = ['git', '-C', self.__full_local_path, 'tag', '-a', '-F', tf_file, tag_name]
@@ -246,7 +245,6 @@ class GitRepository(object):
         shellcmd.run(cmd.split())
 
     def commit_files(self, message, tf_file=None):
-        repo_path = get_full_local_path(self)
         if tf_file:
             cmd = ['git', '-C', self.__full_local_path, 'commit', '-F', tf_file]
         elif message:
