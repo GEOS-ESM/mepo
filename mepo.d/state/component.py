@@ -35,7 +35,7 @@ class MepoComponent(object):
         
     def to_component(self, comp_name, comp_details):
         self.name = comp_name
-        self.local = os.path.abspath(comp_details['local'])
+        self.local = comp_details['local']
         self.remote = comp_details['remote']
         self.develop = comp_details.get('develop', None) # develop is optional
         self.sparse = comp_details.get('sparse', None) # sparse is optional
