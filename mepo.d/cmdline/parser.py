@@ -3,6 +3,7 @@ import argparse
 from cmdline.branch_parser import MepoBranchArgParser
 from cmdline.stash_parser  import MepoStashArgParser
 from cmdline.tag_parser    import MepoTagArgParser
+from cmdline.patch_parser  import MepoPatchArgParser
 
 class MepoArgParser(object):
 
@@ -30,6 +31,7 @@ class MepoArgParser(object):
         self.__branch()
         self.__tag()
         self.__stash()
+        self.__patch()
         self.__develop()
         self.__pull()
         self.__pull_all()
@@ -158,6 +160,12 @@ class MepoArgParser(object):
             'stash',
             description = "Runs stash commands.")
         MepoStashArgParser(stash)
+
+    def __patch(self):
+        patch = self.subparsers.add_parser(
+            'patch',
+            description = "Runs patch commands.")
+        MepoPatchArgParser(patch)
 
     def __tag(self):
         tag = self.subparsers.add_parser(
