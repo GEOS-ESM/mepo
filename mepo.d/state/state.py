@@ -87,8 +87,8 @@ class MepoState(object):
             pickle.dump(state_details, fout, -1)
         state_fileptr = cls.__state_fileptr_name
         state_fileptr_fullpath = os.path.join(state_dir, state_fileptr)
-        if os.path.isfile(state_fileptr):
-            os.remove(state_fileptr)
+        if os.path.isfile(state_fileptr_fullpath):
+            os.remove(state_fileptr_fullpath)
         #os.symlink(new_state_file, state_fileptr_fullpath)
         curr_dir=os.getcwd()
         os.chdir(state_dir)

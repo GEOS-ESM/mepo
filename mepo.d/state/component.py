@@ -45,7 +45,7 @@ class MepoComponent(object):
 
     def to_dict(self, start):
         details = dict()
-        details['local'] = './' + os.path.relpath(self.local, start)
+        details['local'] = self.local
         details['remote'] = self.remote
         if self.version.type == 't':
             details['tag'] = self.version.name
