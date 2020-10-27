@@ -1,5 +1,4 @@
 from collections import namedtuple
-from utilities import colors
 
 MepoVersion = namedtuple('MepoVersion', ['name', 'type', 'detached'])
 
@@ -12,7 +11,7 @@ def version_to_string(version):
         # We remove the "origin/" from the internal detached branch name 
         # for clarity in mepo status output
         version_name = version_name.replace('origin/','')
-        s = f'({version_type}) {version_name} {colors.YELLOW}(DH){colors.RESET}'
+        s = f'({version_type}) {version_name} (DH)'
     else:
         s = f'({version_type}) {version_name}'
     return s

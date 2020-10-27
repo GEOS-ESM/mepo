@@ -4,6 +4,8 @@ from utilities.version import version_to_string
 from repository.git import GitRepository
 from shutil import get_terminal_size
 
+VER_LEN = 30
+
 def run(args):
     allcomps = MepoState.read_state()
     max_namelen = len(max([x.name for x in allcomps], key=len))
@@ -16,11 +18,6 @@ def run(args):
         print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen)
 
 def print_header(max_namelen, max_origlen):
-    # This is to remove to remove padding in the header for colorizing the
-    # (DH) bit of the branch/tag orig name
-    DH_COLOR_LEN = len(colors.YELLOW + colors.RESET)
-    max_origlen = max_origlen - DH_COLOR_LEN
-
     FMT_VAL = (max_namelen, max_namelen, max_origlen)
     FMTHEAD = '{:<%s.%ss} | {:<%ss} | {:<s}' % FMT_VAL
     print(FMTHEAD.format("Repo","Original","Current"))
