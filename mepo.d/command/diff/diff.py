@@ -5,7 +5,6 @@ import os
 
 from state.state import MepoState
 from repository.git import GitRepository
-from utilities.version import version_to_string
 from utilities import verify
 
 from shutil import get_terminal_size
