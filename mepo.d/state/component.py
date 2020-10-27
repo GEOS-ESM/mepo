@@ -63,7 +63,6 @@ class MepoComponent(object):
         self.sparse = comp_details.get('sparse', None) # sparse is optional
         self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
         self.__set_original_version(comp_details)
-        print(self)
         return self
 
     def to_dict(self, start):
