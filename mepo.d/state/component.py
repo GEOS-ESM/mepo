@@ -20,7 +20,7 @@ class MepoComponent(object):
 
     def __repr__(self):
         return '{} - local: {}, remote: {}, version: {}, develop: {}, sparse: {}, recurse_submodules: {}, fixture: {}'.format(
-            self.name, self.local, self.remote, self.version, self.develop, self.recurse_submodules, self.fixture)
+            self.name, self.local, self.remote, self.version, self.develop, self.sparse, self.recurse_submodules, self.fixture)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
@@ -47,10 +47,17 @@ class MepoComponent(object):
                 ver_type = 't'
         self.version = MepoVersion(ver_name, ver_type, True)
         
+    def __validate_fixture(self, comp_details):
+        unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules']
+        if any([comp_details.get(key) for key in unallowed_keys]):
+            raise Exception("Fixtures are only allowed fixture and develop")
+
     def to_component(self, comp_name, comp_details):
         self.name = comp_name
         self.fixture = comp_details.get('fixture', False)
         if self.fixture:
+            self.__validate_fixture(comp_details)
+
             self.local = '.'
             repo_url = get_current_remote_url()
             p = urlparse(repo_url)
@@ -67,23 +74,29 @@ class MepoComponent(object):
 
     def to_dict(self, start):
         details = dict()
-        details['local'] = self.local
-        details['remote'] = self.remote
-        if self.version.type == 't':
-            details['tag'] = self.version.name
-        elif self.version.type == 'h':
-            details['hash'] = self.version.name
-        else: # if not tag or hash, version has to be a branch
-            if self.version.detached: # SPECIAL HANDLING of 'detached head' branches
-                details['branch'] = self.version.name.replace('origin/', '')
-            else:
-                details['branch'] = self.version.name
-        if self.develop:
-            details['develop'] = self.develop
-        if self.sparse:
-            details['sparse'] = self.sparse
-        if self.recurse_submodules:
-            details['recurse_submodules'] = self.recurse_submodules
+        # Fixtures are allowed exactly two entries
+        if self.fixture:
+            details['fixture'] = self.fixture
+            if self.develop:
+                details['develop'] = self.develop
+        else:
+            details['local'] = self.local
+            details['remote'] = self.remote
+            if self.version.type == 't':
+                details['tag'] = self.version.name
+            elif self.version.type == 'h':
+                details['hash'] = self.version.name
+            else: # if not tag or hash, version has to be a branch
+                if self.version.detached: # SPECIAL HANDLING of 'detached head' branches
+                    details['branch'] = self.version.name.replace('origin/', '')
+                else:
+                    details['branch'] = self.version.name
+            if self.develop:
+                details['develop'] = self.develop
+            if self.sparse:
+                details['sparse'] = self.sparse
+            if self.recurse_submodules:
+                details['recurse_submodules'] = self.recurse_submodules
         return {self.name: details}
 
 def get_current_remote_url():
