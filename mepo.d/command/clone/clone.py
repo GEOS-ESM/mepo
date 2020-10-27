@@ -6,12 +6,16 @@ from urllib.parse import urlparse
 
 import os
 import pathlib
+import shutil
 
 def run(args):
 
     # This protects against someone using branch without a URL
     if args.branch and not args.repo_url:
         raise RuntimeError("The branch argument can only be used with a URL")
+
+    if args.config:
+        args.config = os.path.abspath(args.config)
 
     if args.repo_url:
         p = urlparse(args.repo_url)
@@ -35,6 +39,8 @@ def run(args):
         try:
             allcomps = MepoState.read_state()
         except StateDoesNotExistError:
+            if args.config:
+                shutil.copyfile(args.config,'components.yaml')
             mepo_init.run(args)
             continue
         break
