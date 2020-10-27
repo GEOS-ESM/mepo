@@ -19,8 +19,8 @@ class MepoComponent(object):
         self.fixture = None
 
     def __repr__(self):
-        return '{} - local: {}, remote: {}, version: {}, develop:{}'.format(
-            self.name, self.local, self.remote, self.version, self.develop)
+        return '{} - local: {}, remote: {}, version: {}, develop: {}, sparse: {}, recurse_submodules: {}, fixture: {}'.format(
+            self.name, self.local, self.remote, self.version, self.develop, self.recurse_submodules, self.fixture)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
