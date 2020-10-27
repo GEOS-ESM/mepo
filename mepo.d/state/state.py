@@ -57,6 +57,7 @@ class MepoState(object):
         if cls.exists():
             raise StateAlreadyInitializedError('mepo state already exists')
         input_components = ConfigFile(project_config_file).read_file()
+        print(f'input_components: {input_components}')
         complist = list()
         for name, comp in input_components.items():
             complist.append(MepoComponent().to_component(name, comp))
