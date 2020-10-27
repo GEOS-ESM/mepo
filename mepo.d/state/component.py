@@ -24,8 +24,15 @@ class MepoComponent(object):
 
     def __set_original_version(self, comp_details):
         if self.fixture:
-            ver_name = "foo"
-            ver_type = 'x'
+            cmd_if_branch = 'git symbolic-ref HEAD'
+            if not shellcmd.run(cmd_if_branch.split(),status=True):
+                output = shellcmd.run(cmd_if_branch.split(),output=True).rstrip()
+                ver_name = output.replace('refs/heads/','')
+                ver_type = 'b'
+            else:
+                cmd_for_tag = 'git describe --tags'
+                ver_name = shellcmd.run(cmd_for_tag.split(),output=True).rstrip()
+                ver_type = 't'
         else:
             if comp_details.get('branch', None):
                 # SPECIAL HANDLING of 'detached head' branches
@@ -46,9 +53,9 @@ class MepoComponent(object):
         if self.fixture:
             self.local = '.'
             repo_url = get_current_remote_url()
-            p = urlparse(args.repo_url)
+            p = urlparse(repo_url)
             last_url_node = p.path.rsplit('/')[-1]
-            self.remote = last_url_node
+            self.remote = "../"+last_url_node
         else:
             self.local = comp_details['local']
             self.remote = comp_details['remote']
