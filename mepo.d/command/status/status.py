@@ -16,16 +16,22 @@ def run(args):
 
 def check_component_status(comp):
     git = GitRepository(comp.remote, comp.local)
+
+    # version_to_string can strip off 'origin/' for display purposes
+    # so we save the "internal" name for comparison
+    internal_state_branch_name = git.get_version()[0]
+
+    # This can return non "origin/" names for detached head branches
     curr_ver = version_to_string(git.get_version())
-    return (curr_ver, git.check_status())
+    return (curr_ver, internal_state_branch_name, git.check_status())
 
 def print_status(allcomps, result):
     orig_width = len(max([comp.name for comp in allcomps], key=len))
     for index, comp in enumerate(allcomps):
         time.sleep(0.025)
-        current_version, output = result[index]
+        current_version, internal_state_branch_name, output = result[index]
         # Check to see if the current tag/branch is the same as the original
-        if comp.version.name not in current_version:
+        if comp.version.name not in internal_state_branch_name:
             component_name = colors.RED + comp.name + colors.RESET
             width = orig_width + len(colors.RED) + len(colors.RESET)
         else:
