@@ -44,5 +44,5 @@ def print_diff(comp, args, output):
         print(line.rstrip())
     print(horiz_line)
 
-def _get_relative_path(local_path):
-    return os.path.relpath(local_path, os.getcwd())
+def _get_relative_path(path):
+    return os.path.relpath(path, os.getcwd())
