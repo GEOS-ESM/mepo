@@ -24,5 +24,5 @@ def run(args):
             full_local_path=os.path.join(root_dir,comp.local)
             print(FMT.format(comp.name, _get_relative_path(full_local_path)))
         
-def _get_relative_path(local_path):
-    return os.path.relpath(local_path, os.getcwd())
+def _get_relative_path(path):
+    return os.path.relpath(path, os.getcwd())
