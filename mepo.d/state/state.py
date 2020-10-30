@@ -92,8 +92,16 @@ class MepoState(object):
             new_develop_branch = colors.YELLOW + alternate_develop + colors.RESET
             print("Changing develop branch to: {new_develop_branch}".format(new_develop_branch=new_develop_branch))
         input_components = ConfigFile(project_config_file, alternate_develop).read_file()
+
+        num_fixture = 0
         complist = list()
         for name, comp in input_components.items():
+            # We only allow one fixture
+            if 'fixture' in comp:
+                num_fixture += comp['fixture']
+            if num_fixture > 1:
+                raise Exception("Only one fixture allowed")
+
             complist.append(MepoComponent().to_component(name, comp))
         cls.write_state(complist)
 
