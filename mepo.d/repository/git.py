@@ -317,6 +317,12 @@ class GitRepository(object):
             detached = True
             name = hash_out.rstrip()
             tYpe = 'h'
+        elif output.startswith('grafted'):
+            cmd = self.__git + ' describe --always'
+            hash_out = shellcmd.run(cmd.split(), output=True)
+            detached = True
+            name = hash_out.rstrip()
+            tYpe = 'h'
         return (name, tYpe, detached)
 
 def get_current_remote_url():
