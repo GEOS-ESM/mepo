@@ -41,13 +41,14 @@ def run(args):
 
     max_namelen = len(max([comp.name for comp in allcomps], key=len))
     for comp in allcomps:
-        git = GitRepository(comp.remote, comp.local)
-        recurse = comp.recurse_submodules
-        git.clone(recurse)
-        if comp.sparse:
-            git.sparsify(comp.sparse)
-        git.checkout(comp.version.name)
-        print_clone_info(comp, max_namelen)
+        if not comp.fixture:
+            git = GitRepository(comp.remote, comp.local)
+            recurse = comp.recurse_submodules
+            git.clone(recurse)
+            if comp.sparse:
+                git.sparsify(comp.sparse)
+            git.checkout(comp.version.name)
+            print_clone_info(comp, max_namelen)
 
 def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
