@@ -25,14 +25,25 @@ class MepoComponent(object):
     def __set_original_version(self, comp_details):
         if self.fixture:
             cmd_if_branch = 'git symbolic-ref HEAD'
+            # Have to use 'if not' since 0 is a good status
             if not shellcmd.run(cmd_if_branch.split(),status=True):
                 output = shellcmd.run(cmd_if_branch.split(),output=True).rstrip()
                 ver_name = output.replace('refs/heads/','')
                 ver_type = 'b'
             else:
+                # On some CI systems, git is handled oddly. As such, sometimes
+                # tags aren't found due to shallow clones
                 cmd_for_tag = 'git describe --tags'
-                ver_name = shellcmd.run(cmd_for_tag.split(),output=True).rstrip()
-                ver_type = 't'
+                # Have to use 'if not' since 0 is a good status
+                if not shellcmd.run(cmd_for_tag.split(),status=True):
+                    ver_name = shellcmd.run(cmd_for_tag.split(),output=True).rstrip()
+                    ver_type = 't'
+                else:
+                    # Per internet, describe always should always work, though mepo
+                    # will return weirdness (a grafted branch, probably a hash)
+                    cmd_for_always = 'git describe --always'
+                    ver_name = shellcmd.run(cmd_for_always.split(),output=True).rstrip()
+                    ver_type = 'h'
         else:
             if comp_details.get('branch', None):
                 # SPECIAL HANDLING of 'detached head' branches
