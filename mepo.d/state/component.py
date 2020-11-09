@@ -30,6 +30,7 @@ class MepoComponent(object):
                 output = shellcmd.run(cmd_if_branch.split(),output=True).rstrip()
                 ver_name = output.replace('refs/heads/','')
                 ver_type = 'b'
+                is_detached = False
             else:
                 # On some CI systems, git is handled oddly. As such, sometimes
                 # tags aren't found due to shallow clones
@@ -38,25 +39,31 @@ class MepoComponent(object):
                 if not shellcmd.run(cmd_for_tag.split(),status=True):
                     ver_name = shellcmd.run(cmd_for_tag.split(),output=True).rstrip()
                     ver_type = 't'
+                    is_detached = True
                 else:
                     # Per internet, describe always should always work, though mepo
                     # will return weirdness (a grafted branch, probably a hash)
                     cmd_for_always = 'git describe --always'
                     ver_name = shellcmd.run(cmd_for_always.split(),output=True).rstrip()
                     ver_type = 'h'
+                    is_detached = True
         else:
             if comp_details.get('branch', None):
                 # SPECIAL HANDLING of 'detached head' branches
                 ver_name = 'origin/' + comp_details['branch']
                 ver_type = 'b'
+                # we always detach branches from components.yaml
+                is_detached = True
             elif comp_details.get('hash', None):
                 # Hashes don't have to exist
                 ver_name = comp_details['hash']
                 ver_type = 'h'
+                is_detached = True
             else:
                 ver_name = comp_details['tag'] # 'tag' key has to exist
                 ver_type = 't'
-        self.version = MepoVersion(ver_name, ver_type, True)
+                is_detached = True
+        self.version = MepoVersion(ver_name, ver_type, is_detached)
         
     def __validate_fixture(self, comp_details):
         unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules']
