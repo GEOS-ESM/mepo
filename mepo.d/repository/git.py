@@ -96,6 +96,8 @@ class GitRepository(object):
         cmd = self.__git + ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.staged:
+            cmd += ' --staged'
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 

@@ -105,6 +105,10 @@ class MepoArgParser(object):
             action = 'store_true',
             help = 'Show only names of changed files')
         diff.add_argument(
+            '--staged',
+            action = 'store_true',
+            help = 'Show diff of staged changes')
+        diff.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
