@@ -109,6 +109,8 @@ class GitRepository(object):
             cmd += ' --prune'
         if args.tags:
             cmd += ' --tags'
+        if args.force:
+            cmd += ' --force'
         return shellcmd.run(cmd.split(), output=True)
 
     def create_branch(self, branch_name):

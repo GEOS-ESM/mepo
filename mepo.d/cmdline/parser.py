@@ -141,6 +141,7 @@ class MepoArgParser(object):
         fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
         fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+        fetch.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
 
     def __fetch_all(self):
         fetch_all = self.subparsers.add_parser(
@@ -150,6 +151,7 @@ class MepoArgParser(object):
         fetch_all.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
         fetch_all.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+        fetch_all.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
 
     def __branch(self):
         branch = self.subparsers.add_parser(
