@@ -9,9 +9,12 @@ def run(args):
     comps2stg = [x for x in allcomps if x.name in args.comp_name]
     for comp in comps2stg:
         git = GitRepository(comp.remote, comp.local)
-        curr_ver = MepoVersion(*git.get_version())
-        if curr_ver.detached: # detached head
-            raise Exception('{} has detached head! Cannot stage.'.format(comp.name))
-        for myfile in git.get_changed_files(args.untracked):
-            git.stage_file(myfile)
-            print('+ {}: {}'.format(comp.name, myfile))
+        stage_files(args, comp, git)
+
+def stage_files(args, comp, git):
+    curr_ver = MepoVersion(*git.get_version())
+    if curr_ver.detached: # detached head
+        raise Exception('{} has detached head! Cannot stage.'.format(comp.name))
+    for myfile in git.get_changed_files(args.untracked):
+        git.stage_file(myfile)
+        print('+ {}: {}'.format(comp.name, myfile))
