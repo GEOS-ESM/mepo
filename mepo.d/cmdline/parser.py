@@ -231,7 +231,7 @@ class MepoArgParser(object):
         commit = self.subparsers.add_parser(
             'commit',
             description = 'Commit staged files in the specified components')
-        commit.add_argument('-a', action = 'store_true', help = 'stage all tracked files and then commit')
+        commit.add_argument('-a', '--all', action = 'store_true', help = 'stage all tracked files and then commit')
         commit.add_argument('-m', '--message', type=str, metavar = 'message', default=None)
         commit.add_argument(
             'comp_name',
