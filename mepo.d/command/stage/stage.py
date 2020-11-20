@@ -14,7 +14,7 @@ def run(args):
 def stage_files(git, comp, untracked=False, commit=False):
     curr_ver = MepoVersion(*git.get_version())
     if curr_ver.detached: # detached head
-        raise Exception('{} has detached head! Cannot stage.'.format(comp.name))
+        raise Exception(f"{comp.name} has detached head! Cannot stage.")
     for myfile in git.get_changed_files(untracked):
         git.stage_file(myfile)
         print_output = f"{comp.name}: {myfile}"
