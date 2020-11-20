@@ -1,6 +1,7 @@
 from state.state import MepoState
 from utilities import verify
 from repository.git import GitRepository
+from command.stage.stage import stage_files
 
 # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
 import os, tempfile, subprocess
@@ -26,6 +27,9 @@ def run(args):
 
     for comp in comps2commit:
         git = GitRepository(comp.remote, comp.local)
+        if args.all:
+            stage_files(git, comp, commit=True)
+
         staged_files = git.get_staged_files()
         if staged_files:
             git.commit_files(args.message,tf_file)
