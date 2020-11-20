@@ -78,7 +78,7 @@ class MepoArgParser(object):
             '--config',
             metavar = 'config-file',
             nargs = '?',
-            default = 'components.yaml',
+            default = None,
             help = 'Configuration file (ignored if init already called, default: %(default)s)')
 
     def __list(self):

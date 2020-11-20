@@ -16,8 +16,14 @@ def run(args):
 
     # If you pass in a config, with clone, it could be outside the repo.
     # So use the full path
+    passed_in_config = False
     if args.config:
+        passed_in_config = True
         args.config = os.path.abspath(args.config)
+    else:
+        # If we don't pass in a config, we need to "reset" the arg to the
+        # default name because we pass args to mepo_init
+        args.config = 'components.yaml'
 
     if args.repo_url:
         p = urlparse(args.repo_url)
@@ -35,8 +41,8 @@ def run(args):
             local_clone(args.repo_url,args.branch)
             os.chdir(git_url_directory)
 
-    # Copy the new file into the repo
-    if args.config:
+    # Copy the new file into the repo only if we pass it in
+    if passed_in_config:
         shutil.copy(args.config,os.getcwd())
 
     # This tries to read the state and if not, calls init,
