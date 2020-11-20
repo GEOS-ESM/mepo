@@ -28,7 +28,7 @@ def run(args):
     for comp in comps2commit:
         git = GitRepository(comp.remote, comp.local)
         if args.a:
-            stage_files(args, comp, git)
+            stage_files(git, comp)
 
         staged_files = git.get_staged_files()
         if staged_files:
