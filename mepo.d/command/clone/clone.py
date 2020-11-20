@@ -2,16 +2,22 @@ from state.state    import MepoState, StateDoesNotExistError
 from repository.git import GitRepository
 from command.init   import init as mepo_init
 from utilities      import shellcmd
-from urllib.parse import urlparse
+from urllib.parse   import urlparse
 
 import os
 import pathlib
+import shutil
 
 def run(args):
 
     # This protects against someone using branch without a URL
     if args.branch and not args.repo_url:
         raise RuntimeError("The branch argument can only be used with a URL")
+
+    # If you pass in a config, with clone, it could be outside the repo.
+    # So use the full path
+    if args.config:
+        args.config = os.path.abspath(args.config)
 
     if args.repo_url:
         p = urlparse(args.repo_url)
@@ -28,6 +34,10 @@ def run(args):
 
             local_clone(args.repo_url,args.branch)
             os.chdir(git_url_directory)
+
+    # Copy the new file into the repo
+    if args.config:
+        shutil.copy(args.config,os.getcwd())
 
     # This tries to read the state and if not, calls init,
     # loops back, and reads the state
