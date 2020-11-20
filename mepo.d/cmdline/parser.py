@@ -79,7 +79,7 @@ class MepoArgParser(object):
             metavar = 'config-file',
             nargs = '?',
             default = None,
-            help = 'Configuration file (ignored if init already called, default: %(default)s)')
+            help = 'Configuration file (ignored if init already called)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(

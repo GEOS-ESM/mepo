@@ -43,7 +43,10 @@ def run(args):
 
     # Copy the new file into the repo only if we pass it in
     if passed_in_config:
-        shutil.copy(args.config,os.getcwd())
+        try:
+            shutil.copy(args.config,os.getcwd())
+        except shutil.SameFileError as e:
+            pass
 
     # This tries to read the state and if not, calls init,
     # loops back, and reads the state
