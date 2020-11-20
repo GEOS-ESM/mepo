@@ -96,6 +96,8 @@ class GitRepository(object):
         cmd = self.__git + ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.staged:
+            cmd += ' --staged'
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
@@ -107,6 +109,8 @@ class GitRepository(object):
             cmd += ' --prune'
         if args.tags:
             cmd += ' --tags'
+        if args.force:
+            cmd += ' --force'
         return shellcmd.run(cmd.split(), output=True)
 
     def create_branch(self, branch_name):
@@ -313,6 +317,12 @@ class GitRepository(object):
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
+            hash_out = shellcmd.run(cmd.split(), output=True)
+            detached = True
+            name = hash_out.rstrip()
+            tYpe = 'h'
+        elif output.startswith('grafted'):
+            cmd = self.__git + ' describe --always'
             hash_out = shellcmd.run(cmd.split(), output=True)
             detached = True
             name = hash_out.rstrip()
