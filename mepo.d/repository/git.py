@@ -313,7 +313,9 @@ class GitRepository(object):
                 name = tmp[5:]
                 tYpe = 't'
             else:
-                name = tmp
+                cmd_for_branch = self.__git + ' reflog HEAD -n 1'
+                reflog_output = shellcmd.run(cmd_for_branch.split(), output=True)
+                name = reflog_output.split()[-1].strip()
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
