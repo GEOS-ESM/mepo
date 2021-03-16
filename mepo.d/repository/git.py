@@ -37,11 +37,11 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, recurse):
+    def clone(self, version, recurse):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
+        cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):
