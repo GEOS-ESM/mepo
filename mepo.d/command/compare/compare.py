@@ -25,7 +25,8 @@ def print_header(max_namelen, max_origlen):
 
 def print_cmp(name, orig, curr, name_width, orig_width):
     name_blank = ''
-    if orig not in curr:
+    #if orig not in curr:
+    if curr not in orig:
         name = colors.RED + name + colors.RESET
         name_blank = colors.RED + name_blank + colors.RESET
         name_width += len(colors.RED) + len(colors.RESET)
