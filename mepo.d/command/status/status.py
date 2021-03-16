@@ -31,7 +31,8 @@ def print_status(allcomps, result):
         time.sleep(0.025)
         current_version, internal_state_branch_name, output = result[index]
         # Check to see if the current tag/branch is the same as the original
-        if comp.version.name not in internal_state_branch_name:
+        #if comp.version.name not in internal_state_branch_name:
+        if internal_state_branch_name not in comp.version.name:
             component_name = colors.RED + comp.name + colors.RESET
             width = orig_width + len(colors.RED) + len(colors.RESET)
         else:
