@@ -1,4 +1,5 @@
 import os
+import textwrap
 from collections import namedtuple
 from utilities.version import MepoVersion
 from utilities import shellcmd
@@ -64,11 +65,23 @@ class MepoComponent(object):
                 ver_type = 't'
                 is_detached = True
         self.version = MepoVersion(ver_name, ver_type, is_detached)
-        
+
     def __validate_fixture(self, comp_details):
         unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules']
         if any([comp_details.get(key) for key in unallowed_keys]):
             raise Exception("Fixtures are only allowed fixture and develop")
+
+    def __validate_component(self, comp_name, comp_details):
+        types_of_git_tags = ['branch', 'tag']
+        git_tag_intersection = set(types_of_git_tags).intersection(set(comp_details.keys()))
+        if len(git_tag_intersection) == 0:
+            raise Exception(textwrap.fill(textwrap.dedent(f'''
+                Component {comp_name} has none of {types_of_git_tags}. mepo
+                requires one of them.''')))
+        elif len(git_tag_intersection) != 1:
+            raise Exception(textwrap.fill(textwrap.dedent(f'''
+                Component {comp_name} has {git_tag_intersection} and only one of
+                {types_of_git_tags} are allowed.''')))
 
     def to_component(self, comp_name, comp_details):
         self.name = comp_name
@@ -82,6 +95,7 @@ class MepoComponent(object):
             last_url_node = p.path.rsplit('/')[-1]
             self.remote = "../"+last_url_node
         else:
+            self.__validate_component(comp_name, comp_details)
             self.local = comp_details['local']
             self.remote = comp_details['remote']
         self.develop = comp_details.get('develop', None) # develop is optional
