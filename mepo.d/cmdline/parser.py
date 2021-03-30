@@ -123,13 +123,14 @@ class MepoArgParser(object):
         checkout.add_argument('branch_name', metavar = 'branch-name')
         checkout.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
+        checkout.add_argument('--quiet', action = 'store_true', help = 'Suppress prints')
 
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
             'checkout-if-exists',
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
-        checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
+        checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress prints')
         checkout_if_exists.add_argument('--dry-run','-n', action = 'store_true', help = 'Dry-run only (lists repos where branch exists)')
 
     def __fetch(self):
@@ -176,6 +177,7 @@ class MepoArgParser(object):
             'develop',
             description = "Checkout current version of 'develop' branches of specified components")
         develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
+        develop.add_argument('--quiet', action = 'store_true', help = 'Suppress prints')
 
     def __pull(self):
         pull = self.subparsers.add_parser(
