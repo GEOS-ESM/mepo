@@ -78,8 +78,8 @@ class MepoArgParser(object):
             '--config',
             metavar = 'config-file',
             nargs = '?',
-            default = 'components.yaml',
-            help = 'Configuration file (ignored if init already called, default: %(default)s)')
+            default = None,
+            help = 'Configuration file (ignored if init already called)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
@@ -105,6 +105,10 @@ class MepoArgParser(object):
             action = 'store_true',
             help = 'Show only names of changed files')
         diff.add_argument(
+            '--staged',
+            action = 'store_true',
+            help = 'Show diff of staged changes')
+        diff.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
@@ -119,13 +123,14 @@ class MepoArgParser(object):
         checkout.add_argument('branch_name', metavar = 'branch-name')
         checkout.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
         checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
+        checkout.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
 
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
             'checkout-if-exists',
             description = 'Switch to branch <branch-name> in any component where it is present. ')
         checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
-        checkout_if_exists.add_argument('--quiet', action = 'store_true', help = 'Suppress found messages')
+        checkout_if_exists.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
         checkout_if_exists.add_argument('--dry-run','-n', action = 'store_true', help = 'Dry-run only (lists repos where branch exists)')
 
     def __fetch(self):
@@ -137,6 +142,7 @@ class MepoArgParser(object):
         fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
         fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+        fetch.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
 
     def __fetch_all(self):
         fetch_all = self.subparsers.add_parser(
@@ -146,6 +152,7 @@ class MepoArgParser(object):
         fetch_all.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
         fetch_all.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
         fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
+        fetch_all.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
 
     def __branch(self):
         branch = self.subparsers.add_parser(
@@ -170,6 +177,7 @@ class MepoArgParser(object):
             'develop',
             description = "Checkout current version of 'develop' branches of specified components")
         develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
+        develop.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
 
     def __pull(self):
         pull = self.subparsers.add_parser(
@@ -225,6 +233,7 @@ class MepoArgParser(object):
         commit = self.subparsers.add_parser(
             'commit',
             description = 'Commit staged files in the specified components')
+        commit.add_argument('-a', '--all', action = 'store_true', help = 'stage all tracked files and then commit')
         commit.add_argument('-m', '--message', type=str, metavar = 'message', default=None)
         commit.add_argument(
             'comp_name',

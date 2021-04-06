@@ -24,15 +24,15 @@ def _update_comp(comp):
     git = GitRepository(comp.remote, comp.local)
     orig_ver = comp.version
     curr_ver = MepoVersion(*git.get_version())
-    if _version_has_changed(curr_ver, orig_ver):
+    if _version_has_changed(curr_ver, orig_ver, comp.name):
         _verify_local_and_remote_commit_ids_match(git, curr_ver.name, comp.name, curr_ver.type)
         comp.version = curr_ver
 
-def _version_has_changed(curr_ver, orig_ver):
+def _version_has_changed(curr_ver, orig_ver, name):
     result = False
     if curr_ver != orig_ver:
         if curr_ver.type == 'b':
-            assert curr_ver.detached is False, '{}'.format(curr_ver)
+            assert curr_ver.detached is False, f'You cannot save a detached branch, have you committed your code in {name}?\n {curr_ver}'
             result = True
         elif curr_ver.type == 't':
             result = True
