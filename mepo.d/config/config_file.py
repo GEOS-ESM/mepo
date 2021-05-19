@@ -1,6 +1,17 @@
 import pathlib
+import yaml
 
 from state.exceptions import SuffixNotRecognizedError
+
+# From https://github.com/yaml/pyyaml/issues/127#issuecomment-525800484
+class AddBlankLinesDumper(yaml.SafeDumper):
+    # HACK: insert blank lines between top-level objects
+    # inspired by https://stackoverflow.com/a/44284819/3786245
+    def write_line_break(self, data=None):
+        super().write_line_break(data)
+
+        if len(self.indents) == 1:
+            super().write_line_break()
 
 class ConfigFile(object):
 
@@ -49,4 +60,4 @@ class ConfigFile(object):
         '''Dump dict d into a yaml file'''
         import yaml
         with open(self.__filename, 'w') as fout:
-            yaml.dump(d, fout, sort_keys = False)
+            yaml.dump(d, fout, sort_keys = False, Dumper=AddBlankLinesDumper)

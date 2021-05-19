@@ -62,11 +62,13 @@ def run(args):
     for comp in allcomps:
         if not comp.fixture:
             git = GitRepository(comp.remote, comp.local)
+            version = comp.version.name
+            version = version.replace('origin/','')
             recurse = comp.recurse_submodules
-            git.clone(recurse)
+            git.clone(version,recurse)
             if comp.sparse:
                 git.sparsify(comp.sparse)
-            git.checkout(comp.version.name)
+            #git.checkout(comp.version.name)
             print_clone_info(comp, max_namelen)
 
 def print_clone_info(comp, name_width):
