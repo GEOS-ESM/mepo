@@ -9,9 +9,9 @@ from io import StringIO
 
 from input import args
 
-from command.init import init as mepo_init
-from command.clone import clone as mepo_clone
-from command.list import list as mepo_list
+from command.init   import init   as mepo_init
+from command.clone  import clone  as mepo_clone
+from command.list   import list   as mepo_list
 from command.status import status as mepo_status
 
 class TestMepoCommands(unittest.TestCase):
@@ -40,6 +40,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.__checkout_fixture()
         cls.__copy_config_file()
         args.config = 'components.yaml'
+        args.style = 'prefix'
         os.chdir(cls.fixture_dir)
         mepo_init.run(args)
         args.config = None

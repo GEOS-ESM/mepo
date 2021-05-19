@@ -5,6 +5,9 @@ from utilities.version import MepoVersion
 from utilities import shellcmd
 from urllib.parse import urlparse
 
+# This will be used to store the "final nodes" from each subrepo
+original_final_node_list = []
+
 class MepoComponent(object):
 
     __slots__ = ['name', 'local', 'remote', 'version', 'develop', 'sparse', 'recurse_submodules', 'fixture']
@@ -83,7 +86,7 @@ class MepoComponent(object):
                 Component {comp_name} has {git_tag_intersection} and only one of
                 {types_of_git_tags} are allowed.''')))
 
-    def to_component(self, comp_name, comp_details):
+    def to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get('fixture', False)
         if self.fixture:
@@ -96,7 +99,37 @@ class MepoComponent(object):
             self.remote = "../"+last_url_node
         else:
             self.__validate_component(comp_name, comp_details)
-            self.local = comp_details['local']
+            #print(f"original self.local: {comp_details['local']}")
+
+            # Assume the flag for repostories is commercial-at
+            repo_flag = '@'
+
+            # To make it easier to loop over the local path, split into a list
+            local_list = splitall(comp_details['local'])
+
+            # The last node of the path is what we will decorate
+            last_node = local_list[-1]
+
+            # Add that final node to a list
+            original_final_node_list.append(last_node)
+
+            # Now we need to decorate all the final nodes since we can have
+            # nested repos with mepo
+            for item in original_final_node_list:
+                try:
+                    # Find the index of every "final node" in a local path
+                    # for nesting
+                    index = local_list.index(item)
+
+                    # Decorate all final nodes
+                    local_list[index] = decorate_node(item, repo_flag, comp_style)
+                except ValueError:
+                    pass
+
+            # Now pull the list of nodes back into a path
+            self.local = os.path.join(*local_list)
+            #print(f'final self.local: {self.local}')
+
             self.remote = comp_details['remote']
         self.develop = comp_details.get('develop', None) # develop is optional
         self.sparse = comp_details.get('sparse', None) # sparse is optional
@@ -135,3 +168,29 @@ def get_current_remote_url():
     cmd = 'git remote get-url origin'
     output = shellcmd.run(cmd.split(), output=True).strip()
     return output
+
+def decorate_node(item, flag, style):
+    item = item.replace(flag,'')
+    if style == 'naked':
+        output = item
+    elif style == 'prefix':
+        output = flag + item
+    elif style == 'postfix':
+        output = item + flag
+    return output
+
+# From https://learning.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html
+def splitall(path):
+    allparts = []
+    while 1:
+        parts = os.path.split(path)
+        if parts[0] == path:  # sentinel for absolute paths
+            allparts.insert(0, parts[0])
+            break
+        elif parts[1] == path: # sentinel for relative paths
+            allparts.insert(0, parts[1])
+            break
+        else:
+            path = parts[0]
+            allparts.insert(0, parts[1])
+    return allparts
