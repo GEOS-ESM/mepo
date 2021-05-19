@@ -52,6 +52,13 @@ class MepoArgParser(object):
             nargs = '?',
             default = 'components.yaml',
             help = 'default: %(default)s')
+        init.add_argument(
+            '--style',
+            metavar = 'style-type',
+            nargs = '?',
+            default = 'prefix',
+            choices = ['naked', 'prefix','postfix'],
+            help = 'Style of directory file, default: %(default)s, allowed options: %(choices)s')
 
     def __clone(self):
         clone = self.subparsers.add_parser(
@@ -80,6 +87,13 @@ class MepoArgParser(object):
             nargs = '?',
             default = None,
             help = 'Configuration file (ignored if init already called)')
+        clone.add_argument(
+            '--style',
+            metavar = 'style-type',
+            nargs = '?',
+            default = 'prefix',
+            choices = ['naked', 'prefix','postfix'],
+            help = 'Style of directory file, default: %(default)s, allowed options: %(choices)s (ignored if init already called)')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
