@@ -9,11 +9,10 @@ from io import StringIO
 
 from input import args
 
-from command.init    import init    as mepo_init
-from command.clone   import clone   as mepo_clone
-from command.list    import list    as mepo_list
-from command.status  import status  as mepo_status
-from command.compare import compare as mepo_compare
+from command.init   import init   as mepo_init
+from command.clone  import clone  as mepo_clone
+from command.list   import list   as mepo_list
+from command.status import status as mepo_status
 
 class TestMepoCommands(unittest.TestCase):
 
@@ -66,14 +65,6 @@ class TestMepoCommands(unittest.TestCase):
         mepo_status.run(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'status_output.txt'), 'r') as fin:
-            saved_output = fin.read()
-        self.assertEqual(output.getvalue(), saved_output)
-
-    def test_compare_no_change(self):
-        sys.stdout = output = StringIO()
-        mepo_compare.run(args)
-        sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'compare_no_change.txt'), 'r') as fin:
             saved_output = fin.read()
         self.assertEqual(output.getvalue(), saved_output)
 
