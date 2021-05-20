@@ -28,7 +28,7 @@ def get(section, option):
     mepoconfig.read(mepoconfig_file)
     return mepoconfig.get(section, option)
 
-def get_alias(command):
+def get_command_alias(command):
     output = []
     mepoconfig = configparser.ConfigParser()
     mepoconfig.read(mepoconfig_file)
