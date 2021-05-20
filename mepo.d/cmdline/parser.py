@@ -3,6 +3,7 @@ import argparse
 from cmdline.branch_parser import MepoBranchArgParser
 from cmdline.stash_parser  import MepoStashArgParser
 from cmdline.tag_parser    import MepoTagArgParser
+from cmdline.config_parser import MepoConfigArgParser
 from utilities             import mepoconfig
 
 class MepoArgParser(object):
@@ -41,6 +42,7 @@ class MepoArgParser(object):
         self.__commit()
         self.__push()
         self.__save()
+        self.__config()
         return self.parser.parse_args()
 
     def __init(self):
@@ -303,3 +305,10 @@ class MepoArgParser(object):
             nargs = '?',
             default = 'components-new.yaml',
             help = 'default: %(default)s')
+
+    def __config(self):
+        config = self.subparsers.add_parser(
+            'config',
+            description = "Runs config commands.",
+            aliases=mepoconfig.get_command_alias('config'))
+        MepoConfigArgParser(config)
