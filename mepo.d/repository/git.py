@@ -67,6 +67,10 @@ class GitRepository(object):
         cmd = self.__git + ' tag'
         return shellcmd.run(cmd.split(), output=True)
 
+    def rev_list(self, tag):
+        cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
+        return shellcmd.run(cmd.split(), output=True)
+
     def list_stash(self):
         cmd = self.__git + ' stash list'
         return shellcmd.run(cmd.split(), output=True)
@@ -211,7 +215,7 @@ class GitRepository(object):
                     verbose_status = colors.CYAN + "unknown" + colors.RESET + " (please contact mepo maintainer)"
 
                 verbose_status_string = "{file_name:>{file_name_length}}: {verbose_status}".format(
-                        file_name=file_name, file_name_length=max_file_name_length, 
+                        file_name=file_name, file_name_length=max_file_name_length,
                         verbose_status=verbose_status)
                 verbose_output_list.append(verbose_status_string)
 
