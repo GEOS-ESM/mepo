@@ -5,7 +5,7 @@ import atexit
 
 from state.state import MepoState
 from repository.git import GitRepository
-from utilities.version import version_to_string
+from utilities.version import version_to_string, sanitize_version_string
 from utilities import colors
 
 def run(args):
@@ -25,6 +25,11 @@ def check_component_status(comp):
 
     # This can return non "origin/" names for detached head branches
     curr_ver = version_to_string(git.get_version())
+    orig_ver = version_to_string(comp.version)
+
+    # This command is to try and work with git tag oddities
+    curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
+
     return (curr_ver, internal_state_branch_name, git.check_status())
 
 def print_status(allcomps, result):
@@ -32,9 +37,14 @@ def print_status(allcomps, result):
     for index, comp in enumerate(allcomps):
         time.sleep(0.025)
         current_version, internal_state_branch_name, output = result[index]
-        # Check to see if the current tag/branch is the same as the original
-        #if comp.version.name not in internal_state_branch_name:
-        if internal_state_branch_name not in comp.version.name:
+
+        # This should handle tag weirdness...
+        if current_version.split()[1] == comp.version.name:
+            component_name = comp.name
+            width = orig_width
+        # Check to see if the current tag/branch is the same as the original...
+        # if the above check didn't succeed, we are different.
+        elif internal_state_branch_name not in comp.version.name:
             component_name = colors.RED + comp.name + colors.RESET
             width = orig_width + len(colors.RED) + len(colors.RESET)
         else:
