@@ -2,16 +2,28 @@ from state.state    import MepoState, StateDoesNotExistError
 from repository.git import GitRepository
 from command.init   import init as mepo_init
 from utilities      import shellcmd
-from urllib.parse import urlparse
+from urllib.parse   import urlparse
 
 import os
 import pathlib
+import shutil
 
 def run(args):
 
     # This protects against someone using branch without a URL
     if args.branch and not args.repo_url:
         raise RuntimeError("The branch argument can only be used with a URL")
+
+    # If you pass in a config, with clone, it could be outside the repo.
+    # So use the full path
+    passed_in_config = False
+    if args.config:
+        passed_in_config = True
+        args.config = os.path.abspath(args.config)
+    else:
+        # If we don't pass in a config, we need to "reset" the arg to the
+        # default name because we pass args to mepo_init
+        args.config = 'components.yaml'
 
     if args.repo_url:
         p = urlparse(args.repo_url)
@@ -29,6 +41,13 @@ def run(args):
             local_clone(args.repo_url,args.branch)
             os.chdir(git_url_directory)
 
+    # Copy the new file into the repo only if we pass it in
+    if passed_in_config:
+        try:
+            shutil.copy(args.config,os.getcwd())
+        except shutil.SameFileError as e:
+            pass
+
     # This tries to read the state and if not, calls init,
     # loops back, and reads the state
     while True:
@@ -41,13 +60,16 @@ def run(args):
 
     max_namelen = len(max([comp.name for comp in allcomps], key=len))
     for comp in allcomps:
-        git = GitRepository(comp.remote, comp.local)
-        recurse = comp.recurse_submodules
-        git.clone(recurse)
-        if comp.sparse:
-            git.sparsify(comp.sparse)
-        git.checkout(comp.version.name)
-        print_clone_info(comp, max_namelen)
+        if not comp.fixture:
+            git = GitRepository(comp.remote, comp.local)
+            version = comp.version.name
+            version = version.replace('origin/','')
+            recurse = comp.recurse_submodules
+            git.clone(version,recurse)
+            if comp.sparse:
+                git.sparsify(comp.sparse)
+            #git.checkout(comp.version.name)
+            print_clone_info(comp, max_namelen)
 
 def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)

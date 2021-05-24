@@ -1,6 +1,7 @@
 import sys
 import time
 import multiprocessing as mp
+import atexit
 
 from state.state import MepoState
 from repository.git import GitRepository
@@ -11,6 +12,7 @@ def run(args):
     print('Checking status...'); sys.stdout.flush()
     allcomps = MepoState.read_state()
     pool = mp.Pool()
+    atexit.register(pool.close)
     result = pool.map(check_component_status, allcomps)
     restore_state(allcomps, result)
 

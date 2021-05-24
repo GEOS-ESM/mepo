@@ -37,11 +37,11 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, recurse):
+    def clone(self, version, recurse):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        cmd += '--quiet {} {}'.format(self.__remote, self.__local)
+        cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
         shellcmd.run(cmd.split())
 
     def checkout(self, version):
@@ -65,6 +65,10 @@ class GitRepository(object):
 
     def list_tags(self):
         cmd = self.__git + ' tag'
+        return shellcmd.run(cmd.split(), output=True)
+
+    def rev_list(self, tag):
+        cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
         return shellcmd.run(cmd.split(), output=True)
 
     def list_stash(self):
@@ -96,6 +100,8 @@ class GitRepository(object):
         cmd = self.__git + ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.staged:
+            cmd += ' --staged'
         output = shellcmd.run(cmd.split(),output=True)
         return output.rstrip()
 
@@ -113,6 +119,8 @@ class GitRepository(object):
             cmd += ' --prune'
         if args.tags:
             cmd += ' --tags'
+        if args.force:
+            cmd += ' --force'
         return shellcmd.run(cmd.split(), output=True)
 
     def create_branch(self, branch_name):
@@ -213,7 +221,7 @@ class GitRepository(object):
                     verbose_status = colors.CYAN + "unknown" + colors.RESET + " (please contact mepo maintainer)"
 
                 verbose_status_string = "{file_name:>{file_name_length}}: {verbose_status}".format(
-                        file_name=file_name, file_name_length=max_file_name_length, 
+                        file_name=file_name, file_name_length=max_file_name_length,
                         verbose_status=verbose_status)
                 verbose_output_list.append(verbose_status_string)
 
@@ -315,10 +323,18 @@ class GitRepository(object):
                 name = tmp[5:]
                 tYpe = 't'
             else:
-                name = tmp
+                cmd_for_branch = self.__git + ' reflog HEAD -n 1'
+                reflog_output = shellcmd.run(cmd_for_branch.split(), output=True)
+                name = reflog_output.split()[-1].strip()
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
+            hash_out = shellcmd.run(cmd.split(), output=True)
+            detached = True
+            name = hash_out.rstrip()
+            tYpe = 'h'
+        elif output.startswith('grafted'):
+            cmd = self.__git + ' describe --always'
             hash_out = shellcmd.run(cmd.split(), output=True)
             detached = True
             name = hash_out.rstrip()

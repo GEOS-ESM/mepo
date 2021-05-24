@@ -1,6 +1,6 @@
 from state.state import MepoState
 from utilities import colors
-from utilities.version import version_to_string
+from utilities.version import version_to_string, sanitize_version_string
 from repository.git import GitRepository
 from shutil import get_terminal_size
 
@@ -15,6 +15,10 @@ def run(args):
         git = GitRepository(comp.remote, comp.local)
         curr_ver = version_to_string(git.get_version())
         orig_ver = version_to_string(comp.version)
+
+        # This command is to try and work with git tag oddities
+        curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
+
         print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen)
 
 def print_header(max_namelen, max_origlen):
@@ -25,7 +29,8 @@ def print_header(max_namelen, max_origlen):
 
 def print_cmp(name, orig, curr, name_width, orig_width):
     name_blank = ''
-    if orig not in curr:
+    #if orig not in curr:
+    if curr not in orig:
         name = colors.RED + name + colors.RESET
         name_blank = colors.RED + name_blank + colors.RESET
         name_width += len(colors.RED) + len(colors.RESET)

@@ -34,12 +34,15 @@ def check_component_diff(comp, args):
 def print_diff(comp, args, output):
     columns, lines = get_terminal_size(fallback=(80,20))
     horiz_line = u'\u2500'*columns
-    print("{} (location: {}):".format(comp.name,_get_relative_path(comp.local)))
+    
+    root_dir = MepoState.get_root_dir()
+    full_local_path = os.path.join(root_dir,comp.local)
+    print("{} (location: {}):".format(comp.name,_get_relative_path(full_local_path)))
     print()
     for line in output.split('\n'):
         #print('   |', line.rstrip())
         print(line.rstrip())
     print(horiz_line)
 
-def _get_relative_path(local_path):
-    return os.path.relpath(local_path, os.getcwd())
+def _get_relative_path(path):
+    return os.path.relpath(path, os.getcwd())
