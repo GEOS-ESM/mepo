@@ -1,5 +1,19 @@
 from state.state import MepoState
+from utilities import mepoconfig
 
 def run(args):
-    allcomps = MepoState.initialize(args.config,args.style)
-    print(f'Initializing mepo using {args.config} with {args.style} style.')
+    if args.style:
+        style = args.style
+    elif mepoconfig.has_option('init','style'):
+        allowed_styles = ['naked','prefix','postfix']
+        style = mepoconfig.get('init','style')
+        if style not in allowed_styles:
+            raise Exception(f'Detected style [{style}] from .mepoconfig is not an allowed style: {allowed_styles}')
+        else:
+            print(f'Found style [{style}] in .mepoconfig')
+    else:
+        style = 'prefix'
+
+    allcomps = MepoState.initialize(args.config,style)
+
+    print(f'Initializing mepo using {args.config} with {style} style.')
