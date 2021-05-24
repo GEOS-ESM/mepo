@@ -9,7 +9,7 @@ class MepoPatchArgParser(object):
         self.patch.required = True
         self.__apply()
         self.__create()
-        
+
     def __apply(self):
         ptapply = self.patch.add_parser(
             'apply',
