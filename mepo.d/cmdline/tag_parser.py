@@ -10,7 +10,7 @@ class MepoTagArgParser(object):
         self.__list()
         self.__create()
         self.__delete()
-        
+
     def __list(self):
         tglist = self.tag.add_parser(
             'list',
@@ -25,7 +25,7 @@ class MepoTagArgParser(object):
     def __create(self):
         create = self.tag.add_parser(
             'create',
-            description = 'Create tag <tag-name> in component <comp-name>')
+            description = 'Create tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
         create.add_argument('tag_name', metavar = 'tag-name')
         create.add_argument(
             '-a', '--annotate',
@@ -41,16 +41,16 @@ class MepoTagArgParser(object):
         create.add_argument(
             'comp_name',
             metavar = 'comp-name',
-            nargs = '+',
+            nargs = '*',
             help = 'Component to create tags in')
 
     def __delete(self):
         delete = self.tag.add_parser(
             'delete',
-            description = 'Delete tag <tag-name> in component <comp-name>')
+            description = 'Delete tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
         delete.add_argument('tag_name', metavar = 'tag-name')
         delete.add_argument(
             'comp_name',
             metavar = 'comp-name',
-            nargs = '+',
+            nargs = '*',
             help = 'Component to delete tags in')
