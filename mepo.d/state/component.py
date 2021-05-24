@@ -2,7 +2,7 @@ import os
 import textwrap
 from collections import namedtuple
 from utilities.version import MepoVersion
-from utilities import shellcmd
+from utilities import shellcmd, mepoconfig
 from urllib.parse import urlparse
 
 # This will be used to store the "final nodes" from each subrepo
