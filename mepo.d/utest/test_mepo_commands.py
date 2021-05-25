@@ -19,7 +19,7 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __checkout_fixture(cls):
         remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
-        cmd = 'git clone {} {}'.format(remote, cls.fixture_dir)
+        cmd = 'git clone -b {} {} {}'.format(cls.tag, remote, cls.fixture_dir)
         sp.run(cmd.split())
 
     @classmethod
@@ -33,6 +33,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
+        cls.tag = 'v1.2.7'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
