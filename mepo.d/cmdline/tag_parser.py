@@ -10,6 +10,7 @@ class MepoTagArgParser(object):
         self.__list()
         self.__create()
         self.__delete()
+        self.__push()
 
     def __list(self):
         tglist = self.tag.add_parser(
@@ -54,3 +55,18 @@ class MepoTagArgParser(object):
             metavar = 'comp-name',
             nargs = '*',
             help = 'Component to delete tags in')
+
+    def __push(self):
+        push = self.tag.add_parser(
+            'push',
+            description = 'Push tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
+        push.add_argument('tag_name', metavar = 'tag-name')
+        push.add_argument(
+            '-f', '--force',
+            action = 'store_true',
+            help = "Force push (be careful!)")
+        push.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to push tags in')

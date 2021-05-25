@@ -283,12 +283,8 @@ class MepoArgParser(object):
     def __push(self):
         push = self.subparsers.add_parser(
             'push',
-            description = 'Push local commits or tags to remote for specified component',
+            description = 'Push local commits to remote for specified component. Use mepo tag push to push tags',
             aliases=mepoconfig.get_command_alias('push'))
-        push.add_argument(
-            '--tags',
-            action = 'store_true',
-            help = 'push tags')
         push.add_argument(
             'comp_name',
             metavar = 'comp-name',
@@ -298,12 +294,8 @@ class MepoArgParser(object):
     def __push_all(self):
         push_all = self.subparsers.add_parser(
             'push-all',
-            description = 'Push local commits or tags to remote for all components',
+            description = 'Push local commits remote for all components. Use mepo tag push to push tags',
             aliases=mepoconfig.get_command_alias('push-all'))
-        push_all.add_argument(
-            '--tags',
-            action = 'store_true',
-            help = 'push tags')
 
     def __save(self):
         save = self.subparsers.add_parser(
