@@ -144,6 +144,13 @@ class GitRepository(object):
         cmd = self.__git + ' tag -d {}'.format(tag_name)
         shellcmd.run(cmd.split())
 
+    def push_tag(self, tag_name, force):
+        cmd = self.__git + ' push'
+        if force:
+            cmd += ' --force'
+        cmd += ' origin {}'.format(tag_name)
+        shellcmd.run(cmd.split())
+
     def verify_branch(self, branch_name):
         cmd = self.__git + ' show-branch remotes/origin/{}'.format(branch_name)
         status = shellcmd.run(cmd.split(),status=True)
@@ -261,11 +268,8 @@ class GitRepository(object):
             raise Exception("This should not happen")
         shellcmd.run(cmd)
 
-    def push(self,tags):
-        if tags:
-            cmd = self.__git + ' push --tags {}'.format(self.__remote)
-        else:
-            cmd = self.__git + ' push -u {}'.format(self.__remote)
+    def push(self):
+        cmd = self.__git + ' push -u {}'.format(self.__remote)
         return shellcmd.run(cmd.split(), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch, commit_type):

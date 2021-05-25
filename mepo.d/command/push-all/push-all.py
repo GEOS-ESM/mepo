@@ -7,6 +7,6 @@ def run(args):
     allcomps = MepoState.read_state()
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
-        output = git.push(args.tags)
+        output = git.push()
         print('----------\nPushed: {}\n----------'.format(comp.name))
         print(output)
