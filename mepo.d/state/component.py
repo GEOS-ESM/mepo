@@ -170,14 +170,20 @@ def get_current_remote_url():
     return output
 
 def decorate_node(item, flag, style):
-    item = item.replace(flag,'')
-    if style == 'naked':
-        output = item
-    elif style == 'prefix':
-        output = flag + item
-    elif style == 'postfix':
-        output = item + flag
-    return output
+    # If we do not pass in a style...
+    if not style:
+        # Just use what's in components.yaml
+        return item
+    # else use the style
+    else:
+        item = item.replace(flag,'')
+        if style == 'naked':
+            output = item
+        elif style == 'prefix':
+            output = flag + item
+        elif style == 'postfix':
+            output = item + flag
+        return output
 
 # From https://learning.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html
 def splitall(path):
