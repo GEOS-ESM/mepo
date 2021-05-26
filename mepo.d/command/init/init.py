@@ -12,8 +12,11 @@ def run(args):
         else:
             print(f'Found style [{style}] in .mepoconfig')
     else:
-        style = 'prefix'
+        style = None
 
     allcomps = MepoState.initialize(args.config,style)
 
-    print(f'Initializing mepo using {args.config} with {style} style.')
+    if not style:
+        print(f'Initializing mepo using {args.config}')
+    else:
+        print(f'Initializing mepo using {args.config} with {style} style')
