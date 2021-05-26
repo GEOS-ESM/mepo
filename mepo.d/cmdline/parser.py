@@ -100,6 +100,10 @@ class MepoArgParser(object):
             default = None,
             choices = ['naked', 'prefix','postfix'],
             help = 'Style of directory file, default: prefix, allowed options: %(choices)s (ignored if init already called)')
+        clone.add_argument(
+            '--allrepos',
+            action = 'store_true',
+            help = 'Must be passed with -b/--branch. When set, it not only checkouts out the branch/tag for the fixture, but for all the subrepositories as well.')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
