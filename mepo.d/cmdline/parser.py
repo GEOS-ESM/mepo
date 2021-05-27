@@ -26,7 +26,6 @@ class MepoArgParser(object):
         self.__restore_state()
         self.__diff()
         self.__fetch()
-        self.__fetch_all()
         self.__checkout()
         self.__checkout_if_exists()
         self.__branch()
@@ -41,7 +40,6 @@ class MepoArgParser(object):
         self.__unstage()
         self.__commit()
         self.__push()
-        self.__push_all()
         self.__save()
         self.__config()
         return self.parser.parse_args()
@@ -49,7 +47,7 @@ class MepoArgParser(object):
     def __init(self):
         init = self.subparsers.add_parser(
             'init',
-            description = 'Initialize mepo based on <config-file>',
+            description = 'Initialize mepo based on `config-file`',
             aliases=mepoconfig.get_command_alias('init'))
         init.add_argument(
             '--config',
@@ -145,46 +143,73 @@ class MepoArgParser(object):
     def __checkout(self):
         checkout = self.subparsers.add_parser(
             'checkout',
-            description = 'Switch to branch <branch-name> in component <comp-name>. '
-            'Specifying -b causes the branch <branch-name> to be created in '
+            description = 'Switch to branch `branch-name` in component `comp-name`. '
+            'Specifying `-b` causes the branch `branch-name` to be created in '
             'the specified component(s).',
             aliases=mepoconfig.get_command_alias('checkout'))
-        checkout.add_argument('branch_name', metavar = 'branch-name')
-        checkout.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
-        checkout.add_argument('-b', action = 'store_true', help = 'create the branch')
-        checkout.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
+        checkout.add_argument(
+            'branch_name',
+            metavar = 'branch-name',
+            help = "Name of branch")
+        checkout.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '+',
+            help = 'Components to checkout branch in')
+        checkout.add_argument(
+            '-b',
+            action = 'store_true',
+            help = 'create the branch')
+        checkout.add_argument(
+            '-q', '--quiet',
+            action = 'store_true',
+            help = 'Suppress prints')
 
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
             'checkout-if-exists',
-            description = 'Switch to branch <branch-name> in any component where it is present. ',
+            description = 'Switch to branch `branch-name` in any component where it is present. ',
             aliases=mepoconfig.get_command_alias('checkout-if-exists'))
-        checkout_if_exists.add_argument('branch_name', metavar = 'branch-name')
-        checkout_if_exists.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
-        checkout_if_exists.add_argument('--dry-run','-n', action = 'store_true', help = 'Dry-run only (lists repos where branch exists)')
+        checkout_if_exists.add_argument(
+            'branch_name',
+            metavar = 'branch-name',
+            help = "Name of branch")
+        checkout_if_exists.add_argument(
+            '-q', '--quiet',
+            action = 'store_true',
+            help = 'Suppress prints')
+        checkout_if_exists.add_argument(
+            '-n','--dry-run',
+            action = 'store_true',
+            help = 'Dry-run only (lists repos where branch exists)')
 
     def __fetch(self):
         fetch = self.subparsers.add_parser(
             'fetch',
-            description = 'Download objects and refs from in component <comp-name>. '
-            'Specifying --all causes all remotes to be fetched.',
+            description = 'Download objects and refs from in component `comp-name`. '
+            'If no components listed, fetches from all',
             aliases=mepoconfig.get_command_alias('fetch'))
-        fetch.add_argument('comp_name', metavar = 'comp-name', nargs = '+')
-        fetch.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
-        fetch.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
-        fetch.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
-        fetch.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
-
-    def __fetch_all(self):
-        fetch_all = self.subparsers.add_parser(
-            'fetch-all',
-            description = 'Download objects and refs from all components. '
-            'Specifying --all causes all remotes to be fetched.',
-            aliases=mepoconfig.get_command_alias('fetch-all'))
-        fetch_all.add_argument('--all', action = 'store_true', help = 'Fetch all remotes.')
-        fetch_all.add_argument('--prune','-p', action = 'store_true', help = 'Prune remote branches.')
-        fetch_all.add_argument('--tags','-t', action = 'store_true', help = 'Fetch tags.')
-        fetch_all.add_argument('--force','-f', action = 'store_true', help = 'Force action.')
+        fetch.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = "Components to fetch in")
+        fetch.add_argument(
+            '--all',
+            action = 'store_true',
+            help = 'Fetch all remotes.')
+        fetch.add_argument(
+            '-p','--prune',
+            action = 'store_true',
+            help = 'Prune remote branches.')
+        fetch.add_argument(
+            '-t','--tags',
+            action = 'store_true',
+            help = 'Fetch tags.')
+        fetch.add_argument(
+            '-f','--force',
+            action = 'store_true',
+            help = 'Force action.')
 
     def __branch(self):
         branch = self.subparsers.add_parser(
@@ -212,15 +237,27 @@ class MepoArgParser(object):
             'develop',
             description = "Checkout current version of 'develop' branches of specified components",
             aliases=mepoconfig.get_command_alias('develop'))
-        develop.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
-        develop.add_argument('--quiet', '-q', action = 'store_true', help = 'Suppress prints')
+        develop.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '+',
+            default = None,
+            help = "Component(s) to checkout development branches")
+        develop.add_argument(
+            '-q','--quiet',
+            action = 'store_true',
+            help = 'Suppress prints')
 
     def __pull(self):
         pull = self.subparsers.add_parser(
             'pull',
             description = "Pull branches of specified components",
             aliases=mepoconfig.get_command_alias('pull'))
-        pull.add_argument('comp_name', metavar = 'comp-name', nargs = '+', default = None)
+        pull.add_argument('comp_name',
+            metavar = 'comp-name',
+            nargs = '+',
+            default = None,
+            help = "Components to pull in")
 
     def __pull_all(self):
         pull_all = self.subparsers.add_parser(
@@ -237,11 +274,16 @@ class MepoArgParser(object):
     def __whereis(self):
         whereis = self.subparsers.add_parser(
             'whereis',
-            description = 'Get the location of component <comp-name> '
-            'relative to my current location. If <comp-name> is not present, '
+            description = 'Get the location of component `comp-name` '
+            'relative to my current location. If `comp-name` is not present, '
             'get the relative locations of ALL components.',
             aliases=mepoconfig.get_command_alias('whereis'))
-        whereis.add_argument('comp_name', metavar = 'comp-name', nargs = '?', default = None)
+        whereis.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '?',
+            default = None,
+            help = "Component to get location of")
 
     def __stage(self):
         stage = self.subparsers.add_parser(
@@ -251,7 +293,7 @@ class MepoArgParser(object):
         stage.add_argument(
             '--untracked',
             action = 'store_true',
-            help = 'stage untracked files as well')
+            help = 'Stage untracked files as well')
         stage.add_argument(
             'comp_name',
             metavar = 'comp-name',
@@ -268,7 +310,7 @@ class MepoArgParser(object):
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
-            help = 'Component',
+            help = 'Component to unstage in',
             default = None)
 
     def __commit(self):
@@ -276,30 +318,33 @@ class MepoArgParser(object):
             'commit',
             description = 'Commit staged files in the specified components',
             aliases=mepoconfig.get_command_alias('commit'))
-        commit.add_argument('-a', '--all', action = 'store_true', help = 'stage all tracked files and then commit')
-        commit.add_argument('-m', '--message', type=str, metavar = 'message', default=None)
+        commit.add_argument(
+            '-a', '--all',
+            action = 'store_true',
+            help = 'Stage all tracked files and then commit')
+        commit.add_argument(
+            '-m', '--message',
+            type=str,
+            metavar = 'message',
+            default=None,
+            help = "Message to commit with")
         commit.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',
-            help = 'Component to stage file in')
+            help = 'Component to commit file in')
 
     def __push(self):
         push = self.subparsers.add_parser(
             'push',
-            description = 'Push local commits to remote for specified component. Use mepo tag push to push tags',
+            description = 'Push local commits to remote for specified component. '
+            'Use mepo tag push to push tags',
             aliases=mepoconfig.get_command_alias('push'))
         push.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',
             help = 'Component to push to remote')
-
-    def __push_all(self):
-        push_all = self.subparsers.add_parser(
-            'push-all',
-            description = 'Push local commits remote for all components. Use mepo tag push to push tags',
-            aliases=mepoconfig.get_command_alias('push-all'))
 
     def __save(self):
         save = self.subparsers.add_parser(

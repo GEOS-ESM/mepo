@@ -16,18 +16,9 @@ class MepoConfigArgParser(object):
     def __get(self):
         get = self.config.add_parser(
             'get',
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description = textwrap.dedent('''\
-                Get config <entry> in .mepoconfig.
-
-                Note this uses gitconfig style where <entry> is
-                of the form "section.option" So to get something like:
-
-                    [alias]
-                    st = status
-
-                You would run "mepo config get alias.st"
-                '''))
+            description = ('Get config `entry` in `.mepoconfig`. '
+            'Note this uses gitconfig style where `entry` is of the form `section.option`. '
+            'So to get an `alias` `st` You would run `mepo config get alias.st`'))
         get.add_argument(
             'entry',
             metavar = 'entry',
@@ -36,18 +27,9 @@ class MepoConfigArgParser(object):
     def __set(self):
         set = self.config.add_parser(
             'set',
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description = textwrap.dedent('''\
-                Set config <entry> to <value> in .mepoconfig.
-
-                Note this uses gitconfig style where <entry> is
-                of the form "section.option" So to set something like:
-
-                    [alias]
-                    st = status
-
-                You would run "mepo config set alias.st status"
-                '''))
+            description = ('Set config `entry` to `value` in `.mepoconfig`. '
+            'Note this uses gitconfig style where `entry` is of the form `section.option`. '
+            'So to set an `alias` for `status` of `st` You would run `mepo config set alias.st status`'))
         set.add_argument(
             'entry',
             metavar = 'entry',
@@ -60,18 +42,9 @@ class MepoConfigArgParser(object):
     def __delete(self):
         delete = self.config.add_parser(
             'delete',
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description = textwrap.dedent('''\
-                Delete config <entry> in .mepoconfig.
-
-                Note this uses gitconfig style where <entry> is
-                of the form "section.option" So to delete something like:
-
-                    [alias]
-                    st = status
-
-                You would run "mepo config delete alias.st"
-                '''))
+            description = ('Delete config `entry` in `.mepoconfig`. '
+            'Note this uses gitconfig style where `entry` is of the form `section.option`. '
+            'So to delete an `alias` `st` You would run `mepo config delete alias.st`'))
         delete.add_argument(
             'entry',
             metavar = 'entry',
@@ -80,4 +53,4 @@ class MepoConfigArgParser(object):
     def __print(self):
         print = self.config.add_parser(
             'print',
-            description = 'Print contents of .mepoconfig')
+            description = 'Print contents of `.mepoconfig`')
