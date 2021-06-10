@@ -143,9 +143,10 @@ class MepoArgParser(object):
     def __checkout(self):
         checkout = self.subparsers.add_parser(
             'checkout',
-            description = 'Switch to branch `branch-name` in component `comp-name`. '
-            'Specifying `-b` causes the branch `branch-name` to be created in '
-            'the specified component(s).',
+            description = "Switch to branch/tag `branch-name` in component `comp-name`. "
+            "If no components listed, checkout from all. "
+            "Specifying `-b` causes the branch `branch-name` to be created in "
+            "the specified component(s). NOTE: the -b option *requires* components to be specified.",
             aliases=mepoconfig.get_command_alias('checkout'))
         checkout.add_argument(
             'branch_name',
@@ -154,7 +155,7 @@ class MepoArgParser(object):
         checkout.add_argument(
             'comp_name',
             metavar = 'comp-name',
-            nargs = '+',
+            nargs = '*',
             help = 'Components to checkout branch in')
         checkout.add_argument(
             '-b',
