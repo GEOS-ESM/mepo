@@ -27,26 +27,44 @@ def sanitize_version_string(orig,curr,git):
     foo.
     '''
 
-    # The trick below only works on tags (I think), so
-    # if not a tag, just do nothing for now
+    # The trick below only works on tags and hashes (I think), so
+    # if not a tag or hash, just do nothing for now
     is_tag = '(t)'
+    is_hash = '(h)'
 
-    # We pass in space-delimited strings that are:
+    # For status, we pass in space-delimited strings that are:
     #  'type version dh'
-    # So let's split into lists...
+    # So let's split into lists and pull the type
+    # But for save, we are passing in one single string
     orig_list = orig.split()
-    curr_list = curr.split()
-
-    # Then pull the types...
-    orig_type = orig_list[0]
-    curr_type = curr_list[0]
-
-    # Now if a type...
-    if orig_type == is_tag and curr_type == is_tag:
-
+    if (len(orig_list) > 1):
+        # Pull out the type
+        orig_type = orig_list[0]
         # Pull out the version string...
         orig_ver = orig_list[1]
+    else:
+        # Assume tag?
+        orig_type = is_tag
+        # version is the only element
+        orig_ver = orig_list[0]
+
+    curr_list = curr.split()
+    if (len(curr_list) > 1):
+        # Pull out the type
+        curr_type = curr_list[0]
+        # Pull out the version string...
         curr_ver = curr_list[1]
+    else:
+        # Assume tag?
+        curr_type = is_tag
+        # version is the only element
+        curr_ver = curr_list[0]
+
+    orig_type_is_tag_or_hash = (orig_type == is_tag or orig_type == is_hash)
+    curr_type_is_tag_or_hash = (curr_type == is_tag or curr_type == is_hash)
+
+    # Now if a type or hash...
+    if orig_type_is_tag_or_hash and curr_type_is_tag_or_hash:
 
         # Use rev-list to get the hash of the tag...
         orig_rev = git.rev_list(orig_ver)
@@ -58,6 +76,8 @@ def sanitize_version_string(orig,curr,git):
             # Replace the curr version with the original to make
             # mepo happy...
             curr_list[curr_list.index(curr_ver)] = orig_ver
+            if orig_type == is_hash:
+                curr_list[curr_list.index(curr_type)] = orig_type
 
             # And then remake the curr string
             curr = ' '.join(curr_list)
