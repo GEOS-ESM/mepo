@@ -68,10 +68,11 @@ def run(args):
             version = comp.version.name
             version = version.replace('origin/','')
             recurse = comp.recurse_submodules
-            git.clone(version,recurse)
+            # We need the type to handle hashes in components.yaml
+            type = comp.version.type
+            git.clone(version,recurse,type)
             if comp.sparse:
                 git.sparsify(comp.sparse)
-            #git.checkout(comp.version.name)
             print_clone_info(comp, max_namelen)
 
     if args.allrepos:
