@@ -37,12 +37,19 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse):
+    def clone(self, version, recurse, type):
         cmd = 'git clone '
         if recurse:
             cmd += '--recurse-submodules '
-        cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
-        shellcmd.run(cmd.split())
+        # You can't git clone -b hash, so we need to do different things
+        if type == 'h':
+            cmd += '--quiet {} {}'.format(self.__remote, self.__local)
+            shellcmd.run(cmd.split())
+            cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
+            shellcmd.run(cmd2.split())
+        else:
+            cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
+            shellcmd.run(cmd.split())
 
     def checkout(self, version):
         cmd = self.__git + ' checkout --quiet {}'.format(version)

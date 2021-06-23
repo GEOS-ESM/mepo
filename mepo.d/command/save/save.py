@@ -2,6 +2,7 @@ from state.state import MepoState
 from state.component import MepoVersion
 from repository.git import GitRepository
 from config.config_file import ConfigFile
+from utilities.version import sanitize_version_string
 
 import os
 
@@ -24,9 +25,22 @@ def _update_comp(comp):
     git = GitRepository(comp.remote, comp.local)
     orig_ver = comp.version
     curr_ver = MepoVersion(*git.get_version())
-    if _version_has_changed(curr_ver, orig_ver, comp.name):
-        _verify_local_and_remote_commit_ids_match(git, curr_ver.name, comp.name, curr_ver.type)
-        comp.version = curr_ver
+
+    orig_ver_is_tag_or_hash = (orig_ver.type == 't' or orig_ver.type == 'h')
+    curr_ver_is_tag_or_hash = (curr_ver.type == 't' or curr_ver.type == 'h')
+
+    if orig_ver_is_tag_or_hash and curr_ver_is_tag_or_hash:
+        # This command is to try and work with git tag oddities
+        curr_ver_to_use = sanitize_version_string(orig_ver.name,curr_ver.name,git)
+        if curr_ver_to_use == orig_ver.name:
+            comp.version = orig_ver
+        else:
+            _verify_local_and_remote_commit_ids_match(git, curr_ver_to_use, comp.name, curr_ver.type)
+            comp.version = curr_ver
+    else:
+        if _version_has_changed(curr_ver, orig_ver, comp.name):
+            _verify_local_and_remote_commit_ids_match(git, curr_ver.name, comp.name, curr_ver.type)
+            comp.version = curr_ver
 
 def _version_has_changed(curr_ver, orig_ver, name):
     result = False
