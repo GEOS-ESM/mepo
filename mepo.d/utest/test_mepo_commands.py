@@ -3,6 +3,7 @@ import sys
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(THIS_DIR, '..'))
 import shutil
+import shlex
 import unittest
 import subprocess as sp
 from io import StringIO
@@ -20,7 +21,7 @@ class TestMepoCommands(unittest.TestCase):
     def __checkout_fixture(cls):
         remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
         cmd = 'git clone -b {} {} {}'.format(cls.tag, remote, cls.fixture_dir)
-        sp.run(cmd.split())
+        sp.run(shlex.split(cmd))
 
     @classmethod
     def __copy_config_file(cls):
