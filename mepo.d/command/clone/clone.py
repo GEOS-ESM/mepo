@@ -7,6 +7,7 @@ from urllib.parse   import urlparse
 import os
 import pathlib
 import shutil
+import shlex
 
 def run(args):
 
@@ -94,5 +95,5 @@ def local_clone(url,branch=None,directory=None):
         cmd += '--branch {} '.format(branch)
     cmd += '--quiet {}'.format(url)
     if directory:
-        cmd += ' {}'.format(directory)
-    shellcmd.run(cmd.split())
+        cmd += ' "{}"'.format(directory)
+    shellcmd.run(shlex.split(cmd))

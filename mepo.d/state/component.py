@@ -1,4 +1,5 @@
 import os
+import shlex
 import textwrap
 from collections import namedtuple
 from utilities.version import MepoVersion
@@ -166,7 +167,7 @@ class MepoComponent(object):
 
 def get_current_remote_url():
     cmd = 'git remote get-url origin'
-    output = shellcmd.run(cmd.split(), output=True).strip()
+    output = shellcmd.run(shlex.split(cmd), output=True).strip()
     return output
 
 def decorate_node(item, flag, style):
