@@ -357,13 +357,13 @@ class MepoArgParser(object):
     def __save(self):
         save = self.subparsers.add_parser(
             'save',
-            description = 'Save current state in a yaml config file',
+            description = 'Save current state in a yaml config file. Defaults to overwriting components.yaml',
             aliases=mepoconfig.get_command_alias('save'))
         save.add_argument(
             'config_file',
             metavar = 'config-file',
             nargs = '?',
-            default = 'components-new.yaml',
+            default = 'components.yaml',
             help = 'default: %(default)s')
 
     def __config(self):

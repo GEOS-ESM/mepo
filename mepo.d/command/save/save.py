@@ -7,6 +7,16 @@ from utilities.version import sanitize_version_string
 import os
 
 def run(args):
+
+    out_file = save_state(args)
+    print(f"Components written to '{out_file}'")
+
+def save_state(args=None):
+    if args:
+        local_config_file = args.config_file
+    else:
+        local_config_file = 'components.yaml'
+
     allcomps = MepoState.read_state()
     for comp in allcomps:
         _update_comp(comp)
@@ -17,9 +27,9 @@ def run(args):
     relpath_start = MepoState.get_root_dir()
     for comp in allcomps:
         complist.update(comp.to_dict(relpath_start))
-    config_file_root_dir=os.path.join(relpath_start,args.config_file)
+    config_file_root_dir=os.path.join(relpath_start,local_config_file)
     ConfigFile(config_file_root_dir).write_yaml(complist)
-    print(f"Components written to '{config_file_root_dir}'")
+    return config_file_root_dir
 
 def _update_comp(comp):
     git = GitRepository(comp.remote, comp.local)
