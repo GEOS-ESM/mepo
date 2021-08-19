@@ -145,8 +145,7 @@ class MepoArgParser(object):
             'checkout',
             description = "Switch to branch/tag `branch-name` in component `comp-name`. "
             "If no components listed, checkout from all. "
-            "Specifying `-b` causes the branch `branch-name` to be created in "
-            "the specified component(s). NOTE: the -b option *requires* components to be specified.",
+            "Specifying `-b` causes the branch `branch-name` to be created and checked out.",
             aliases=mepoconfig.get_command_alias('checkout'))
         checkout.add_argument(
             'branch_name',
