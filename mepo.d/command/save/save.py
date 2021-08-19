@@ -7,11 +7,11 @@ from utilities.version import sanitize_version_string
 import os
 
 def run(args):
-
     out_file = save_state(args)
     print(f"Components written to '{out_file}'")
 
 def save_state(args=None):
+    print("HO")
     if args:
         local_config_file = args.config_file
     else:

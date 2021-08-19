@@ -18,14 +18,15 @@ def run(args):
                 print("Creating and checking out branch %s in %s" %
                         (colors.YELLOW + branch + colors.RESET,
                         colors.RESET + comp.name + colors.RESET))
-            out_file = mepo_save.save_state()
         else:
             if not args.quiet:
                 print("Checking out %s in %s" %
                         (colors.YELLOW + branch + colors.RESET,
                         colors.RESET + comp.name + colors.RESET))
         git.checkout(branch)
-    if out_file: print(f"Components written to '{out_file}'")
+    if args.b:
+        out_file = mepo_save.save_state()
+        print(f"Components written to '{out_file}'")
 
 def _get_comps_to_checkout(specified_comps, allcomps):
     comps_to_list = allcomps
