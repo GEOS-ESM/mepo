@@ -16,4 +16,4 @@ def run(args):
                     (colors.YELLOW + comp.develop + colors.RESET,
                     colors.RESET + comp.name + colors.RESET))
         git.checkout(comp.develop)
-        git.pull()
+        output = git.pull()
