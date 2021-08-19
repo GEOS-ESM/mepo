@@ -312,7 +312,7 @@ class GitRepository(object):
 
     def pull(self):
         cmd = self.__git + ' pull'
-        shellcmd.run(cmd.split())
+        return shellcmd.run(cmd.split(), output=True).strip()
 
     def get_version(self):
         cmd = self.__git + ' show -s --pretty=%D HEAD'

@@ -259,12 +259,20 @@ class MepoArgParser(object):
             nargs = '+',
             default = None,
             help = "Components to pull in")
+        pull.add_argument(
+            '-q','--quiet',
+            action = 'store_true',
+            help = 'Suppress prints')
 
     def __pull_all(self):
         pull_all = self.subparsers.add_parser(
             'pull-all',
             description = "Pull branches of all components (only those in non-detached HEAD state)",
             aliases=mepoconfig.get_command_alias('pull-all'))
+        pull_all.add_argument(
+            '-q','--quiet',
+            action = 'store_true',
+            help = 'Suppress prints')
 
     def __compare(self):
         compare = self.subparsers.add_parser(
