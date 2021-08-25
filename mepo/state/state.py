@@ -76,7 +76,10 @@ class MepoState(object):
         if not cls.exists():
             raise StateDoesNotExistError('mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
-            allcomps = pickle.load(fin)
+            try:
+                allcomps = pickle.load(fin)
+            except ModuleNotFoundError:
+                allcomps = renamed_load(fin)
         return allcomps
 
     @classmethod
@@ -103,3 +106,16 @@ class MepoState(object):
         os.chdir(state_dir)
         os.symlink(state_file_name, state_fileptr)
         os.chdir(curr_dir)
+
+class RenameUnpickler(pickle.Unpickler):
+    def find_class(self, module, name):
+        renamed_module = 'mepo.'+module
+
+        return super(RenameUnpickler, self).find_class(renamed_module, name)
+
+def renamed_load(file_obj):
+    return RenameUnpickler(file_obj).load()
+
+def renamed_loads(pickled_bytes):
+    file_obj = io.BytesIO(pickled_bytes)
+    return renamed_load(file_obj)
