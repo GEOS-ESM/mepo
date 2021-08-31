@@ -5,6 +5,7 @@ import atexit
 
 from state.state import MepoState
 from repository.git import GitRepository
+from repository.svn import SVNRepository
 from utilities.version import version_to_string, sanitize_version_string
 from utilities import colors
 
@@ -17,20 +18,28 @@ def run(args):
     print_status(allcomps, result)
 
 def check_component_status(comp):
-    git = GitRepository(comp.remote, comp.local)
+    if comp.protocol == 'git':
+        git = GitRepository(comp.remote, comp.local)
 
-    # version_to_string can strip off 'origin/' for display purposes
-    # so we save the "internal" name for comparison
-    internal_state_branch_name = git.get_version()[0]
+        # version_to_string can strip off 'origin/' for display purposes
+        # so we save the "internal" name for comparison
+        internal_state_branch_name = git.get_version()[0]
 
-    # This can return non "origin/" names for detached head branches
-    curr_ver = version_to_string(git.get_version())
-    orig_ver = version_to_string(comp.version)
+        # This can return non "origin/" names for detached head branches
+        curr_ver = version_to_string(git.get_version())
+        orig_ver = version_to_string(comp.version)
 
-    # This command is to try and work with git tag oddities
-    curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
+        # This command is to try and work with git tag oddities
+        curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-    return (curr_ver, internal_state_branch_name, git.check_status())
+        status = git.check_status()
+    else:
+        svn = SVNRepository(comp.remote, comp.local)
+        internal_state_branch_name = svn.get_version()[0]
+        curr_ver = version_to_string(svn.get_version())
+        status = svn.check_status()
+
+    return (curr_ver, internal_state_branch_name, status)
 
 def print_status(allcomps, result):
     orig_width = len(max([comp.name for comp in allcomps], key=len))

@@ -1,5 +1,6 @@
 from state.state    import MepoState, StateDoesNotExistError
 from repository.git import GitRepository
+from repository.svn import SVNRepository
 from command.init   import init as mepo_init
 from utilities      import shellcmd, colors
 from urllib.parse   import urlparse
@@ -65,25 +66,38 @@ def run(args):
     max_namelen = len(max([comp.name for comp in allcomps], key=len))
     for comp in allcomps:
         if not comp.fixture:
-            git = GitRepository(comp.remote, comp.local)
-            version = comp.version.name
-            version = version.replace('origin/','')
-            recurse = comp.recurse_submodules
-            # We need the type to handle hashes in components.yaml
-            type = comp.version.type
-            git.clone(version,recurse,type)
-            if comp.sparse:
-                git.sparsify(comp.sparse)
-            print_clone_info(comp, max_namelen)
+            if comp.protocol == "git":
+                git = GitRepository(comp.remote, comp.local)
+                version = comp.version.name
+                version = version.replace('origin/','')
+                recurse = comp.recurse_submodules
+                # We need the type to handle hashes in components.yaml
+                type = comp.version.type
+                git.clone(version,recurse,type)
+                if comp.sparse:
+                    git.sparsify(comp.sparse)
+                print_clone_info(comp, max_namelen)
+            else:
+                svn = SVNRepository(comp.remote, comp.local)
+                version = comp.version.name
+                type = comp.version.type
+                svn.clone(version,recurse,type)
+                print_clone_info(comp, max_namelen)
 
     if args.allrepos:
         for comp in allcomps:
             if not comp.fixture:
-                git = GitRepository(comp.remote, comp.local)
-                print("Checking out %s in %s" %
-                        (colors.YELLOW + args.branch + colors.RESET,
-                        colors.RESET + comp.name + colors.RESET))
-                git.checkout(args.branch)
+                if comp.protocol == 'git':
+                    git = GitRepository(comp.remote, comp.local)
+                    print("Checking out %s in %s" %
+                            (colors.YELLOW + args.branch + colors.RESET,
+                            colors.RESET + comp.name + colors.RESET))
+                    git.checkout(args.branch)
+                else:
+                    svn = SVNRepository(comp.remote, comp.local)
+                    print("Checking out %s in %s" %
+                            (colors.YELLOW + args.branch + colors.RESET,
+                            colors.RESET + comp.name + colors.RESET))
 
 def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)

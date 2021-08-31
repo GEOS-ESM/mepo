@@ -11,7 +11,7 @@ original_final_node_list = []
 
 class MepoComponent(object):
 
-    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture']
+    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture', 'protocol']
 
     def __init__(self):
         self.name = None
@@ -22,10 +22,11 @@ class MepoComponent(object):
         self.develop = None
         self.recurse_submodules = None
         self.fixture = None
+        self.protocol = None
 
     def __repr__(self):
-        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}'.format(
-            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture)
+        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}, protocol: {}'.format(
+            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture, self.protocol)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
@@ -53,39 +54,50 @@ class MepoComponent(object):
                     ver_type = 'h'
                     is_detached = True
         else:
-            if comp_details.get('branch', None):
-                # SPECIAL HANDLING of 'detached head' branches
-                ver_name = 'origin/' + comp_details['branch']
-                ver_type = 'b'
-                # we always detach branches from components.yaml
-                is_detached = True
-            elif comp_details.get('hash', None):
-                # Hashes don't have to exist
-                ver_name = comp_details['hash']
-                ver_type = 'h'
-                is_detached = True
-            else:
-                ver_name = comp_details['tag'] # 'tag' key has to exist
-                ver_type = 't'
-                is_detached = True
+            if self.protocol == 'git':
+                if comp_details.get('branch', None):
+                    # SPECIAL HANDLING of 'detached head' branches
+                    ver_name = 'origin/' + comp_details['branch']
+                    ver_type = 'b'
+                    # we always detach branches from components.yaml
+                    is_detached = True
+                elif comp_details.get('hash', None):
+                    # Hashes don't have to exist
+                    ver_name = comp_details['hash']
+                    ver_type = 'h'
+                    is_detached = True
+                else:
+                    ver_name = comp_details['tag'] # 'tag' key has to exist
+                    ver_type = 't'
+                    is_detached = True
+            elif self.protocol == 'svn':
+                if comp_details.get('branch', None):
+                    ver_name = comp_details['branch'] # 'tag' key has to exist
+                    ver_type = 'b'
+                    is_detached = False
+                else:
+                    ver_name = comp_details['tag'] # 'tag' key has to exist
+                    ver_type = 't'
+                    is_detached = False
+
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
     def __validate_fixture(self, comp_details):
-        unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules']
+        unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules', 'protocol']
         if any([comp_details.get(key) for key in unallowed_keys]):
             raise Exception("Fixtures are only allowed fixture and develop")
 
     def __validate_component(self, comp_name, comp_details):
-        types_of_git_tags = ['branch', 'tag', 'hash']
-        git_tag_intersection = set(types_of_git_tags).intersection(set(comp_details.keys()))
+        types_of_repo_tags = ['branch', 'tag', 'hash']
+        git_tag_intersection = set(types_of_repo_tags).intersection(set(comp_details.keys()))
         if len(git_tag_intersection) == 0:
             raise Exception(textwrap.fill(textwrap.dedent(f'''
-                Component {comp_name} has none of {types_of_git_tags}. mepo
+                Component {comp_name} has none of {types_of_repo_tags}. mepo
                 requires one of them.''')))
         elif len(git_tag_intersection) != 1:
             raise Exception(textwrap.fill(textwrap.dedent(f'''
                 Component {comp_name} has {git_tag_intersection} and only one of
-                {types_of_git_tags} are allowed.''')))
+                {types_of_repo_tags} are allowed.''')))
 
     def to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
@@ -135,6 +147,7 @@ class MepoComponent(object):
         self.sparse = comp_details.get('sparse', None) # sparse is optional
         self.develop = comp_details.get('develop', None) # develop is optional
         self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
+        self.protocol = comp_details.get('protocol', 'git') # recurse_submodules is optional
         self.__set_original_version(comp_details)
         return self
 
@@ -163,6 +176,7 @@ class MepoComponent(object):
                 details['develop'] = self.develop
             if self.recurse_submodules:
                 details['recurse_submodules'] = self.recurse_submodules
+            details['protocol'] = self.protocol
         return {self.name: details}
 
 def get_current_remote_url():
