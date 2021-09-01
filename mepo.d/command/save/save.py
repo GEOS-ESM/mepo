@@ -11,7 +11,6 @@ def run(args):
     print(f"Components written to '{out_file}'")
 
 def save_state(args=None):
-    print("HO")
     if args:
         local_config_file = args.config_file
     else:
