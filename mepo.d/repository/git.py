@@ -300,11 +300,13 @@ class GitRepository(object):
             else:
                 raise RuntimeError("Should not get here")
             cmd = self.__git + ' ls-remote {} refs/{}/{}'.format(self.__remote, reftype, branch)
-            output = shellcmd.run(shlex.split(cmd), output=True).strip()
+            output = shellcmd.run(shlex.split(cmd), stdout=True).strip()
             if not output:
-                msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
-                msg += " Have you run 'mepo push'?"
-                raise RuntimeError(msg)
+                #msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
+                #msg += " Have you run 'mepo push'?"
+                #raise RuntimeError(msg)
+                cmd = self.__git + ' rev-parse HEAD'
+            output = shellcmd.run(shlex.split(cmd), output=True).strip()
             return output.split()[0]
 
     def get_local_latest_commit_id(self):
