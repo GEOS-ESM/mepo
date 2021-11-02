@@ -57,10 +57,11 @@ class GitRepository(object):
 
     def checkout(self, version, detach=False):
         cmd = self.__git + ' checkout '
-        if detach:
-           cmd += '--detach '
         cmd += '--quiet {}'.format(version)
         shellcmd.run(shlex.split(cmd))
+        if detach:
+           cmd2 = self.__git + ' checkout --detach'
+           shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
