@@ -50,6 +50,11 @@ class GitRepository(object):
         cmd3 = 'git -C {} checkout --detach'.format(self.__local)
         shellcmd.run(shlex.split(cmd3))
 
+        # NOTE: The above looks odd because of a quirk of git. You can't do
+        #       git checkout --detach branch unless the branch is local. But
+        #       since this is at clone time, all branches are remote. Thus,
+        #       we have to do a git checkout branch and then detach.
+
     def checkout(self, version, detach=False):
         cmd = self.__git + ' checkout '
         if detach:
