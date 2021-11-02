@@ -39,21 +39,20 @@ class GitRepository(object):
         return self.__remote
 
     def clone(self, version, recurse, type):
-        cmd = 'git clone '
+        cmd1 = 'git clone '
         if recurse:
-            cmd += '--recurse-submodules '
-        # You can't git clone -b hash, so we need to do different things
-        if type == 'h':
-            cmd += '--quiet {} {}'.format(self.__remote, self.__local)
-            shellcmd.run(shlex.split(cmd))
-            cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
-            shellcmd.run(shlex.split(cmd2))
-        else:
-            cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
-            shellcmd.run(shlex.split(cmd))
+            cmd1 += '--recurse-submodules '
 
-    def checkout(self, version):
-        cmd = self.__git + ' checkout --quiet {}'.format(version)
+        cmd1 += '--quiet {} {}'.format(self.__remote, self.__local)
+        shellcmd.run(shlex.split(cmd1))
+        cmd2 = 'git -C {} checkout --detach {}'.format(self.__local, version)
+        shellcmd.run(shlex.split(cmd2))
+
+    def checkout(self, version, detach=False):
+        cmd = self.__git + ' checkout '
+        if detach:
+           cmd += '--detach '
+        cmd += '--quiet {}'.format(version)
         shellcmd.run(shlex.split(cmd))
 
     def sparsify(self, sparse_config):
@@ -332,7 +331,7 @@ class GitRepository(object):
                 tYpe = 't'
             else:
                 cmd_for_branch = self.__git + ' reflog HEAD -n 1'
-                reflog_output = shellcmd.run(cmd_for_branch.split(), output=True)
+                reflog_output = shellcmd.run(shlex.split(cmd_for_branch), output=True)
                 name = reflog_output.split()[-1].strip()
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
