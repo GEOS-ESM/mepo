@@ -53,7 +53,7 @@ class MepoState(object):
             return False
 
     @classmethod
-    def initialize(cls, project_config_file):
+    def initialize(cls, project_config_file, directory_style):
         if cls.exists():
             raise StateAlreadyInitializedError('mepo state already exists')
         input_components = ConfigFile(project_config_file).read_file()
@@ -67,7 +67,7 @@ class MepoState(object):
             if num_fixture > 1:
                 raise Exception("Only one fixture allowed")
 
-            complist.append(MepoComponent().to_component(name, comp))
+            complist.append(MepoComponent().to_component(name, comp, directory_style))
         cls.write_state(complist)
 
     @classmethod

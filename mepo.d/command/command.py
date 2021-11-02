@@ -1,7 +1,8 @@
 from importlib import import_module
+from utilities import mepoconfig
 
 def run(args):
-    mepo_cmd = args.mepo_cmd
+    mepo_cmd = mepoconfig.get_alias_command(args.mepo_cmd)
 
     # Load the module containing the 'run' method of specified mepo command
     cmd_module = import_module('command.{}.{}'.format(mepo_cmd, mepo_cmd))

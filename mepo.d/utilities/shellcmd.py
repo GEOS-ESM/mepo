@@ -1,6 +1,6 @@
 import subprocess as sp
 
-def run(cmd, output=None, status=None):
+def run(cmd, output=None, stdout=None, status=None):
     result = sp.run(
         cmd,
         stdout = sp.PIPE,
@@ -14,5 +14,7 @@ def run(cmd, output=None, status=None):
         print(result.stderr)
         result.check_returncode()
 
+    if stdout:
+        return result.stdout
     if output:
         return result.stdout + result.stderr

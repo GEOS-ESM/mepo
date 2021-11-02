@@ -3,15 +3,16 @@ import sys
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(THIS_DIR, '..'))
 import shutil
+import shlex
 import unittest
 import subprocess as sp
 from io import StringIO
 
 from input import args
 
-from command.init import init as mepo_init
-from command.clone import clone as mepo_clone
-from command.list import list as mepo_list
+from command.init   import init   as mepo_init
+from command.clone  import clone  as mepo_clone
+from command.list   import list   as mepo_list
 from command.status import status as mepo_status
 
 class TestMepoCommands(unittest.TestCase):
@@ -19,8 +20,8 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __checkout_fixture(cls):
         remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
-        cmd = 'git clone {} {}'.format(remote, cls.fixture_dir)
-        sp.run(cmd.split())
+        cmd = 'git clone -b {} {} {}'.format(cls.tag, remote, cls.fixture_dir)
+        sp.run(shlex.split(cmd))
 
     @classmethod
     def __copy_config_file(cls):
@@ -33,6 +34,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
+        cls.tag = 'v1.2.7'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
@@ -40,6 +42,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.__checkout_fixture()
         cls.__copy_config_file()
         args.config = 'components.yaml'
+        args.style = 'prefix'
         os.chdir(cls.fixture_dir)
         mepo_init.run(args)
         args.config = None

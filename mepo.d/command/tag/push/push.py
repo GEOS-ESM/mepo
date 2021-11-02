@@ -1,16 +1,15 @@
 from state.state import MepoState
 from utilities import verify
 from repository.git import GitRepository
-from utilities import colors
 
 def run(args):
     allcomps = MepoState.read_state()
-    comps2fetch = _get_comps_to_list(args.comp_name, allcomps)
-    for comp in comps2fetch:
+    verify.valid_components(args.comp_name, allcomps)
+    comps2tagpush = _get_comps_to_list(args.comp_name, allcomps)
+    for comp in comps2tagpush:
         git = GitRepository(comp.remote, comp.local)
-        print("Fetching %s" %
-                 colors.YELLOW + comp.name + colors.RESET)
-        git.fetch(args)
+        git.push_tag(args.tag_name,args.force)
+        print(f'Pushed tag {args.tag_name} to {comp.name}')
 
 def _get_comps_to_list(specified_comps, allcomps):
     comps_to_list = allcomps

@@ -10,12 +10,11 @@ class MepoBranchArgParser(object):
         self.__list()
         self.__create()
         self.__delete()
-        
+
     def __list(self):
         brlist = self.branch_subparsers.add_parser(
             'list',
-            description = 'List local branches.'
-            'If no component is specified, runs over all components')
+            description = 'List local branches. If no component is specified, runs over all components')
         brlist.add_argument(
             '-a', '--all',
             action = 'store_true',
@@ -30,7 +29,10 @@ class MepoBranchArgParser(object):
         create = self.branch_subparsers.add_parser(
             'create',
             description = 'Create branch <branch-name> in component <comp-name>')
-        create.add_argument('branch_name', metavar = 'branch-name')
+        create.add_argument(
+            'branch_name',
+            metavar = 'branch-name',
+            help = "Name of branch")
         create.add_argument(
             'comp_name',
             metavar = 'comp-name',
@@ -41,7 +43,10 @@ class MepoBranchArgParser(object):
         delete = self.branch_subparsers.add_parser(
             'delete',
             description = 'Delete branch <branch-name> in component <comp-name>')
-        delete.add_argument('branch_name', metavar = 'branch-name')
+        delete.add_argument(
+            'branch_name',
+            metavar = 'branch-name',
+            help = "Name of branch")
         delete.add_argument(
             'comp_name',
             metavar = 'comp-name',

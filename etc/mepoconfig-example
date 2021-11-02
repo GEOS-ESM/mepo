@@ -1,0 +1,42 @@
+# This is a skeleton example of a .mepoconfig file
+#
+# .mepoconfig is a config file a la gitconfig with sections and options.
+#
+# Currently, .mepoconfig files recognize two sections: [init] and [alias]
+#
+# =======================================================================
+#
+# [init] Section
+#
+#   The init section currently recognizes one option, style.
+#   This has three allowed values: naked, postfix, prefix
+#
+#   So if you have:
+#
+#     [init]
+#     style = postfix
+#
+#   This is equivalent to doing:
+#
+#     mepo init --style postfix
+#
+#   or when running with mepo clone:
+#
+#     mepo clone --style postfix
+#
+# =======================================================================
+#
+# [alias] Section
+#
+#   The [alias] Section is used to make aliases of mepo commands. For
+#   example this:
+#
+#     [alias]
+#     st = status
+#
+#   lets one run "mepo st" as an alias to "mepo status"
+#
+#   Note: Due to lack of skill of the developer and limitations in Argparse,
+#         you can only alias mepo primary commands and not "subcommands" or
+#         "options". So you can have an alias for "commit" and for "branch",
+#         but you can't do an option for "commit -m" or "branch create".

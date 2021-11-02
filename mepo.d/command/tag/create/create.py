@@ -7,8 +7,7 @@ import os, tempfile, subprocess
 
 def run(args):
     allcomps = MepoState.read_state()
-    verify.valid_components(args.comp_name, allcomps)
-    comps2crttg = [x for x in allcomps if x.name in args.comp_name]
+    comps2crttg = _get_comps_to_list(args.comp_name, allcomps)
 
     tf_file = None
 
@@ -60,3 +59,9 @@ def git_var(what):
     output = output.decode('utf8', errors='ignore') # or similar for py3k
     return output
 
+def _get_comps_to_list(specified_comps, allcomps):
+    comps_to_list = allcomps
+    if specified_comps:
+        verify.valid_components(specified_comps, allcomps)
+        comps_to_list = [x for x in allcomps if x.name in specified_comps]
+    return comps_to_list
