@@ -11,12 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+## [1.38.0] - 2021-09-10
+
+### Added
+
 - Added `CHANGELOG.md`
 - Added changelog enforcer
 
 ### Changed
 
-### Removed
+- Detach branches on clone
 
 ## [1.37.1] - 2021-09-02
 

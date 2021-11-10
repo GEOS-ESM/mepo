@@ -39,22 +39,29 @@ class GitRepository(object):
         return self.__remote
 
     def clone(self, version, recurse, type):
-        cmd = 'git clone '
+        cmd1 = 'git clone '
         if recurse:
-            cmd += '--recurse-submodules '
-        # You can't git clone -b hash, so we need to do different things
-        if type == 'h':
-            cmd += '--quiet {} {}'.format(self.__remote, self.__local)
-            shellcmd.run(shlex.split(cmd))
-            cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
-            shellcmd.run(shlex.split(cmd2))
-        else:
-            cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
-            shellcmd.run(shlex.split(cmd))
+            cmd1 += '--recurse-submodules '
 
-    def checkout(self, version):
-        cmd = self.__git + ' checkout --quiet {}'.format(version)
+        cmd1 += '--quiet {} {}'.format(self.__remote, self.__local)
+        shellcmd.run(shlex.split(cmd1))
+        cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
+        shellcmd.run(shlex.split(cmd2))
+        cmd3 = 'git -C {} checkout --detach'.format(self.__local)
+        shellcmd.run(shlex.split(cmd3))
+
+        # NOTE: The above looks odd because of a quirk of git. You can't do
+        #       git checkout --detach branch unless the branch is local. But
+        #       since this is at clone time, all branches are remote. Thus,
+        #       we have to do a git checkout branch and then detach.
+
+    def checkout(self, version, detach=False):
+        cmd = self.__git + ' checkout '
+        cmd += '--quiet {}'.format(version)
         shellcmd.run(shlex.split(cmd))
+        if detach:
+           cmd2 = self.__git + ' checkout --detach'
+           shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
@@ -331,9 +338,11 @@ class GitRepository(object):
                 name = tmp[5:]
                 tYpe = 't'
             else:
-                cmd_for_branch = self.__git + ' reflog HEAD -n 1'
-                reflog_output = shellcmd.run(cmd_for_branch.split(), output=True)
-                name = reflog_output.split()[-1].strip()
+                # This was needed for when we weren't explicitly detaching on clone
+                #cmd_for_branch = self.__git + ' reflog HEAD -n 1'
+                #reflog_output = shellcmd.run(shlex.split(cmd_for_branch), output=True)
+                #name = reflog_output.split()[-1].strip()
+                name = output.split()[-1].strip()
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
