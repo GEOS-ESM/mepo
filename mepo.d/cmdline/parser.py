@@ -164,6 +164,10 @@ class MepoArgParser(object):
             '-q', '--quiet',
             action = 'store_true',
             help = 'Suppress prints')
+        checkout.add_argument(
+            '--detach',
+            action = 'store_true',
+            help = 'Detach upon checkout')
 
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
@@ -178,6 +182,10 @@ class MepoArgParser(object):
             '-q', '--quiet',
             action = 'store_true',
             help = 'Suppress prints')
+        checkout_if_exists.add_argument(
+            '--detach',
+            action = 'store_true',
+            help = 'Detach on checkout')
         checkout_if_exists.add_argument(
             '-n','--dry-run',
             action = 'store_true',
