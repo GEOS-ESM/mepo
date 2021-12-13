@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ```
 GEOSgcm_GridComp       | (b) feature/aogcm (DH, 0793f7b2)
 ```
+- GitHub Actions updates
+  - Uses `pypy-3.8` specifically
+  - Have `pip` install from `requirements.txt`
 
 ### Removed
 
