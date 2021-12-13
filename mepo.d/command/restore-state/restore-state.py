@@ -18,7 +18,7 @@ def run(args):
 
 def check_component_status(comp):
     git = GitRepository(comp.remote, comp.local)
-    curr_ver = version_to_string(git.get_version())
+    curr_ver = version_to_string(git.get_version(),git)
     return (curr_ver, git.check_status())
 
 def restore_state(allcomps, result):

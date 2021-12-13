@@ -86,6 +86,12 @@ class GitRepository(object):
         cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
         return shellcmd.run(shlex.split(cmd), output=True)
 
+    def rev_parse(self, short=False):
+        cmd = self.__git + ' rev-parse --verify HEAD'
+        if short:
+            cmd += ' --short'
+        return shellcmd.run(shlex.split(cmd), output=True)
+
     def list_stash(self):
         cmd = self.__git + ' stash list'
         return shellcmd.run(shlex.split(cmd), output=True)
