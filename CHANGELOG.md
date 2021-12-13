@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- When running `mepo compare` and `mepo status`, detatched branches will also display the commit id:
+```
+GEOSgcm_GridComp       | (b) feature/aogcm (DH, 0793f7b2)
+```
+
 ### Removed
 
 ## [1.38.0] - 2021-09-10
