@@ -112,9 +112,14 @@ class GitRepository(object):
         return output.rstrip()
 
     def run_diff(self, args=None):
-        cmd = self.__git + ' diff --color'
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if args.ignore_permissions:
+            cmd += ' -c core.fileMode=false'
+        cmd += ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.name_status:
+            cmd += ' --name-status'
         if args.staged:
             cmd += ' --staged'
         output = shellcmd.run(shlex.split(cmd),output=True)
@@ -174,7 +179,7 @@ class GitRepository(object):
     def check_status(self, ignore_permissions=False):
         cmd = 'git -C {}'.format(self.__full_local_path)
         if ignore_permissions:
-            cmd += ' -c core.fileMode=false '
+            cmd += ' -c core.fileMode=false'
         cmd += ' status --porcelain=v2'
         output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
