@@ -171,8 +171,11 @@ class GitRepository(object):
         status = shellcmd.run(shlex.split(cmd),status=True)
         return status
 
-    def check_status(self):
-        cmd = self.__git + ' status --porcelain=v2'
+    def check_status(self, ignore_permissions=False):
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if ignore_permissions:
+            cmd += ' -c core.fileMode=false '
+        cmd += ' status --porcelain=v2'
         output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
             output_list = output.splitlines()

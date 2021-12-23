@@ -114,6 +114,10 @@ class MepoArgParser(object):
             'status',
             description = 'Check current status of all components',
             aliases=mepoconfig.get_command_alias('status'))
+        status.add_argument(
+            '--ignore-permissions',
+            action = 'store_true',
+            help = 'Tells status command to ignore changes in file permissions.')
 
     def __restore_state(self):
         restore_state = self.subparsers.add_parser(

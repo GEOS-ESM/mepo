@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `--ignore-permissions` flag to `status` to allow the command to ignore permissions changes
+
 ### Changed
 
 ### Removed
