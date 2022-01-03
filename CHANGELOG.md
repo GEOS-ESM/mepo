@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `--ignore-permissions` flag to `status` and `diff` to allow the commands to ignore permissions changes
+- Add `--name-status` flag to `mepo diff`
+
 ### Changed
 
 - When running `mepo compare` and `mepo status`, detatched branches will also display the commit id:
