@@ -11,20 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+## [1.39.0] - 2022-01-07
+
+### Added
+
 - Added `--ignore-permissions` flag to `status` and `diff` to allow the commands to ignore permissions changes
 - Add `--name-status` flag to `mepo diff`
 
 ### Changed
 
 - When running `mepo compare` and `mepo status`, detatched branches will also display the commit id:
-```
-GEOSgcm_GridComp       | (b) feature/aogcm (DH, 0793f7b2)
-```
+  ```
+  GEOSgcm_GridComp       | (b) feature/aogcm (DH, 0793f7b2)
+  ```
 - GitHub Actions updates
   - Uses `pypy-3.8` specifically
   - Have `pip` install from `requirements.txt`
-
-### Removed
 
 ## [1.38.0] - 2021-09-10
 
