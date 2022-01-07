@@ -3,6 +3,7 @@ import sys
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0, os.path.join(THIS_DIR, '..'))
 import shutil
+import shlex
 import unittest
 import subprocess as sp
 from io import StringIO
@@ -19,8 +20,8 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __checkout_fixture(cls):
         remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
-        cmd = 'git clone {} {}'.format(remote, cls.fixture_dir)
-        sp.run(cmd.split())
+        cmd = 'git clone -b {} {} {}'.format(cls.tag, remote, cls.fixture_dir)
+        sp.run(shlex.split(cmd))
 
     @classmethod
     def __copy_config_file(cls):
@@ -33,6 +34,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
+        cls.tag = 'v1.2.7'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
@@ -62,6 +64,7 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_status(self):
         sys.stdout = output = StringIO()
+        args.ignore_permissions=False
         mepo_status.run(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'status_output.txt'), 'r') as fin:

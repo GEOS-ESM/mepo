@@ -10,12 +10,12 @@ class MepoTagArgParser(object):
         self.__list()
         self.__create()
         self.__delete()
+        self.__push()
 
     def __list(self):
         tglist = self.tag.add_parser(
             'list',
-            description = 'List tags.'
-            'If no component is specified, runs over all components')
+            description = 'List tags. If no component is specified, runs over all components')
         tglist.add_argument(
             'comp_name',
             metavar = 'comp-name',
@@ -26,7 +26,10 @@ class MepoTagArgParser(object):
         create = self.tag.add_parser(
             'create',
             description = 'Create tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
-        create.add_argument('tag_name', metavar = 'tag-name')
+        create.add_argument(
+            'tag_name',
+            metavar = 'tag-name',
+            help = "Name of tag")
         create.add_argument(
             '-a', '--annotate',
             action = 'store_true',
@@ -48,9 +51,30 @@ class MepoTagArgParser(object):
         delete = self.tag.add_parser(
             'delete',
             description = 'Delete tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
-        delete.add_argument('tag_name', metavar = 'tag-name')
+        delete.add_argument(
+            'tag_name',
+            metavar = 'tag-name',
+            help = "Name of tag")
         delete.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
             help = 'Component to delete tags in')
+
+    def __push(self):
+        push = self.tag.add_parser(
+            'push',
+            description = 'Push tag <tag-name> in component <comp-name>. If no component is specified, runs over all components')
+        push.add_argument(
+            'tag_name',
+            metavar = 'tag-name',
+            help = "Name of tag")
+        push.add_argument(
+            '-f', '--force',
+            action = 'store_true',
+            help = "Force push (be careful!)")
+        push.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to push tags in')

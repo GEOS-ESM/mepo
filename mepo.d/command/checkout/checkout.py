@@ -5,8 +5,7 @@ from utilities import colors
 
 def run(args):
     allcomps = MepoState.read_state()
-    verify.valid_components(args.comp_name, allcomps)
-    comps2checkout = [x for x in allcomps if x.name in args.comp_name]
+    comps2checkout = _get_comps_to_checkout(args.comp_name, allcomps)
     for comp in comps2checkout:
         git = GitRepository(comp.remote, comp.local)
         branch = args.branch_name
@@ -22,4 +21,12 @@ def run(args):
                 print("Checking out %s in %s" %
                         (colors.YELLOW + branch + colors.RESET,
                         colors.RESET + comp.name + colors.RESET))
-        git.checkout(branch)
+        git.checkout(branch,args.detach)
+
+def _get_comps_to_checkout(specified_comps, allcomps):
+    comps_to_list = allcomps
+    if specified_comps:
+        verify.valid_components(specified_comps, allcomps)
+        comps_to_list = [x for x in allcomps if x.name in specified_comps]
+    return comps_to_list
+

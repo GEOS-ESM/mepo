@@ -1,4 +1,5 @@
 import os
+import shlex
 import textwrap
 from collections import namedtuple
 from utilities.version import MepoVersion
@@ -10,21 +11,21 @@ original_final_node_list = []
 
 class MepoComponent(object):
 
-    __slots__ = ['name', 'local', 'remote', 'version', 'develop', 'sparse', 'recurse_submodules', 'fixture']
+    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture']
 
     def __init__(self):
         self.name = None
         self.local = None
         self.remote = None
         self.version = None
-        self.develop = None
         self.sparse = None
+        self.develop = None
         self.recurse_submodules = None
         self.fixture = None
 
     def __repr__(self):
-        return '{} - local: {}, remote: {}, version: {}, develop: {}, sparse: {}, recurse_submodules: {}, fixture: {}'.format(
-            self.name, self.local, self.remote, self.version, self.develop, self.sparse, self.recurse_submodules, self.fixture)
+        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}'.format(
+            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
@@ -75,7 +76,7 @@ class MepoComponent(object):
             raise Exception("Fixtures are only allowed fixture and develop")
 
     def __validate_component(self, comp_name, comp_details):
-        types_of_git_tags = ['branch', 'tag']
+        types_of_git_tags = ['branch', 'tag', 'hash']
         git_tag_intersection = set(types_of_git_tags).intersection(set(comp_details.keys()))
         if len(git_tag_intersection) == 0:
             raise Exception(textwrap.fill(textwrap.dedent(f'''
@@ -131,8 +132,8 @@ class MepoComponent(object):
             #print(f'final self.local: {self.local}')
 
             self.remote = comp_details['remote']
-        self.develop = comp_details.get('develop', None) # develop is optional
         self.sparse = comp_details.get('sparse', None) # sparse is optional
+        self.develop = comp_details.get('develop', None) # develop is optional
         self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
         self.__set_original_version(comp_details)
         return self
@@ -156,28 +157,34 @@ class MepoComponent(object):
                     details['branch'] = self.version.name.replace('origin/', '')
                 else:
                     details['branch'] = self.version.name
-            if self.develop:
-                details['develop'] = self.develop
             if self.sparse:
                 details['sparse'] = self.sparse
+            if self.develop:
+                details['develop'] = self.develop
             if self.recurse_submodules:
                 details['recurse_submodules'] = self.recurse_submodules
         return {self.name: details}
 
 def get_current_remote_url():
     cmd = 'git remote get-url origin'
-    output = shellcmd.run(cmd.split(), output=True).strip()
+    output = shellcmd.run(shlex.split(cmd), output=True).strip()
     return output
 
 def decorate_node(item, flag, style):
-    item = item.replace(flag,'')
-    if style == 'naked':
-        output = item
-    elif style == 'prefix':
-        output = flag + item
-    elif style == 'postfix':
-        output = item + flag
-    return output
+    # If we do not pass in a style...
+    if not style:
+        # Just use what's in components.yaml
+        return item
+    # else use the style
+    else:
+        item = item.replace(flag,'')
+        if style == 'naked':
+            output = item
+        elif style == 'prefix':
+            output = flag + item
+        elif style == 'postfix':
+            output = item + flag
+        return output
 
 # From https://learning.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html
 def splitall(path):

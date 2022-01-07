@@ -1,6 +1,7 @@
 import os
 import shutil
 import subprocess
+import shlex
 
 from state.state import MepoState
 from utilities import shellcmd
@@ -26,7 +27,7 @@ class GitRepository(object):
         root_dir = MepoState.get_root_dir()
         full_local_path=os.path.join(root_dir,local_path)
         self.__full_local_path=full_local_path
-        self.__git = 'git -C {}'.format(self.__full_local_path)
+        self.__git = 'git -C "{}"'.format(self.__full_local_path)
 
     def get_local_path(self):
         return self.__local
@@ -37,72 +38,91 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse):
-        cmd = 'git clone '
+    def clone(self, version, recurse, type):
+        cmd1 = 'git clone '
         if recurse:
-            cmd += '--recurse-submodules '
-        cmd += '--branch {} --quiet {} {}'.format(version, self.__remote, self.__local)
-        shellcmd.run(cmd.split())
+            cmd1 += '--recurse-submodules '
 
-    def checkout(self, version):
-        cmd = self.__git + ' checkout --quiet {}'.format(version)
-        shellcmd.run(cmd.split())
+        cmd1 += '--quiet {} {}'.format(self.__remote, self.__local)
+        shellcmd.run(shlex.split(cmd1))
+        cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
+        shellcmd.run(shlex.split(cmd2))
+        cmd3 = 'git -C {} checkout --detach'.format(self.__local)
+        shellcmd.run(shlex.split(cmd3))
+
+        # NOTE: The above looks odd because of a quirk of git. You can't do
+        #       git checkout --detach branch unless the branch is local. But
+        #       since this is at clone time, all branches are remote. Thus,
+        #       we have to do a git checkout branch and then detach.
+
+    def checkout(self, version, detach=False):
+        cmd = self.__git + ' checkout '
+        cmd += '--quiet {}'.format(version)
+        shellcmd.run(shlex.split(cmd))
+        if detach:
+           cmd2 = self.__git + ' checkout --detach'
+           shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(sparse_config, dst)
         cmd1 = self.__git + ' config core.sparseCheckout true'
-        shellcmd.run(cmd1.split())
+        shellcmd.run(shlex.split(cmd1))
         cmd2 = self.__git + ' read-tree -mu HEAD'
-        shellcmd.run(cmd2.split())
+        shellcmd.run(shlex.split(cmd2))
 
     def list_branch(self, all=False):
         cmd = self.__git + ' branch'
         if all:
             cmd += ' -a'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def list_tags(self):
         cmd = self.__git + ' tag'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def rev_list(self, tag):
         cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def list_stash(self):
         cmd = self.__git + ' stash list'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def pop_stash(self):
         cmd = self.__git + ' stash pop'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def apply_stash(self):
         cmd = self.__git + ' stash apply'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def push_stash(self, message):
         cmd = self.__git + ' stash push'
         if message:
             cmd += ' -m {}'.format(message)
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def show_stash(self, patch):
         cmd = self.__git + ' stash show'
         if patch:
             cmd += ' -p --color'
-        output = shellcmd.run(cmd.split(),output=True)
+        output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
     def run_diff(self, args=None):
-        cmd = self.__git + ' diff --color'
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if args.ignore_permissions:
+            cmd += ' -c core.fileMode=false'
+        cmd += ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.name_status:
+            cmd += ' --name-status'
         if args.staged:
             cmd += ' --staged'
-        output = shellcmd.run(cmd.split(),output=True)
+        output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
     def create_patch(self, args=None):
@@ -121,11 +141,11 @@ class GitRepository(object):
             cmd += ' --tags'
         if args.force:
             cmd += ' --force'
-        return shellcmd.run(cmd.split(), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True)
 
     def create_branch(self, branch_name):
         cmd = self.__git + ' branch {}'.format(branch_name)
-        shellcmd.run(cmd.split())
+        shellcmd.run(shlex.split(cmd))
 
     def create_tag(self, tag_name, annotate, message, tf_file=None):
         if annotate:
@@ -144,20 +164,30 @@ class GitRepository(object):
         if force:
             delete = '-D'
         cmd = self.__git + ' branch {} {}'.format(delete, branch_name)
-        shellcmd.run(cmd.split())
+        shellcmd.run(shlex.split(cmd))
 
     def delete_tag(self, tag_name):
         cmd = self.__git + ' tag -d {}'.format(tag_name)
-        shellcmd.run(cmd.split())
+        shellcmd.run(shlex.split(cmd))
+
+    def push_tag(self, tag_name, force):
+        cmd = self.__git + ' push'
+        if force:
+            cmd += ' --force'
+        cmd += ' origin {}'.format(tag_name)
+        shellcmd.run(shlex.split(cmd))
 
     def verify_branch(self, branch_name):
         cmd = self.__git + ' show-branch remotes/origin/{}'.format(branch_name)
-        status = shellcmd.run(cmd.split(),status=True)
+        status = shellcmd.run(shlex.split(cmd),status=True)
         return status
 
-    def check_status(self):
-        cmd = self.__git + ' status --porcelain=v2'
-        output = shellcmd.run(cmd.split(), output=True)
+    def check_status(self, ignore_permissions=False):
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if ignore_permissions:
+            cmd += ' -c core.fileMode=false'
+        cmd += ' status --porcelain=v2'
+        output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
             output_list = output.splitlines()
 
@@ -231,12 +261,12 @@ class GitRepository(object):
 
     def __get_modified_files(self):
         cmd = self.__git + ' diff --name-only'
-        output = shellcmd.run(cmd.split(), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
     def __get_untracked_files(self):
         cmd = self.__git + ' ls-files --others --exclude-standard'
-        output = shellcmd.run(cmd.split(), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
     def get_changed_files(self, untracked=False):
@@ -247,16 +277,16 @@ class GitRepository(object):
 
     def stage_file(self, myfile):
         cmd = self.__git + ' add {}'.format(myfile)
-        shellcmd.run(cmd.split())
+        shellcmd.run(shlex.split(cmd))
 
     def get_staged_files(self):
         cmd = self.__git + ' diff --name-only --staged'
-        output = shellcmd.run(cmd.split(), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
     def unstage_file(self, myfile):
         cmd = self.__git + ' reset -- {}'.format(myfile)
-        shellcmd.run(cmd.split())
+        shellcmd.run(shlex.split(cmd))
 
     def commit_files(self, message, tf_file=None):
         if tf_file:
@@ -267,17 +297,14 @@ class GitRepository(object):
             raise Exception("This should not happen")
         shellcmd.run(cmd)
 
-    def push(self,tags):
-        if tags:
-            cmd = self.__git + ' push --tags {}'.format(self.__remote)
-        else:
-            cmd = self.__git + ' push -u {}'.format(self.__remote)
-        return shellcmd.run(cmd.split(), output=True).strip()
+    def push(self):
+        cmd = self.__git + ' push -u {}'.format(self.__remote)
+        return shellcmd.run(shlex.split(cmd), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch, commit_type):
         if commit_type == 'h':
             cmd = self.__git + ' cat-file -e {}'.format(branch)
-            status = shellcmd.run(cmd.split(), status=True)
+            status = shellcmd.run(shlex.split(cmd), status=True)
             if status != 0:
                 msg = 'Hash {} does not exist on {}'.format(branch, self.__remote)
                 msg += " Have you run 'mepo push'?"
@@ -294,24 +321,26 @@ class GitRepository(object):
             else:
                 raise RuntimeError("Should not get here")
             cmd = self.__git + ' ls-remote {} refs/{}/{}'.format(self.__remote, reftype, branch)
-            output = shellcmd.run(cmd.split(), output=True).strip()
+            output = shellcmd.run(shlex.split(cmd), stdout=True).strip()
             if not output:
-                msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
-                msg += " Have you run 'mepo push'?"
-                raise RuntimeError(msg)
+                #msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
+                #msg += " Have you run 'mepo push'?"
+                #raise RuntimeError(msg)
+                cmd = self.__git + ' rev-parse HEAD'
+            output = shellcmd.run(shlex.split(cmd), output=True).strip()
             return output.split()[0]
 
     def get_local_latest_commit_id(self):
         cmd = self.__git + ' rev-parse HEAD'
-        return shellcmd.run(cmd.split(), output=True).strip()
+        return shellcmd.run(shlex.split(cmd), output=True).strip()
 
     def pull(self):
         cmd = self.__git + ' pull'
-        shellcmd.run(cmd.split())
+        return shellcmd.run(shlex.split(cmd), output=True).strip()
 
     def get_version(self):
         cmd = self.__git + ' show -s --pretty=%D HEAD'
-        output = shellcmd.run(cmd.split(), output=True)
+        output = shellcmd.run(shlex.split(cmd), output=True)
         if output.startswith('HEAD ->'): # an actual branch
             detached = False
             name = output.split(',')[0].split('->')[1].strip()
@@ -323,19 +352,21 @@ class GitRepository(object):
                 name = tmp[5:]
                 tYpe = 't'
             else:
-                cmd_for_branch = self.__git + ' reflog HEAD -n 1'
-                reflog_output = shellcmd.run(cmd_for_branch.split(), output=True)
-                name = reflog_output.split()[-1].strip()
+                # This was needed for when we weren't explicitly detaching on clone
+                #cmd_for_branch = self.__git + ' reflog HEAD -n 1'
+                #reflog_output = shellcmd.run(shlex.split(cmd_for_branch), output=True)
+                #name = reflog_output.split()[-1].strip()
+                name = output.split()[-1].strip()
                 tYpe = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
-            hash_out = shellcmd.run(cmd.split(), output=True)
+            hash_out = shellcmd.run(shlex.split(cmd), output=True)
             detached = True
             name = hash_out.rstrip()
             tYpe = 'h'
         elif output.startswith('grafted'):
             cmd = self.__git + ' describe --always'
-            hash_out = shellcmd.run(cmd.split(), output=True)
+            hash_out = shellcmd.run(shlex.split(cmd), output=True)
             detached = True
             name = hash_out.rstrip()
             tYpe = 'h'
@@ -343,5 +374,5 @@ class GitRepository(object):
 
 def get_current_remote_url():
     cmd = 'git remote get-url origin'
-    output = shellcmd.run(cmd.split(), output=True).strip()
+    output = shellcmd.run(shlex.split(cmd), output=True).strip()
     return output

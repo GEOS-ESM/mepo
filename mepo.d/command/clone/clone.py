@@ -1,18 +1,22 @@
 from state.state    import MepoState, StateDoesNotExistError
 from repository.git import GitRepository
 from command.init   import init as mepo_init
-from utilities      import shellcmd
+from utilities      import shellcmd, colors
 from urllib.parse   import urlparse
 
 import os
 import pathlib
 import shutil
+import shlex
 
 def run(args):
 
     # This protects against someone using branch without a URL
     if args.branch and not args.repo_url:
         raise RuntimeError("The branch argument can only be used with a URL")
+
+    if args.allrepos and not args.branch:
+        raise RuntimeError("The allrepos option must be used with a branch/tag.")
 
     # If you pass in a config, with clone, it could be outside the repo.
     # So use the full path
@@ -38,7 +42,7 @@ def run(args):
             else:
                 git_url_directory = last_url_node
 
-            local_clone(args.repo_url,args.branch)
+            local_clone(args.repo_url,args.branch,git_url_directory)
             os.chdir(git_url_directory)
 
     # Copy the new file into the repo only if we pass it in
@@ -65,21 +69,34 @@ def run(args):
             version = comp.version.name
             version = version.replace('origin/','')
             recurse = comp.recurse_submodules
-            git.clone(version,recurse)
+            # We need the type to handle hashes in components.yaml
+            type = comp.version.type
+            git.clone(version,recurse,type)
             if comp.sparse:
                 git.sparsify(comp.sparse)
-            #git.checkout(comp.version.name)
             print_clone_info(comp, max_namelen)
+
+    if args.allrepos:
+        for comp in allcomps:
+            if not comp.fixture:
+                git = GitRepository(comp.remote, comp.local)
+                print("Checking out %s in %s" %
+                        (colors.YELLOW + args.branch + colors.RESET,
+                        colors.RESET + comp.name + colors.RESET))
+                git.checkout(args.branch,detach=True)
 
 def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
     print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = name_width))
 
 def local_clone(url,branch=None,directory=None):
-    cmd = 'git clone '
+    cmd1 = 'git clone '
     if branch:
-        cmd += '--branch {} '.format(branch)
-    cmd += '--quiet {}'.format(url)
+        cmd1 += '--branch {} '.format(branch)
+    cmd1 += '--quiet {}'.format(url)
     if directory:
-        cmd += ' {}'.format(directory)
-    shellcmd.run(cmd.split())
+        cmd1 += ' "{}"'.format(directory)
+    shellcmd.run(shlex.split(cmd1))
+    if branch:
+        cmd2 = f'git -C {directory} checkout --detach {branch}'
+        shellcmd.run(shlex.split(cmd2))

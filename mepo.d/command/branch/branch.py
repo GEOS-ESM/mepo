@@ -2,13 +2,13 @@ import subprocess as sp
 
 from state.state import MepoState
 
-from command.branch.brlist import brlist
+from command.branch.list   import list
 from command.branch.create import create
 from command.branch.delete import delete
 
 def run(args):
     d = {
-        'list': brlist,
+        'list': list,
         'create': create,
         'delete': delete,
     }
