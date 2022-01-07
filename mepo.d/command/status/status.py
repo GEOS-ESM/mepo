@@ -24,8 +24,8 @@ def check_component_status(comp, ignore):
     internal_state_branch_name = git.get_version()[0]
 
     # This can return non "origin/" names for detached head branches
-    curr_ver = version_to_string(git.get_version())
-    orig_ver = version_to_string(comp.version)
+    curr_ver = version_to_string(git.get_version(),git)
+    orig_ver = version_to_string(comp.version,git)
 
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver,curr_ver,git)

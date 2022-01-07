@@ -2,7 +2,7 @@ from collections import namedtuple
 
 MepoVersion = namedtuple('MepoVersion', ['name', 'type', 'detached'])
 
-def version_to_string(version):
+def version_to_string(version,git=None):
     version_name     = version[0]
     version_type     = version[1]
     version_detached = version[2]
@@ -11,7 +11,11 @@ def version_to_string(version):
         # We remove the "origin/" from the internal detached branch name
         # for clarity in mepo status output
         version_name = version_name.replace('origin/','')
-        s = f'({version_type}) {version_name} (DH)'
+        if version_type == 'b' and git:
+            cur_hash = git.rev_parse(short=True).strip()
+            s = f'({version_type}) {version_name} (DH, {cur_hash})'
+        else:
+            s = f'({version_type}) {version_name} (DH)'
     else:
         s = f'({version_type}) {version_name}'
     return s
