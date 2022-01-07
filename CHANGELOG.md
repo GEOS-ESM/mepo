@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added `--ignore-permissions` flag to `status` and `diff` to allow the commands to ignore permissions changes
 - Add `--name-status` flag to `mepo diff`
+- Add `patch` commands to mepo to create and apply patches.
 
 ### Changed
 
