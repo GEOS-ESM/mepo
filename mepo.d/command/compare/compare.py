@@ -13,8 +13,8 @@ def run(args):
     print_header(max_namelen, max_origlen)
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
-        curr_ver = version_to_string(git.get_version())
-        orig_ver = version_to_string(comp.version)
+        curr_ver = version_to_string(git.get_version(),git)
+        orig_ver = version_to_string(comp.version,git)
 
         # This command is to try and work with git tag oddities
         curr_ver = sanitize_version_string(orig_ver,curr_ver,git)

@@ -86,6 +86,12 @@ class GitRepository(object):
         cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
         return shellcmd.run(shlex.split(cmd), output=True)
 
+    def rev_parse(self, short=False):
+        cmd = self.__git + ' rev-parse --verify HEAD'
+        if short:
+            cmd += ' --short'
+        return shellcmd.run(shlex.split(cmd), output=True)
+
     def list_stash(self):
         cmd = self.__git + ' stash list'
         return shellcmd.run(shlex.split(cmd), output=True)
@@ -112,9 +118,14 @@ class GitRepository(object):
         return output.rstrip()
 
     def run_diff(self, args=None):
-        cmd = self.__git + ' diff --color'
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if args.ignore_permissions:
+            cmd += ' -c core.fileMode=false'
+        cmd += ' diff --color'
         if args.name_only:
             cmd += ' --name-only'
+        if args.name_status:
+            cmd += ' --name-status'
         if args.staged:
             cmd += ' --staged'
         output = shellcmd.run(shlex.split(cmd),output=True)
@@ -171,8 +182,11 @@ class GitRepository(object):
         status = shellcmd.run(shlex.split(cmd),status=True)
         return status
 
-    def check_status(self):
-        cmd = self.__git + ' status --porcelain=v2'
+    def check_status(self, ignore_permissions=False):
+        cmd = 'git -C {}'.format(self.__full_local_path)
+        if ignore_permissions:
+            cmd += ' -c core.fileMode=false'
+        cmd += ' status --porcelain=v2'
         output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
             output_list = output.splitlines()

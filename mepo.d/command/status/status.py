@@ -13,10 +13,10 @@ def run(args):
     allcomps = MepoState.read_state()
     pool = mp.Pool()
     atexit.register(pool.close)
-    result = pool.map(check_component_status, allcomps)
+    result = pool.starmap(check_component_status, [(comp, args.ignore_permissions) for comp in allcomps])
     print_status(allcomps, result)
 
-def check_component_status(comp):
+def check_component_status(comp, ignore):
     git = GitRepository(comp.remote, comp.local)
 
     # version_to_string can strip off 'origin/' for display purposes
@@ -24,13 +24,13 @@ def check_component_status(comp):
     internal_state_branch_name = git.get_version()[0]
 
     # This can return non "origin/" names for detached head branches
-    curr_ver = version_to_string(git.get_version())
-    orig_ver = version_to_string(comp.version)
+    curr_ver = version_to_string(git.get_version(),git)
+    orig_ver = version_to_string(comp.version,git)
 
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-    return (curr_ver, internal_state_branch_name, git.check_status())
+    return (curr_ver, internal_state_branch_name, git.check_status(ignore))
 
 def print_status(allcomps, result):
     orig_width = len(max([comp.name for comp in allcomps], key=len))
