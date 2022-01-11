@@ -42,6 +42,15 @@ def print_diff(comp, args, output):
         print(line.rstrip())
     print(horiz_line)
 
-def _get_relative_path(path):
-    full_local_path = os.path.join(MepoState.get_root_dir(),comp.local)
+def _get_relative_path(local_path):
+    """
+    Get the relative path when given a local path.
+
+    local_path: The path to a subrepo as known by mepo (relative to the .mepo directory)
+    """
+
+    # This creates a full path on the disk from the root of mepo and the local_path
+    full_local_path=os.path.join(MepoState.get_root_dir(),local_path)
+
+    # We return the path relative to where we currently are
     return os.path.relpath(full_local_path, os.getcwd())
