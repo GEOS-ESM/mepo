@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.40.0] - 2022-01-11
+
+### Added
+
+- Added `--ignore-case` option to `mepo whereis`
+
+### Changed
+
+- Updated `mepo-cd` functions and aliases to use ignore-case variant of `mepo whereis --ignore-case` by default
+  - This allows for simpler use of `mepo-cd` as you don't have to exactly match the name of a component
+
 ## [1.39.0] - 2022-01-07
 
 ### Added

@@ -34,15 +34,23 @@ def check_component_diff(comp, args):
 def print_diff(comp, args, output):
     columns, lines = get_terminal_size(fallback=(80,20))
     horiz_line = u'\u2500'*columns
-    
-    root_dir = MepoState.get_root_dir()
-    full_local_path = os.path.join(root_dir,comp.local)
-    print("{} (location: {}):".format(comp.name,_get_relative_path(full_local_path)))
+
+    print("{} (location: {}):".format(comp.name,_get_relative_path(comp.local)))
     print()
     for line in output.split('\n'):
         #print('   |', line.rstrip())
         print(line.rstrip())
     print(horiz_line)
 
-def _get_relative_path(path):
-    return os.path.relpath(path, os.getcwd())
+def _get_relative_path(local_path):
+    """
+    Get the relative path when given a local path.
+
+    local_path: The path to a subrepo as known by mepo (relative to the .mepo directory)
+    """
+
+    # This creates a full path on the disk from the root of mepo and the local_path
+    full_local_path=os.path.join(MepoState.get_root_dir(),local_path)
+
+    # We return the path relative to where we currently are
+    return os.path.relpath(full_local_path, os.getcwd())
