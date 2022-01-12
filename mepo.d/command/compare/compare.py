@@ -8,8 +8,7 @@ VER_LEN = 30
 
 def run(args):
     allcomps = MepoState.read_state()
-    max_namelen = len(max([x.name for x in allcomps], key=len))
-    max_origlen = len(max([version_to_string(x.version) for x in allcomps], key=len))
+    max_namelen, max_origlen = calculate_header_lengths(allcomps)
     print_header(max_namelen, max_origlen)
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
@@ -20,6 +19,17 @@ def run(args):
         curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
         print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen)
+
+def calculate_header_lengths(allcomps):
+    names = []
+    versions = []
+    for comp in allcomps:
+        git = GitRepository(comp.remote, comp.local)
+        names.append(comp.name)
+        versions.append(version_to_string(comp.version,git))
+    max_namelen = len(max(names, key=len))
+    max_origlen = len(max(versions, key=len))
+    return max_namelen, max_origlen
 
 def print_header(max_namelen, max_origlen):
     FMT_VAL = (max_namelen, max_namelen, max_origlen)

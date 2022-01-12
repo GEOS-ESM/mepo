@@ -15,7 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-## [1.40.0] - 2022-01-11
+## [1.40.0] - 2022-01-12
+
+### Fixed
+
+- Fixed the output of `mepo compare` to handle detached branch hashes
 
 ### Added
 
