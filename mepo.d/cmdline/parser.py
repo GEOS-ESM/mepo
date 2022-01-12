@@ -312,6 +312,10 @@ class MepoArgParser(object):
             nargs = '?',
             default = None,
             help = "Component to get location of")
+        whereis.add_argument(
+            '-i','--ignore-case',
+            action = 'store_true',
+            help = 'Ignore case for whereis')
 
     def __stage(self):
         stage = self.subparsers.add_parser(

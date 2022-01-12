@@ -18,7 +18,7 @@ function mepo-cd () {
     if [ "$#" -eq 0 ]; then
        output=$(mepo whereis _root)
     else
-       output=$(mepo whereis $1)
+       output=$(mepo whereis -i $1)
     fi
     if [ $? -eq 0 ]; then
         cd $output
