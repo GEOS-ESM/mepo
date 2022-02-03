@@ -20,4 +20,4 @@ def run(args):
                     print("Checking out branch %s in %s" %
                             (colors.YELLOW + branch + colors.RESET,
                             colors.RESET + comp.name + colors.RESET))
-                git.checkout(branch)
+                git.checkout(branch,args.detach)

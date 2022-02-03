@@ -114,6 +114,10 @@ class MepoArgParser(object):
             'status',
             description = 'Check current status of all components',
             aliases=mepoconfig.get_command_alias('status'))
+        status.add_argument(
+            '--ignore-permissions',
+            action = 'store_true',
+            help = 'Tells command to ignore changes in file permissions.')
 
     def __restore_state(self):
         restore_state = self.subparsers.add_parser(
@@ -130,6 +134,14 @@ class MepoArgParser(object):
             '--name-only',
             action = 'store_true',
             help = 'Show only names of changed files')
+        diff.add_argument(
+            '--name-status',
+            action = 'store_true',
+            help = 'Show name-status of changed files')
+        diff.add_argument(
+            '--ignore-permissions',
+            action = 'store_true',
+            help = 'Tells command to ignore changes in file permissions.')
         diff.add_argument(
             '--staged',
             action = 'store_true',
@@ -164,6 +176,10 @@ class MepoArgParser(object):
             '-q', '--quiet',
             action = 'store_true',
             help = 'Suppress prints')
+        checkout.add_argument(
+            '--detach',
+            action = 'store_true',
+            help = 'Detach upon checkout')
 
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
@@ -178,6 +194,10 @@ class MepoArgParser(object):
             '-q', '--quiet',
             action = 'store_true',
             help = 'Suppress prints')
+        checkout_if_exists.add_argument(
+            '--detach',
+            action = 'store_true',
+            help = 'Detach on checkout')
         checkout_if_exists.add_argument(
             '-n','--dry-run',
             action = 'store_true',
@@ -292,6 +312,10 @@ class MepoArgParser(object):
             nargs = '?',
             default = None,
             help = "Component to get location of")
+        whereis.add_argument(
+            '-i','--ignore-case',
+            action = 'store_true',
+            help = 'Ignore case for whereis')
 
     def __stage(self):
         stage = self.subparsers.add_parser(
