@@ -18,7 +18,7 @@ def run(args):
         # This command is to try and work with git tag oddities
         curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-        print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen)
+        print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen, args.brief)
 
 def calculate_header_lengths(allcomps):
     names = []
@@ -37,13 +37,17 @@ def print_header(max_namelen, max_origlen):
     print(FMTHEAD.format("Repo","Original","Current"))
     print(FMTHEAD.format("-"*80,"-"*max_origlen,"-"*7))
 
-def print_cmp(name, orig, curr, name_width, orig_width):
+def print_cmp(name, orig, curr, name_width, orig_width, brief):
     name_blank = ''
     #if orig not in curr:
     if curr not in orig:
         name = colors.RED + name + colors.RESET
         name_blank = colors.RED + name_blank + colors.RESET
         name_width += len(colors.RED) + len(colors.RESET)
+    else:
+        # This only prints differing repos if --brief is passed in
+        if brief:
+            return
     FMT_VAL = (name_width, name_width, orig_width)
 
     FMT0 = '{:<%s.%ss} | {:<%ss} | {:<s}' % FMT_VAL

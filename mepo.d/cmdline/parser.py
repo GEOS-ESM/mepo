@@ -298,6 +298,10 @@ class MepoArgParser(object):
             'compare',
             description = 'Compare current and original states of all components',
             aliases=mepoconfig.get_command_alias('compare'))
+        compare.add_argument(
+            '--brief',
+            action = 'store_true',
+            help = 'Only show differing repos')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(
