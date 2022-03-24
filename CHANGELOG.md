@@ -11,9 +11,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `--brief` option to `compare` to only show differing repos
-
 ### Changed
+
+- Changed the default behavior of `compare` to only show differing repos. Use `--all` to see all repos
 
 ### Removed
 
