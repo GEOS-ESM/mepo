@@ -19,6 +19,8 @@ from command.develop import develop as mepo_develop
 
 class TestMepoCommands(unittest.TestCase):
 
+    maxDiff=None
+
     @classmethod
     def __checkout_fixture(cls):
         remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
