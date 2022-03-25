@@ -13,9 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Changed the default behavior of `compare` to only show differing repos. Use `--all` to see all repos
-
 ### Removed
+
+## [1.41.0] - 2022-03-25
+
+### Changed
+
+- Changed the default behavior of `compare` to only show differing repos. Use `--all` to see all repos
+- Updated unit tests for new `compare` behavior
 
 ## [1.40.0] - 2022-01-12
 
