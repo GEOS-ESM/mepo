@@ -84,6 +84,7 @@ class TestMepoCommands(unittest.TestCase):
         sys.stdout = output = StringIO()
         args.all=False
         args.nocolor=True
+        args.wrap=True
         mepo_compare.run(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'compare_brief_output.txt'), 'r') as fin:
@@ -94,6 +95,7 @@ class TestMepoCommands(unittest.TestCase):
         sys.stdout = output = StringIO()
         args.all=True
         args.nocolor=True
+        args.wrap=True
         mepo_compare.run(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'compare_full_output.txt'), 'r') as fin:

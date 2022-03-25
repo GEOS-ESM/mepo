@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changed the default behavior of `compare` to only show differing repos. Use `--all` to see all repos
+- Add `--nocolor` option to `status` and `compare` (for unit testing)
+- Add `--wrap` option to `compare` (for unit testing)
 - Updated unit tests for new `compare` behavior
 
 ## [1.40.0] - 2022-01-12

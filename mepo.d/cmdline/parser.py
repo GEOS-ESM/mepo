@@ -311,6 +311,10 @@ class MepoArgParser(object):
             '--nocolor',
             action = 'store_true',
             help = 'Tells command to not display colors.')
+        compare.add_argument(
+            '--wrap',
+            action = 'store_true',
+            help = 'Tells command to ignore terminal size and wrap')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(

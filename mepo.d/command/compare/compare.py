@@ -22,7 +22,7 @@ def run(args):
             # This command is to try and work with git tag oddities
             curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-            print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen, args.all, args.nocolor)
+            print_cmp(comp.name, orig_ver, curr_ver, max_namelen, max_origlen, args.all, args.nocolor, args.wrap)
 
 def any_differing_repos(allcomps):
 
@@ -56,7 +56,7 @@ def print_header(max_namelen, max_origlen):
     print(FMTHEAD.format("Repo","Original","Current"))
     print(FMTHEAD.format("-"*80,"-"*max_origlen,"-"*7))
 
-def print_cmp(name, orig, curr, name_width, orig_width, all_repos=False, nocolor=False):
+def print_cmp(name, orig, curr, name_width, orig_width, all_repos=False, nocolor=False, wrap=False):
     name_blank = ''
     #if orig not in curr:
     if curr not in orig:
@@ -76,7 +76,7 @@ def print_cmp(name, orig, curr, name_width, orig_width, all_repos=False, nocolor
 
     columns, lines = get_terminal_size(fallback=(80,20))
 
-    if len(FMT0.format(name, orig, curr)) > columns:
+    if (not wrap) and (len(FMT0.format(name, orig, curr)) > columns):
         print(FMT1.format(name, orig + ' ...'))
         print(FMT2.format(name_blank, '...', curr))
     else:
