@@ -118,6 +118,10 @@ class MepoArgParser(object):
             '--ignore-permissions',
             action = 'store_true',
             help = 'Tells command to ignore changes in file permissions.')
+        status.add_argument(
+            '--nocolor',
+            action = 'store_true',
+            help = 'Tells status to not display colors.')
 
     def __restore_state(self):
         restore_state = self.subparsers.add_parser(
@@ -296,8 +300,21 @@ class MepoArgParser(object):
     def __compare(self):
         compare = self.subparsers.add_parser(
             'compare',
-            description = 'Compare current and original states of all components',
+            description = 'Compare current and original states of all components. '
+                          'Will only show differing repos unless --all is passed in',
             aliases=mepoconfig.get_command_alias('compare'))
+        compare.add_argument(
+            '--all',
+            action = 'store_true',
+            help = 'Show all repos, not only differing repos')
+        compare.add_argument(
+            '--nocolor',
+            action = 'store_true',
+            help = 'Tells command to not display colors.')
+        compare.add_argument(
+            '--wrap',
+            action = 'store_true',
+            help = 'Tells command to ignore terminal size and wrap')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(
