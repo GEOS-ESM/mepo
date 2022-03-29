@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.42.0] - 2022-03-29
+
+### Added
+
+- Added `-b/--ignore-space-change` option to `mepo diff`
+
 ## [1.41.0] - 2022-03-25
 
 ### Changed

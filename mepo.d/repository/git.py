@@ -128,6 +128,8 @@ class GitRepository(object):
             cmd += ' --name-status'
         if args.staged:
             cmd += ' --staged'
+        if args.ignore_space_change:
+            cmd += ' --ignore-space-change'
         output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
