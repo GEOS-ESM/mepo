@@ -151,6 +151,10 @@ class MepoArgParser(object):
             action = 'store_true',
             help = 'Show diff of staged changes')
         diff.add_argument(
+            '-b','--ignore-space-change',
+            action = 'store_true',
+            help = 'Ignore changes in amount of whitespace')
+        diff.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
