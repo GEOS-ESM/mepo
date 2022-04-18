@@ -71,7 +71,7 @@ def run(args):
             recurse = comp.recurse_submodules
             # We need the type to handle hashes in components.yaml
             type = comp.version.type
-            git.clone(version,recurse,type)
+            git.clone(version,recurse,type,comp.name)
             if comp.sparse:
                 git.sparsify(comp.sparse)
             print_clone_info(comp, max_namelen)
