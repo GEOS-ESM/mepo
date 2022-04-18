@@ -1,9 +1,13 @@
-class StateDoesNotExistError(Exception):
+class StateDoesNotExistError(SystemExit):
     """Raised when the mepo state does not exist"""
     pass
 
-class StateAlreadyInitializedError(Exception):
+class StateAlreadyInitializedError(SystemExit):
     """Raised when the mepo state has already been initialized"""
+    pass
+
+class RepoAlreadyClonedError(SystemExit):
+    """Raised when the repository has already been cloned"""
     pass
 
 class ConfigFileNotFoundError(FileNotFoundError):
