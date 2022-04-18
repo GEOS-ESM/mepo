@@ -26,7 +26,7 @@ class GitRepository(object):
             self.__remote = remote_url
 
         root_dir = MepoState.get_root_dir()
-        full_local_path=os.path.join(root_dir,local_path)
+        full_local_path=os.path.normpath(os.path.join(root_dir,local_path))
         self.__full_local_path=full_local_path
         self.__git = 'git -C "{}"'.format(self.__full_local_path)
 
