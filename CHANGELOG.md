@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.43.0] - 2022-04-18
+
+### Fixed
+
+- Fixed issue where you could issue `mepo clone` in already cloned multirepos (#224)
+
+### Changed
+
+- Changed StateDoesNotExistError and StateAlreadyInitializedError to be subclasses of `SystemExit`
+- Changed some git subcommands to use full local path
+
 ## [1.42.0] - 2022-03-29
 
 ### Added
