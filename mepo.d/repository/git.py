@@ -222,6 +222,8 @@ class GitRepository(object):
                     verbose_status = colors.RED   + "modified, not staged" + colors.RESET
                 elif short_status == ".A":
                     verbose_status = colors.RED   + "added, not staged" + colors.RESET
+                elif short_status == ".T":
+                    verbose_status = colors.RED   + "typechange, not staged" + colors.RESET
 
                 elif short_status == "D.":
                     verbose_status = colors.GREEN + "deleted, staged" + colors.RESET
@@ -229,6 +231,8 @@ class GitRepository(object):
                     verbose_status = colors.GREEN + "modified, staged" + colors.RESET
                 elif short_status == "A.":
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET
+                elif short_status == "T.":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET
 
                 elif short_status == "MM":
                     verbose_status = colors.GREEN + "modified, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
@@ -239,6 +243,11 @@ class GitRepository(object):
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
                 elif short_status == "AD":
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                elif short_status == "TM":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "TD":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
 
                 elif short_status == "R.":
                     verbose_status = colors.GREEN + "renamed" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET
