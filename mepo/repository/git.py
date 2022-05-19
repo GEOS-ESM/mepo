@@ -4,6 +4,7 @@ import subprocess
 import shlex
 
 from urllib.parse import urljoin
+from state.exceptions import RepoAlreadyClonedError
 
 from mepo.state.state import MepoState
 from mepo.utilities import shellcmd
@@ -26,7 +27,7 @@ class GitRepository(object):
             self.__remote = remote_url
 
         root_dir = MepoState.get_root_dir()
-        full_local_path=os.path.join(root_dir,local_path)
+        full_local_path=os.path.normpath(os.path.join(root_dir,local_path))
         self.__full_local_path=full_local_path
         self.__git = 'git -C "{}"'.format(self.__full_local_path)
 
@@ -39,16 +40,20 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, type):
+    def clone(self, version, recurse, type, comp_name):
         cmd1 = 'git clone '
         if recurse:
             cmd1 += '--recurse-submodules '
 
-        cmd1 += '--quiet {} {}'.format(self.__remote, self.__local)
-        shellcmd.run(shlex.split(cmd1))
-        cmd2 = 'git -C {} checkout {}'.format(self.__local, version)
+        cmd1 += '--quiet {} {}'.format(self.__remote, self.__full_local_path)
+        try:
+            shellcmd.run(shlex.split(cmd1))
+        except subprocess.CalledProcessError:
+            raise RepoAlreadyClonedError(f'Error! Repo [{comp_name}] already cloned')
+
+        cmd2 = 'git -C {} checkout {}'.format(self.__full_local_path, version)
         shellcmd.run(shlex.split(cmd2))
-        cmd3 = 'git -C {} checkout --detach'.format(self.__local)
+        cmd3 = 'git -C {} checkout --detach'.format(self.__full_local_path)
         shellcmd.run(shlex.split(cmd3))
 
         # NOTE: The above looks odd because of a quirk of git. You can't do
@@ -65,7 +70,7 @@ class GitRepository(object):
            shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
-        dst = os.path.join(self.__local, '.git', 'info', 'sparse-checkout')
+        dst = os.path.join(self.__full_local_path, '.git', 'info', 'sparse-checkout')
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(sparse_config, dst)
         cmd1 = self.__git + ' config core.sparseCheckout true'
@@ -129,6 +134,8 @@ class GitRepository(object):
             cmd += ' --name-status'
         if args.staged:
             cmd += ' --staged'
+        if args.ignore_space_change:
+            cmd += ' --ignore-space-change'
         output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
@@ -216,6 +223,8 @@ class GitRepository(object):
                     verbose_status = colors.RED   + "modified, not staged" + colors.RESET
                 elif short_status == ".A":
                     verbose_status = colors.RED   + "added, not staged" + colors.RESET
+                elif short_status == ".T":
+                    verbose_status = colors.RED   + "typechange, not staged" + colors.RESET
 
                 elif short_status == "D.":
                     verbose_status = colors.GREEN + "deleted, staged" + colors.RESET
@@ -223,6 +232,8 @@ class GitRepository(object):
                     verbose_status = colors.GREEN + "modified, staged" + colors.RESET
                 elif short_status == "A.":
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET
+                elif short_status == "T.":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET
 
                 elif short_status == "MM":
                     verbose_status = colors.GREEN + "modified, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
@@ -233,6 +244,11 @@ class GitRepository(object):
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
                 elif short_status == "AD":
                     verbose_status = colors.GREEN + "added, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
+
+                elif short_status == "TM":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET + " with " + colors.RED + "unstaged changes" + colors.RESET
+                elif short_status == "TD":
+                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET + " but " + colors.RED + "deleted, not staged" + colors.RESET
 
                 elif short_status == "R.":
                     verbose_status = colors.GREEN + "renamed" + colors.RESET + " as " + colors.YELLOW + new_file_name + colors.RESET

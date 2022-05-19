@@ -15,6 +15,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.44.0] - 2022-04-28
+
+### Fixed
+
+- Add support for typechange in `mepo status`
+
+## [1.43.0] - 2022-04-18
+
+### Fixed
+
+- Fixed issue where you could issue `mepo clone` in already cloned multirepos (#224)
+
+### Changed
+
+- Changed StateDoesNotExistError and StateAlreadyInitializedError to be subclasses of `SystemExit`
+- Changed some git subcommands to use full local path
+
+## [1.42.0] - 2022-03-29
+
+### Added
+
+- Added `-b/--ignore-space-change` option to `mepo diff`
+
+## [1.41.0] - 2022-03-25
+
+### Changed
+
+- Changed the default behavior of `compare` to only show differing repos. Use `--all` to see all repos
+- Add `--nocolor` option to `status` and `compare` (for unit testing)
+- Add `--wrap` option to `compare` (for unit testing)
+- Updated unit tests for new `compare` behavior
+
 ## [1.40.0] - 2022-01-12
 
 ### Fixed

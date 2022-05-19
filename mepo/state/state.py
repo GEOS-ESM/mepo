@@ -56,7 +56,7 @@ class MepoState(object):
     @classmethod
     def initialize(cls, project_config_file, directory_style):
         if cls.exists():
-            raise StateAlreadyInitializedError('mepo state already exists')
+            raise StateAlreadyInitializedError('Error! mepo state already exists')
         input_components = ConfigFile(project_config_file).read_file()
 
         num_fixture = 0
@@ -74,7 +74,7 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise StateDoesNotExistError('mepo state does not exist')
+            raise StateDoesNotExistError('Error! mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             try:
                 allcomps = pickle.load(fin)

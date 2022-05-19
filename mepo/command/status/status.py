@@ -14,7 +14,7 @@ def run(args):
     pool = mp.Pool()
     atexit.register(pool.close)
     result = pool.starmap(check_component_status, [(comp, args.ignore_permissions) for comp in allcomps])
-    print_status(allcomps, result)
+    print_status(allcomps, result, args.nocolor)
 
 def check_component_status(comp, ignore):
     git = GitRepository(comp.remote, comp.local)
@@ -32,7 +32,7 @@ def check_component_status(comp, ignore):
 
     return (curr_ver, internal_state_branch_name, git.check_status(ignore))
 
-def print_status(allcomps, result):
+def print_status(allcomps, result, nocolor=False):
     orig_width = len(max([comp.name for comp in allcomps], key=len))
     for index, comp in enumerate(allcomps):
         time.sleep(0.025)
@@ -42,9 +42,10 @@ def print_status(allcomps, result):
         if current_version.split()[1] == comp.version.name:
             component_name = comp.name
             width = orig_width
-        # Check to see if the current tag/branch is the same as the original...
-        # if the above check didn't succeed, we are different.
-        elif internal_state_branch_name not in comp.version.name:
+        # Check to see if the current tag/branch is the same as the
+        # original... if the above check didn't succeed, we are
+        # different and we colorize if asked for
+        elif (internal_state_branch_name not in comp.version.name) and not nocolor:
             component_name = colors.RED + comp.name + colors.RESET
             width = orig_width + len(colors.RED) + len(colors.RESET)
         else:
