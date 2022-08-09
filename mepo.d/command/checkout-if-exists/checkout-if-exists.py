@@ -19,7 +19,7 @@ def run(args):
             else:
                 if not args.quiet:
                     print("Checking out %s %s in %s" %
-                            (ref_type.lower,
+                            (ref_type.lower(),
                              colors.YELLOW + ref_name + colors.RESET,
                              colors.RESET + comp.name + colors.RESET))
                 git.checkout(ref_name,args.detach)
