@@ -184,10 +184,18 @@ class GitRepository(object):
         cmd += ' origin {}'.format(tag_name)
         shellcmd.run(shlex.split(cmd))
 
-    def verify_branch(self, branch_name):
-        cmd = self.__git + ' show-branch remotes/origin/{}'.format(branch_name)
-        status = shellcmd.run(shlex.split(cmd),status=True)
-        return status
+    def verify_branch_or_tag(self, ref_name):
+        branch_cmd = self.__git + f' show-branch remotes/origin/{ref_name}'
+        tag_cmd = self.__git + f' rev-parse {ref_name}'
+        branch_status = shellcmd.run(shlex.split(branch_cmd),status=True)
+        ref_type = "UNKNOWN"
+        if branch_status != 0:
+            status = shellcmd.run(shlex.split(tag_cmd),status=True)
+            ref_type = "Tag"
+        else:
+            status = branch_status
+            ref_type = "Branch"
+        return status, ref_type
 
     def check_status(self, ignore_permissions=False):
         cmd = 'git -C {}'.format(self.__full_local_path)

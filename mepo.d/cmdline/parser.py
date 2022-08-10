@@ -192,12 +192,12 @@ class MepoArgParser(object):
     def __checkout_if_exists(self):
         checkout_if_exists = self.subparsers.add_parser(
             'checkout-if-exists',
-            description = 'Switch to branch `branch-name` in any component where it is present. ',
+            description = 'Switch to branch or tag `ref-name` in any component where it is present. ',
             aliases=mepoconfig.get_command_alias('checkout-if-exists'))
         checkout_if_exists.add_argument(
-            'branch_name',
-            metavar = 'branch-name',
-            help = "Name of branch")
+            'ref_name',
+            metavar = 'ref-name',
+            help = "Name of branch or tag")
         checkout_if_exists.add_argument(
             '-q', '--quiet',
             action = 'store_true',
