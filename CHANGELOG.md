@@ -13,9 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Allow `checkout-if-exists` to work on tags or branches
-
 ### Removed
+
+## [1.45.0] - 2022-08-10
+
+### Changed
+
+- Allow `checkout-if-exists` to work on tags or branches
 
 ## [1.44.0] - 2022-04-28
 
