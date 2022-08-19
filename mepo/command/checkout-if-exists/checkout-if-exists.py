@@ -7,17 +7,19 @@ def run(args):
     allcomps = MepoState.read_state()
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
-        branch = args.branch_name
-        status = git.verify_branch(branch)
+        ref_name = args.ref_name
+        status, ref_type = git.verify_branch_or_tag(ref_name)
 
         if status == 0:
             if args.dry_run:
-                print("Branch %s exists in %s" %
-                        (colors.YELLOW + branch + colors.RESET,
+                print("%s %s exists in %s" %
+                        (ref_type,
+                         colors.YELLOW + ref_name + colors.RESET,
                          colors.RESET + comp.name + colors.RESET))
             else:
                 if not args.quiet:
-                    print("Checking out branch %s in %s" %
-                            (colors.YELLOW + branch + colors.RESET,
+                    print("Checking out %s %s in %s" %
+                            (ref_type.lower(),
+                             colors.YELLOW + ref_name + colors.RESET,
                             colors.RESET + comp.name + colors.RESET))
-                git.checkout(branch,args.detach)
+                git.checkout(ref_name,args.detach)
