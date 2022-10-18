@@ -283,8 +283,14 @@ class GitRepository(object):
 
         return output.rstrip()
 
-    def __get_modified_files(self):
-        cmd = self.__git + ' diff --name-only'
+    def __get_modified_files(self, orig_ver, comp_type):
+        if not orig_ver:
+            cmd = self.__git + ' diff --name-only'
+        else:
+            if comp_type == "b":
+                cmd = self.__git + ' diff --name-only origin/{}'.format(orig_ver)
+            else:
+                cmd = self.__git + ' diff --name-only {}'.format(orig_ver)
         output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
@@ -293,8 +299,8 @@ class GitRepository(object):
         output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
-    def get_changed_files(self, untracked=False):
-        changed_files = self.__get_modified_files()
+    def get_changed_files(self, untracked=False, orig_ver=None, comp_type=None):
+        changed_files = self.__get_modified_files(orig_ver, comp_type)
         if untracked:
             changed_files += self.__get_untracked_files()
         return changed_files

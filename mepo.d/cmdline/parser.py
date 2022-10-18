@@ -28,6 +28,7 @@ class MepoArgParser(object):
         self.__fetch()
         self.__checkout()
         self.__checkout_if_exists()
+        self.__changed_files()
         self.__branch()
         self.__tag()
         self.__stash()
@@ -210,6 +211,21 @@ class MepoArgParser(object):
             '-n','--dry-run',
             action = 'store_true',
             help = 'Dry-run only (lists repos where branch exists)')
+
+    def __changed_files(self):
+        changed_files = self.subparsers.add_parser(
+            'changed-files',
+            description = 'List files that have changes versus the state. By default runs against all components.',
+            aliases=mepoconfig.get_command_alias('changed-files'))
+        changed_files.add_argument(
+            '--full-path',
+            action = 'store_true',
+            help = 'Print with full path')
+        changed_files.add_argument(
+            'comp_name',
+            metavar = 'comp-name',
+            nargs = '*',
+            help = 'Component to list branches in')
 
     def __fetch(self):
         fetch = self.subparsers.add_parser(
