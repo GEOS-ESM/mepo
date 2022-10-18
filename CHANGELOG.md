@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add new `changed-files` command to list all changed files vs original state
-
 ### Changed
 
 ### Removed
+
+## [1.46.0] - 2022-10-18
+
+### Added
+
+- Add new `changed-files` command to list all changed files vs original state
 
 ## [1.45.0] - 2022-08-10
 
