@@ -74,6 +74,10 @@ class MepoTagArgParser(object):
             action = 'store_true',
             help = "Force push (be careful!)")
         push.add_argument(
+            '-d', '--delete',
+            action = 'store_true',
+            help = "Delete (be careful!)")
+        push.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
