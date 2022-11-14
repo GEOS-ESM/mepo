@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.47.0] - 2022-11-14
+
+### Added
+
+- Added ability to do `mepo tag push --delete` so you can delete a tag on the remote
+
 ## [1.46.0] - 2022-10-18
 
 ### Added
