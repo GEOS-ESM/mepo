@@ -9,7 +9,10 @@ def run(args):
     for comp in comps2tagpush:
         git = GitRepository(comp.remote, comp.local)
         git.push_tag(args.tag_name,args.force,args.delete)
-        print(f'Pushed tag {args.tag_name} to {comp.name}')
+        if args.delete:
+            print(f'Pushed deleted tag {args.tag_name} to {comp.name}')
+        else:
+            print(f'Pushed tag {args.tag_name} to {comp.name}')
 
 def _get_comps_to_list(specified_comps, allcomps):
     comps_to_list = allcomps
