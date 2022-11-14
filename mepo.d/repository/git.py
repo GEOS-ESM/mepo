@@ -177,10 +177,12 @@ class GitRepository(object):
         cmd = self.__git + ' tag -d {}'.format(tag_name)
         shellcmd.run(shlex.split(cmd))
 
-    def push_tag(self, tag_name, force):
+    def push_tag(self, tag_name, force, delete):
         cmd = self.__git + ' push'
         if force:
             cmd += ' --force'
+        if delete:
+            cmd += ' --delete'
         cmd += ' origin {}'.format(tag_name)
         shellcmd.run(shlex.split(cmd))
 
