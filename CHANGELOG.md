@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added new `reset` command to reset a mepo clone
 
+### Changed
+
+- Updated GitHub Actions
+
 ## [1.47.0] - 2022-11-14
 
 ### Added
