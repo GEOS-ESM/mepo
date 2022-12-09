@@ -36,6 +36,7 @@ class MepoArgParser(object):
         self.__pull()
         self.__pull_all()
         self.__compare()
+        self.__reset()
         self.__whereis()
         self.__stage()
         self.__unstage()
@@ -335,6 +336,26 @@ class MepoArgParser(object):
             '--wrap',
             action = 'store_true',
             help = 'Tells command to ignore terminal size and wrap')
+
+    def __reset(self):
+        reset = self.subparsers.add_parser(
+            'reset',
+            description = 'Reset the current mepo clone to the original state. '
+                          'This will delete all subrepos and does not check for uncommitted changes! '
+                          'Must be run in the root of the mepo clone.',
+            aliases=mepoconfig.get_command_alias('reset'))
+        reset.add_argument(
+            '-f','--force',
+            action = 'store_true',
+            help = 'Force action.')
+        reset.add_argument(
+            '--reclone',
+            action = 'store_true',
+            help = 'Reclone repos after reset.')
+        reset.add_argument(
+            '-n','--dry-run',
+            action = 'store_true',
+            help = 'Dry-run only')
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(

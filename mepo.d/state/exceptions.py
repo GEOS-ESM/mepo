@@ -17,3 +17,7 @@ class ConfigFileNotFoundError(FileNotFoundError):
 class SuffixNotRecognizedError(RuntimeError):
     """Raised when the config suffix is not recognized"""
     pass
+
+class NotInRootDirError(SystemExit):
+    """Raised when a command is run not in the root directory"""
+    pass
