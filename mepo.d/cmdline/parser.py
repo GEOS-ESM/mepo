@@ -340,7 +340,9 @@ class MepoArgParser(object):
     def __reset(self):
         reset = self.subparsers.add_parser(
             'reset',
-            description = 'Reset the current mepo clone to the original state. Must be run in the root of the mepo clone.',
+            description = 'Reset the current mepo clone to the original state. '
+                          'This will delete all subrepos and does not check for uncommitted changes! '
+                          'Must be run in the root of the mepo clone.',
             aliases=mepoconfig.get_command_alias('reset'))
         reset.add_argument(
             '-f','--force',
