@@ -12,15 +12,6 @@ from command.clone import clone as mepo_clone
 # of the project.
 
 def run(args):
-    # If a user has called this command without the force flag, we
-    # will ask them to confirm that they want to reset the project
-    if not args.force and not args.dry_run:
-        print(f"Are you sure you want to reset the project? If so, type 'yes' and press enter.", end=' ')
-        answer = input()
-        if answer != "yes":
-            print("Reset cancelled.")
-            return
-
     allcomps = MepoState.read_state()
 
     # Check to see that we are in the root directory of the project
@@ -33,6 +24,15 @@ def run(args):
         raise NotInRootDirError('Error! As a safety precaution, you must be in the root directory of the project to reset')
 
     # If we get this far, then we are in the root directory of the project
+
+    # If a user has called this command without the force flag, we
+    # will ask them to confirm that they want to reset the project
+    if not args.force and not args.dry_run:
+        print(f"Are you sure you want to reset the project? If so, type 'yes' and press enter.", end=' ')
+        answer = input()
+        if answer != "yes":
+            print("Reset cancelled.")
+            return
 
     # First, we need to delete all the subrepos
     # Loop over all the components in reverse (since we are deleting them)
