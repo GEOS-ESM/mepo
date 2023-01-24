@@ -38,7 +38,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
-        cls.tag = 'v1.5.0'
+        cls.tag = 'v1.13.0'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
