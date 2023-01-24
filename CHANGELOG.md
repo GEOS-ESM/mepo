@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- When running `compare`, use columns whose size is based on the longest branch name of a repo that has changed (unless `--all` is
+  passed in)
+
 ### Removed
 
 ## [1.48.0] - 2022-12-09

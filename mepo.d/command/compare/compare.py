@@ -12,7 +12,7 @@ def run(args):
     if not any_differing_repos(allcomps):
         print(f'No repositories have changed')
     else:
-        max_namelen, max_origlen = calculate_header_lengths(allcomps)
+        max_namelen, max_origlen = calculate_header_lengths(allcomps, args.all)
         print_header(max_namelen, max_origlen)
         for comp in allcomps:
             git = GitRepository(comp.remote, comp.local)
@@ -39,13 +39,27 @@ def any_differing_repos(allcomps):
 
     return False
 
-def calculate_header_lengths(allcomps):
+def calculate_header_lengths(allcomps, all_repos=False):
     names = []
     versions = []
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
-        names.append(comp.name)
-        versions.append(version_to_string(comp.version,git))
+
+        # We want to base the display on changed repos
+        # if we don't ask for all repos
+        if not all_repos:
+            curr_ver = version_to_string(git.get_version(),git)
+            orig_ver = version_to_string(comp.version,git)
+
+            # This command is to try and work with git tag oddities
+            curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
+
+            if curr_ver not in orig_ver:
+                names.append(comp.name)
+                versions.append(version_to_string(comp.version,git))
+        else:
+            names.append(comp.name)
+            versions.append(version_to_string(comp.version,git))
     max_namelen = len(max(names, key=len))
     max_origlen = len(max(versions, key=len))
     return max_namelen, max_origlen
