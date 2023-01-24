@@ -61,6 +61,8 @@ def calculate_header_lengths(allcomps, all_repos=False):
             names.append(comp.name)
             versions.append(version_to_string(comp.version,git))
     max_namelen = len(max(names, key=len))
+    # Note: max_namelen could be 3 characters but we want at least 4 for "Repo"
+    max_namelen = max(max_namelen, 4)
     max_origlen = len(max(versions, key=len))
     return max_namelen, max_origlen
 
