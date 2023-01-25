@@ -13,10 +13,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- When running `compare`, use columns whose size is based on the longest branch name of a repo that has changed (unless `--all` is
-  passed in)
-
 ### Removed
+
+## [1.49.0] - 2023-01-25
+
+### Changed
+
+- When running `compare` in default mode, size columns based on the longest branch name of a repo that has changed. This prevents
+  odd column widths based on long branch names in repos that haven't changed
 
 ## [1.48.0] - 2022-12-09
 
