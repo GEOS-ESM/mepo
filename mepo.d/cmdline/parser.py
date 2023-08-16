@@ -124,6 +124,10 @@ class MepoArgParser(object):
             '--nocolor',
             action = 'store_true',
             help = 'Tells status to not display colors.')
+        status.add_argument(
+            '--hashes',
+            action = 'store_true',
+            help = 'Print the exact hash of the HEAD.')
 
     def __restore_state(self):
         restore_state = self.subparsers.add_parser(
