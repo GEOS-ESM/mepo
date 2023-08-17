@@ -1,12 +1,12 @@
 {
-   "license": "other-open", 
-   "upload_type": "software", 
+   "license": "other-open",
+   "upload_type": "software",
    "creators": [
       {
          "name": "Thompson, Matthew",
          "affiliation": "GMAO SSAI",
          "orcid": "0000-0001-6222-6863"
-      }, 
+      },
       {
          "name": "Chakraborty, Purnendu"
       },
@@ -14,11 +14,16 @@
          "name": "Jamieson, William",
          "affiliation": "GMAO SSAI",
          "orcid": "0000-0001-5976-4492"
-      }, 
+      },
       {
          "name": "Clune, Tom",
          "affiliation": "NASA",
          "orcid": "0000-0003-3320-0204"
+      },
+      {
+         "name": "Deconinck, Florian",
+         "affiliation": "NASA SSAI",
+         "orcid": "0000-0002-0925-917X"
       }
    ],
    "contributors": [
@@ -27,7 +32,7 @@
          "affiliation": "GMAO SSAI",
          "orcid": "0000-0001-6222-6863",
          "type": "ContactPerson"
-      }, 
+      },
       {
          "name": "Clune, Tom",
          "affiliation": "NASA",
