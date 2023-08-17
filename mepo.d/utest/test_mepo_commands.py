@@ -74,6 +74,7 @@ class TestMepoCommands(unittest.TestCase):
         sys.stdout = output = StringIO()
         args.ignore_permissions=False
         args.nocolor=True
+        args.hashes=False
         mepo_status.run(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'status_output.txt'), 'r') as fin:

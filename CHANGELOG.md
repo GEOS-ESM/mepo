@@ -11,11 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-Command `status` has now a `--hashes` option that list current HEAD hash for each component.
-
 ### Changed
 
 ### Removed
+
+## [1.50.0] - 2023-08-17
+
+### Added
+
+- Command `status` has now a `--hashes` option that list current HEAD hash for each component.
 
 ## [1.49.0] - 2023-01-25
 
