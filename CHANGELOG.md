@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.50.0] - 2023-08-17
+
+### Added
+
+- Command `status` has now a `--hashes` option that list current HEAD hash for each component.
+
 ## [1.49.0] - 2023-01-25
 
 ### Changed
@@ -107,9 +113,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - When running `mepo compare` and `mepo status`, detatched branches will also display the commit id:
+
   ```
   GEOSgcm_GridComp       | (b) feature/aogcm (DH, 0793f7b2)
   ```
+
 - GitHub Actions updates
   - Uses `pypy-3.8` specifically
   - Have `pip` install from `requirements.txt`
@@ -135,11 +143,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Allows `mepo checkout -b <branch>` to run on all repos rather than requiring one to be specified
+- Allows `mepo checkout -b <branch>` to run on all repos rather than requiring one to be specified
 
 ### Fixed
 
-* Fixes a bug in handling paths with spaces in folder names
+- Fixes a bug in handling paths with spaces in folder names
 
 ## [1.36.1] - 2021-08-19
 
@@ -392,11 +400,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Update the CI to use a matrix on Linux and macOS of python3.x and pypy3
+- Update the CI to use a matrix on Linux and macOS of python3.x and pypy3
 
 ### Fixed
 
-* Fix the unit tests
+- Fix the unit tests
 
 ## [1.11.0] - 2020-05-28
 
@@ -432,10 +440,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Add `--name-only` to `mepo diff`
-* Add colors to `mepo status` for non-original branches
-* Make `checkout-if-exists` more verbose
-* Make `mepo commit` act more like `git commit`
+- Add `--name-only` to `mepo diff`
+- Add colors to `mepo status` for non-original branches
+- Make `checkout-if-exists` more verbose
+- Make `mepo commit` act more like `git commit`
 
 ## [1.6.0] - 2020-02-19
 
