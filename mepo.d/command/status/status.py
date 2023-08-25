@@ -18,7 +18,7 @@ def run(args):
     result = pool.starmap(check_component_status, [(comp, args.ignore_permissions) for comp in allcomps])
     print_status(allcomps, result, args.nocolor, args.hashes)
 
-def check_component_status(comp, ignore):
+def check_component_status(comp, ignore_permissions):
     git = GitRepository(comp.remote, comp.local)
 
     # version_to_string can strip off 'origin/' for display purposes
@@ -32,7 +32,7 @@ def check_component_status(comp, ignore):
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-    return (curr_ver, internal_state_branch_name, git.check_status(ignore))
+    return (curr_ver, internal_state_branch_name, git.check_status(ignore_permissions,comp.ignore_submodules))
 
 def print_status(allcomps, result, nocolor=False, hashes=False):
     orig_width = len(max([comp.name for comp in allcomps], key=len))
