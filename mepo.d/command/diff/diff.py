@@ -10,7 +10,7 @@ from utilities import verify
 from shutil import get_terminal_size
 
 def run(args):
-    print('Diffing...'); sys.stdout.flush()
+    foundDiff = False
 
     allcomps = MepoState.read_state()
     comps2diff = _get_comps_to_diff(args.comp_name, allcomps)
@@ -18,7 +18,13 @@ def run(args):
     for comp in comps2diff:
         result = check_component_diff(comp, args)
         if result:
+            if not foundDiff:
+                print('Diffing...'); sys.stdout.flush()
+                foundDiff = True
             print_diff(comp, args, result)
+
+    if not foundDiff:
+        print('No diffs found')
 
 def _get_comps_to_diff(specified_comps, allcomps):
     comps_to_diff = allcomps
@@ -29,7 +35,14 @@ def _get_comps_to_diff(specified_comps, allcomps):
 
 def check_component_diff(comp, args):
     git = GitRepository(comp.remote, comp.local)
-    return git.run_diff(args, comp.ignore_submodules)
+
+    # Older mepo clones will not have ignore_submodules in comp, so
+    # we need to handle this gracefully
+    try:
+        _ignore_submodules = comp.ignore_submodules
+    except AttributeError:
+        _ignore_submodules = None
+    return git.run_diff(args, _ignore_submodules)
 
 def print_diff(comp, args, output):
     columns, lines = get_terminal_size(fallback=(80,20))

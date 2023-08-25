@@ -21,6 +21,13 @@ def run(args):
 def check_component_status(comp, ignore_permissions):
     git = GitRepository(comp.remote, comp.local)
 
+    # Older mepo clones will not have ignore_submodules in comp, so
+    # we need to handle this gracefully
+    try:
+        _ignore_submodules = comp.ignore_submodules
+    except AttributeError:
+        _ignore_submodules = None
+
     # version_to_string can strip off 'origin/' for display purposes
     # so we save the "internal" name for comparison
     internal_state_branch_name = git.get_version()[0]
@@ -32,7 +39,7 @@ def check_component_status(comp, ignore_permissions):
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
 
-    return (curr_ver, internal_state_branch_name, git.check_status(ignore_permissions,comp.ignore_submodules))
+    return (curr_ver, internal_state_branch_name, git.check_status(ignore_permissions,_ignore_submodules))
 
 def print_status(allcomps, result, nocolor=False, hashes=False):
     orig_width = len(max([comp.name for comp in allcomps], key=len))

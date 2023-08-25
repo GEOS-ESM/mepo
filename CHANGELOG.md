@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.51.1] - 2023-08-25
+
+### Fixed
+
+- Fixes to allow mepo to work on older mepo clones that don't have ignore_submodules in their state
+
 ## [1.51.0] - 2023-08-25
 
 ### Added
