@@ -25,8 +25,15 @@ class MepoComponent(object):
         self.ignore_submodules = None
 
     def __repr__(self):
+        # Older mepo clones will not have ignore_submodules in comp, so
+        # we need to handle this gracefully
+        try:
+            _ignore_submodules = self.ignore_submodules
+        except AttributeError:
+            _ignore_submodules = None
+
         return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}, ignore_submodules: {}'.format(
-            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture, self.ignore_submodules)
+            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture, _ignore_submodules)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
