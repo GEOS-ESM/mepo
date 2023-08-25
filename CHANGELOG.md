@@ -11,12 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added new `ignore_submodules` field in `components.yaml` to allow ignoring submodules in a repo. Currently used for `status` and
-  `diff` commands.
-
 ### Changed
 
 ### Removed
+
+## [1.51.0] - 2023-08-25
+
+### Added
+
+- Added new `ignore_submodules` field in `components.yaml` to allow ignoring submodules in a repo. Currently used for `status` and
+  `diff` commands.
 
 ## [1.50.0] - 2023-08-17
 
