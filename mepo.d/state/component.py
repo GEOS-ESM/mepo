@@ -11,7 +11,7 @@ original_final_node_list = []
 
 class MepoComponent(object):
 
-    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture']
+    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture', 'ignore_submodules']
 
     def __init__(self):
         self.name = None
@@ -22,10 +22,11 @@ class MepoComponent(object):
         self.develop = None
         self.recurse_submodules = None
         self.fixture = None
+        self.ignore_submodules = None
 
     def __repr__(self):
-        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}'.format(
-            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture)
+        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}, ignore_submodules: {}'.format(
+            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture, self.ignore_submodules)
 
     def __set_original_version(self, comp_details):
         if self.fixture:
@@ -71,7 +72,7 @@ class MepoComponent(object):
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
     def __validate_fixture(self, comp_details):
-        unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules']
+        unallowed_keys = ['remote', 'local', 'branch', 'hash', 'tag', 'sparse', 'recurse_submodules', 'ignore_submodules']
         if any([comp_details.get(key) for key in unallowed_keys]):
             raise Exception("Fixtures are only allowed fixture and develop")
 
@@ -135,6 +136,7 @@ class MepoComponent(object):
         self.sparse = comp_details.get('sparse', None) # sparse is optional
         self.develop = comp_details.get('develop', None) # develop is optional
         self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
+        self.ignore_submodules = comp_details.get('ignore_submodules', None) # ignore_submodules is optional
         self.__set_original_version(comp_details)
         return self
 
@@ -163,6 +165,8 @@ class MepoComponent(object):
                 details['develop'] = self.develop
             if self.recurse_submodules:
                 details['recurse_submodules'] = self.recurse_submodules
+            if self.ignore_submodules:
+                details['ignore_submodules'] = self.ignore_submodules
         return {self.name: details}
 
 def get_current_remote_url():

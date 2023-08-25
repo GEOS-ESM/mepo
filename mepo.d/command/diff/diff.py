@@ -29,7 +29,7 @@ def _get_comps_to_diff(specified_comps, allcomps):
 
 def check_component_diff(comp, args):
     git = GitRepository(comp.remote, comp.local)
-    return git.run_diff(args)
+    return git.run_diff(args, comp.ignore_submodules)
 
 def print_diff(comp, args, output):
     columns, lines = get_terminal_size(fallback=(80,20))
