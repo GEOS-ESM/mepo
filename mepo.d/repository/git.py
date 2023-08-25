@@ -122,7 +122,7 @@ class GitRepository(object):
         output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
-    def run_diff(self, args=None):
+    def run_diff(self, args=None, ignore_submodules=False):
         cmd = 'git -C {}'.format(self.__full_local_path)
         if args.ignore_permissions:
             cmd += ' -c core.fileMode=false'
@@ -135,6 +135,8 @@ class GitRepository(object):
             cmd += ' --staged'
         if args.ignore_space_change:
             cmd += ' --ignore-space-change'
+        if ignore_submodules:
+            cmd += ' --ignore-submodules=all'
         output = shellcmd.run(shlex.split(cmd),output=True)
         return output.rstrip()
 
@@ -199,11 +201,13 @@ class GitRepository(object):
             ref_type = "Branch"
         return status, ref_type
 
-    def check_status(self, ignore_permissions=False):
+    def check_status(self, ignore_permissions=False, ignore_submodules=False):
         cmd = 'git -C {}'.format(self.__full_local_path)
         if ignore_permissions:
             cmd += ' -c core.fileMode=false'
         cmd += ' status --porcelain=v2'
+        if ignore_submodules:
+            cmd += ' --ignore-submodules=all'
         output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
             output_list = output.splitlines()
