@@ -1,7 +1,7 @@
 from state.state    import MepoState, StateDoesNotExistError
 from repository.git import GitRepository
 from command.init   import init as mepo_init
-from utilities      import shellcmd, colors
+from utilities      import shellcmd, colors, mepoconfig
 from urllib.parse   import urlparse
 
 import os
@@ -17,6 +17,22 @@ def run(args):
 
     if args.allrepos and not args.branch:
         raise RuntimeError("The allrepos option must be used with a branch/tag.")
+
+    # We can get the blobless and treeless options from the config or the args
+    if args.partial:
+        partial = args.partial
+    elif mepoconfig.has_option('clone','partial'):
+        allowed = ['blobless','treeless']
+        partial = mepoconfig.get('clone','partial')
+        if partial not in allowed:
+            raise Exception(f'Detected partial clone type [{partial}] from .mepoconfig is not an allowed partial clone type: {allowed}')
+        else:
+            print(f'Found partial clone type [{partial}] in .mepoconfig')
+    else:
+        partial = None
+
+    blobless = partial == 'blobless'
+    treeless = partial == 'treeless'
 
     # If you pass in a config, with clone, it could be outside the repo.
     # So use the full path
@@ -34,7 +50,7 @@ def run(args):
         last_url_node = p.path.rsplit('/')[-1]
         url_suffix = pathlib.Path(last_url_node).suffix
         if args.directory:
-            local_clone(args.repo_url,args.branch,args.directory)
+            local_clone(args.repo_url,args.branch,args.directory,blobless,treeless)
             os.chdir(args.directory)
         else:
             if url_suffix == '.git':
@@ -42,7 +58,7 @@ def run(args):
             else:
                 git_url_directory = last_url_node
 
-            local_clone(args.repo_url,args.branch,git_url_directory)
+            local_clone(args.repo_url,args.branch,git_url_directory,blobless,treeless)
             os.chdir(git_url_directory)
 
     # Copy the new file into the repo only if we pass it in
@@ -71,7 +87,7 @@ def run(args):
             recurse = comp.recurse_submodules
             # We need the type to handle hashes in components.yaml
             type = comp.version.type
-            git.clone(version,recurse,type,comp.name)
+            git.clone(version,recurse,type,comp.name,blobless,treeless)
             if comp.sparse:
                 git.sparsify(comp.sparse)
             print_clone_info(comp, max_namelen)
@@ -89,8 +105,12 @@ def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
     print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = name_width))
 
-def local_clone(url,branch=None,directory=None):
+def local_clone(url,branch=None,directory=None,blobless=False,treeless=False):
     cmd1 = 'git clone '
+    if blobless:
+        cmd1 += '--filter=blob:none '
+    if treeless:
+        cmd1 += '--filter=tree:0 '
     if branch:
         cmd1 += '--branch {} '.format(branch)
     cmd1 += '--quiet {}'.format(url)
