@@ -2,7 +2,7 @@
 #
 # .mepoconfig is a config file a la gitconfig with sections and options.
 #
-# Currently, .mepoconfig files recognize two sections: [init] and [alias]
+# Currently, .mepoconfig files recognize three sections: [init], [alias], and [clone].
 #
 # =======================================================================
 #
@@ -24,6 +24,10 @@
 #
 #     mepo clone --style postfix
 #
+#   You set these options by running:
+#
+#     mepo config set init.style <value>
+#
 # =======================================================================
 #
 # [alias] Section
@@ -40,3 +44,40 @@
 #         you can only alias mepo primary commands and not "subcommands" or
 #         "options". So you can have an alias for "commit" and for "branch",
 #         but you can't do an option for "commit -m" or "branch create".
+#
+#   You can set an alias by running:
+#
+#     mepo config set alias.<alias> <command>
+#
+# =======================================================================
+#
+# [clone] Section
+#
+#   The clone section currently recognizes one option, partial.
+#   This has two allowed values: blobless and treeless
+#
+#   So if you have:
+#
+#     [clone]
+#     partial = blobless
+#
+#   This is equivalent to doing:
+#
+#     mepo clone --partial=blobless
+#
+#   which corresponds to the git clone option --filter=blob:none
+#
+#   and similarly for treeless:
+#
+#     [clone]
+#     partial = treeless
+#
+#   is equivalent to doing:
+#
+#     mepo clone --partial=treeless
+#
+#   which corresponds to the git clone option --filter=tree:0
+#
+#   You set these options by running:
+#
+#     mepo config set clone.partial <value>

@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.52.0] - 2024-01-10
+
+### Added
+
+- Added new `--partial` option to `mepo clone` with two settings: `blobless` and `treeless`. If you set, `--partial=blobless` then
+  the clone will not download blobs by using `--filter=blob:none`. If you set `--partial=treeless` then the clone will not download
+  trees by using `--filter=tree:0`. The `blobless` option is useful for large repos that have a lot of binary files that you don't
+  need. The `treeless` option is even more aggressive and *SHOULD NOT* be used unless you know what you are doing.
+- Add a new section for `.mepoconfig` to allow users to set `--partial` as a default for `mepo clone`.
+
 ## [1.51.1] - 2023-08-25
 
 ### Fixed

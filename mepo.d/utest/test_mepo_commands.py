@@ -53,6 +53,7 @@ class TestMepoCommands(unittest.TestCase):
         args.repo_url = None
         args.branch = None
         args.directory = None
+        args.partial = 'blobless'
         mepo_clone.run(args)
         # In order to better test compare, we need to do *something*
         args.comp_name = ['env','cmake','fvdycore']

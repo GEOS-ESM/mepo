@@ -104,6 +104,13 @@ class MepoArgParser(object):
             '--allrepos',
             action = 'store_true',
             help = 'Must be passed with -b/--branch. When set, it not only checkouts out the branch/tag for the fixture, but for all the subrepositories as well.')
+        clone.add_argument(
+            '--partial',
+            metavar = 'partial-type',
+            nargs = '?',
+            default = None,
+            choices = ['blobless','treeless'],
+            help = 'Style of partial clone, default: None, allowed options: %(choices)s. Note that blobless means cloning with --filter=blob:none and treeless means cloning with --filter=tree:0. NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
