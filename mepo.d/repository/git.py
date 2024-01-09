@@ -39,13 +39,12 @@ class GitRepository(object):
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, type, comp_name, blobless=False, treeless=False):
+    def clone(self, version, recurse, type, comp_name, partial=None):
         cmd1 = 'git clone '
 
-        if blobless:
+        if partial == 'blobless':
             cmd1 += '--filter=blob:none '
-
-        if treeless:
+        elif partial == 'treeless':
             cmd1 += '--filter=tree:0 '
 
         if recurse:

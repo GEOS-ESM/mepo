@@ -31,9 +31,6 @@ def run(args):
     else:
         partial = None
 
-    blobless = partial == 'blobless'
-    treeless = partial == 'treeless'
-
     # If you pass in a config, with clone, it could be outside the repo.
     # So use the full path
     passed_in_config = False
@@ -50,7 +47,7 @@ def run(args):
         last_url_node = p.path.rsplit('/')[-1]
         url_suffix = pathlib.Path(last_url_node).suffix
         if args.directory:
-            local_clone(args.repo_url,args.branch,args.directory,blobless,treeless)
+            local_clone(args.repo_url,args.branch,args.directory,partial)
             os.chdir(args.directory)
         else:
             if url_suffix == '.git':
@@ -58,7 +55,7 @@ def run(args):
             else:
                 git_url_directory = last_url_node
 
-            local_clone(args.repo_url,args.branch,git_url_directory,blobless,treeless)
+            local_clone(args.repo_url,args.branch,git_url_directory,partial)
             os.chdir(git_url_directory)
 
     # Copy the new file into the repo only if we pass it in
@@ -87,7 +84,7 @@ def run(args):
             recurse = comp.recurse_submodules
             # We need the type to handle hashes in components.yaml
             type = comp.version.type
-            git.clone(version,recurse,type,comp.name,blobless,treeless)
+            git.clone(version,recurse,type,comp.name,partial)
             if comp.sparse:
                 git.sparsify(comp.sparse)
             print_clone_info(comp, max_namelen)
@@ -105,11 +102,11 @@ def print_clone_info(comp, name_width):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
     print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = name_width))
 
-def local_clone(url,branch=None,directory=None,blobless=False,treeless=False):
+def local_clone(url,branch=None,directory=None,partial=None):
     cmd1 = 'git clone '
-    if blobless:
+    if partial == 'blobless':
         cmd1 += '--filter=blob:none '
-    if treeless:
+    elif partial == 'treeless':
         cmd1 += '--filter=tree:0 '
     if branch:
         cmd1 += '--branch {} '.format(branch)
