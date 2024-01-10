@@ -20,7 +20,10 @@ def run(args):
 
     # We can get the blobless and treeless options from the config or the args
     if args.partial:
-        partial = args.partial
+        # We need to set partial to None if it's off, otherwise we use the
+        # string. This is safe because argparse only allows for 'off',
+        # 'blobless', or 'treeless'
+        partial = None if args.partial == 'off' else args.partial
     elif mepoconfig.has_option('clone','partial'):
         allowed = ['blobless','treeless']
         partial = mepoconfig.get('clone','partial')
@@ -30,6 +33,7 @@ def run(args):
             print(f'Found partial clone type [{partial}] in .mepoconfig')
     else:
         partial = None
+
 
     # If you pass in a config, with clone, it could be outside the repo.
     # So use the full path
@@ -82,9 +86,16 @@ def run(args):
             version = comp.version.name
             version = version.replace('origin/','')
             recurse = comp.recurse_submodules
+
+            # According to Git, treeless clones do not interact well with
+            # submodules. So we need to see if any comp has the recurse
+            # option set to True. If so, we need to clone that comp "normally"
+
+            _partial = None if partial == 'treeless' and recurse else partial
+
             # We need the type to handle hashes in components.yaml
             type = comp.version.type
-            git.clone(version,recurse,type,comp.name,partial)
+            git.clone(version,recurse,type,comp.name,_partial)
             if comp.sparse:
                 git.sparsify(comp.sparse)
             print_clone_info(comp, max_namelen)
@@ -104,10 +115,14 @@ def print_clone_info(comp, name_width):
 
 def local_clone(url,branch=None,directory=None,partial=None):
     cmd1 = 'git clone '
+
     if partial == 'blobless':
         cmd1 += '--filter=blob:none '
     elif partial == 'treeless':
         cmd1 += '--filter=tree:0 '
+    else:
+        partial = None
+
     if branch:
         cmd1 += '--branch {} '.format(branch)
     cmd1 += '--quiet {}'.format(url)

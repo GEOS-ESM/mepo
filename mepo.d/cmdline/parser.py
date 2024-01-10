@@ -109,8 +109,8 @@ class MepoArgParser(object):
             metavar = 'partial-type',
             nargs = '?',
             default = None,
-            choices = ['blobless','treeless'],
-            help = 'Style of partial clone, default: None, allowed options: %(choices)s. Note that blobless means cloning with --filter=blob:none and treeless means cloning with --filter=tree:0. NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.')
+            choices = ['off','blobless','treeless'],
+            help = 'Style of partial clone, default: None, allowed options: %(choices)s. Off means a "normal" full git clone, blobless means cloning with "--filter=blob:none" and treeless means cloning with "--filter=tree:0". NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.')
 
     def __list(self):
         listcomps = self.subparsers.add_parser(
