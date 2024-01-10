@@ -93,8 +93,6 @@ def run(args):
 
             _partial = None if partial == 'treeless' and recurse else partial
 
-            print(f'Cloning {comp.name} {version}. Recurse: {recurse}. Partial: {_partial}')
-
             # We need the type to handle hashes in components.yaml
             type = comp.version.type
             git.clone(version,recurse,type,comp.name,_partial)
