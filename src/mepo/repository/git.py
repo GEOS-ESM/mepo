@@ -3,11 +3,12 @@ import shutil
 import subprocess
 import shlex
 
-from state.state import MepoState
-from utilities import shellcmd
-from utilities import colors
 from urllib.parse import urljoin
-from state.exceptions import RepoAlreadyClonedError
+
+from mepo.state.state import MepoState
+from mepo.utilities import shellcmd
+from mepo.utilities import colors
+from mepo.state.exceptions import RepoAlreadyClonedError
 
 class GitRepository(object):
     """

@@ -1,5 +1,5 @@
-from state.state import MepoState
-from utilities import mepoconfig
+from mepo.state.state import MepoState
+from mepo.utilities import mepoconfig
 
 def run(args):
     if args.style:

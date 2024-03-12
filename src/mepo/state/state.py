@@ -4,11 +4,12 @@ import yaml
 import glob
 import pickle
 
-from config.config_file import ConfigFile
-from state.component import MepoComponent
-from utilities import shellcmd
 from pathlib import Path
-from state.exceptions import StateDoesNotExistError, StateAlreadyInitializedError
+
+from mepo.config.config_file import ConfigFile
+from mepo.state.component import MepoComponent
+from mepo.utilities import shellcmd
+from mepo.state.exceptions import StateDoesNotExistError, StateAlreadyInitializedError
 
 class MepoState(object):
 

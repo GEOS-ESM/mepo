@@ -1,8 +1,9 @@
-from state.state import MepoState
-from utilities import colors
-from utilities.version import version_to_string, sanitize_version_string
-from repository.git import GitRepository
 from shutil import get_terminal_size
+
+from mepo.state.state import MepoState
+from mepo.utilities import colors
+from mepo.utilities.version import version_to_string, sanitize_version_string
+from mepo.repository.git import GitRepository
 
 VER_LEN = 30
 

@@ -2,13 +2,13 @@ import sys
 import time
 import multiprocessing as mp
 import atexit
-
-from state.state import MepoState
-from repository.git import GitRepository
-from utilities.version import version_to_string, sanitize_version_string
-from utilities import colors, shellcmd
-from command.whereis.whereis import _get_relative_path
 import shlex
+
+from mepo.state.state import MepoState
+from mepo.repository.git import GitRepository
+from mepo.utilities.version import version_to_string, sanitize_version_string
+from mepo.utilities import colors, shellcmd
+from mepo.command.whereis.whereis import _get_relative_path
 
 def run(args):
     print('Checking status...'); sys.stdout.flush()

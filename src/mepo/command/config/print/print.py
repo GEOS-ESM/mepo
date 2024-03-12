@@ -1,4 +1,4 @@
-from utilities import mepoconfig
+from mepo.utilities import mepoconfig
 
 def run(args):
     mepoconfig.print()

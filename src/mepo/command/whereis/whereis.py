@@ -1,7 +1,7 @@
 import os
 
-from state.state import MepoState
-from utilities import verify
+from mepo.state.state import MepoState
+from mepo.utilities import verify
 
 def run(args):
     allcomps = MepoState.read_state()

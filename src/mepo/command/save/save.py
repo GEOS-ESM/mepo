@@ -1,8 +1,8 @@
-from state.state import MepoState
-from state.component import MepoVersion
-from repository.git import GitRepository
-from config.config_file import ConfigFile
-from utilities.version import sanitize_version_string
+from mepo.state.state import MepoState
+from mepo.state.component import MepoVersion
+from mepo.repository.git import GitRepository
+from mepo.config.config_file import ConfigFile
+from mepo.utilities.version import sanitize_version_string
 
 import os
 

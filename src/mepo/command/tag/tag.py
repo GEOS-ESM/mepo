@@ -1,11 +1,11 @@
 import subprocess as sp
 
-from state.state import MepoState
+from mepo.state.state import MepoState
 
-from command.tag.list   import list
-from command.tag.create import create
-from command.tag.delete import delete
-from command.tag.push   import push
+from mepo.command.tag.list   import list
+from mepo.command.tag.create import create
+from mepo.command.tag.delete import delete
+from mepo.command.tag.push   import push
 
 def run(args):
     d = {

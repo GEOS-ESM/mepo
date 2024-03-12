@@ -1,13 +1,13 @@
-from state.state    import MepoState, StateDoesNotExistError
-from repository.git import GitRepository
-from command.init   import init as mepo_init
-from utilities      import shellcmd, colors, mepoconfig
-from urllib.parse   import urlparse
-
 import os
 import pathlib
 import shutil
 import shlex
+from urllib.parse import urlparse
+
+from mepo.state.state    import MepoState, StateDoesNotExistError
+from mepo.repository.git import GitRepository
+from mepo.command.init   import init as mepo_init
+from mepo.utilities      import shellcmd, colors, mepoconfig
 
 def run(args):
 

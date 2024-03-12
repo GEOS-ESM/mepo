@@ -1,4 +1,4 @@
-from state.state import MepoState
+from mepo.state.state import MepoState
 
 def run(args):
     allcomps = MepoState.read_state()

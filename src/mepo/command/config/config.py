@@ -1,11 +1,11 @@
 import subprocess as sp
 
-from state.state import MepoState
+from mepo.state.state import MepoState
 
-from command.config.get    import get
-from command.config.set    import set
-from command.config.delete import delete
-from command.config.print  import print
+from mepo.command.config.get    import get
+from mepo.command.config.set    import set
+from mepo.command.config.delete import delete
+from mepo.command.config.print  import print
 
 def run(args):
     d = {

@@ -3,10 +3,10 @@ import time
 import multiprocessing as mp
 import atexit
 
-from state.state import MepoState
-from repository.git import GitRepository
-from utilities.version import version_to_string
-from utilities import colors
+from mepo.state.state import MepoState
+from mepo.repository.git import GitRepository
+from mepo.utilities.version import version_to_string
+from mepo.utilities import colors
 
 def run(args):
     print('Checking status...'); sys.stdout.flush()

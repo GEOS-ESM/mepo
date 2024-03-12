@@ -1,10 +1,10 @@
 import os
 import shutil
 
-from state.state import MepoState
-from state.exceptions import NotInRootDirError
+from mepo.state.state import MepoState
+from mepo.state.exceptions import NotInRootDirError
 
-from command.clone import clone as mepo_clone
+from mepo.command.clone import clone as mepo_clone
 
 # This command will "reset" the mepo clone. This will delete all
 # the subrepos, remove the .mepo directory, and then re-clone all the

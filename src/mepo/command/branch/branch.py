@@ -1,10 +1,10 @@
 import subprocess as sp
 
-from state.state import MepoState
+from mepo.state.state import MepoState
 
-from command.branch.list   import list
-from command.branch.create import create
-from command.branch.delete import delete
+from mepo.command.branch.list   import list
+from mepo.command.branch.create import create
+from mepo.command.branch.delete import delete
 
 def run(args):
     d = {
