@@ -4,9 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mepo"
-version = "v1.55.0"
-authors = ["GMAO SI Team"]
-description = "Tool to manage (m)ultiple git r(epo)sitories"
+version = "v1.59.0"
+authors = [
+    {name = "GMAO SI Team", email = "gmao.siteam@nasa.gov"},
+]
+description = "Add description here"
 requires-python = ">= 3.9"
 license = {file = "LICENSE"}
 readme = "README.md"
@@ -18,7 +20,7 @@ dependencies = [
 Homepage = "https://github.com/GEOS-ESM/mepo"
 
 [project.scripts]
-mepo = "mepo:main"
+mepo = "mepo.main:main"
 
 [tool.setuptools]
 include-package-data = true

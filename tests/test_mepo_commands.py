@@ -1,7 +1,7 @@
 import os
 import sys
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(0, os.path.join(THIS_DIR, '..'))
+sys.path.insert(0, os.path.join(THIS_DIR, '..', 'src'))
 import shutil
 import shlex
 import unittest
