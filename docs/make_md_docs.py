@@ -13,12 +13,12 @@ mepo provides many different commands for working with a multi-repository fixtur
 doc_dir_path = os.path.dirname(os.path.realpath(__file__))
 # Then we need to get to the mepo/mepo.d/command directory. First the "main" dir
 main_dir_path = os.path.dirname(doc_dir_path)
-# Now add 'mepo.d'
-mepod_dir_path = os.path.join(main_dir_path,'mepo.d')
+# Now add 'src/mepo'
+mepod_dir_path = os.path.join(main_dir_path, 'src', 'mepo')
 # And then 'command'
-command_dir_path = os.path.join(mepod_dir_path,'command')
+command_dir_path = os.path.join(mepod_dir_path, 'command')
 
-mepo_command_path = os.path.join(main_dir_path,'mepo')
+mepo_command_path = os.path.join(main_dir_path, 'mepo')
 
 def get_command_list(directory):
     # Walk the tree
@@ -50,12 +50,12 @@ def get_command_list(directory):
     return sorted(all_useful_commands)
 
 def create_markdown_from_usage(command, mdFile):
-    cmd = [mepo_command_path,command,'--help']
+    cmd = [mepo_command_path, command, '--help']
 
     # Some commands have spaces, so we need to break it up again
     cmd = ' '.join(cmd).split()
 
-    result = sp.run(cmd,capture_output=True,universal_newlines=True,env={'COLUMNS':'256'})
+    result = sp.run(cmd, capture_output=True, universal_newlines=True, env={'COLUMNS':'256'})
     output = result.stdout
 
     output_list = output.split("\n")
@@ -84,7 +84,7 @@ def create_markdown_from_usage(command, mdFile):
 
 if __name__ == "__main__":
 
-    doc_file='Mepo-Commands.md'
+    doc_file = 'Mepo-Commands.md'
     mdFile = MdUtils(file_name=doc_file)
 
     mdFile.new_header(level=1, title="Overview")
@@ -99,4 +99,3 @@ if __name__ == "__main__":
     mdFile.new_table_of_contents(table_title='Table of Contents', depth=2)
     mdFile.create_md_file()
     print(f'Generated {doc_file}.')
-
