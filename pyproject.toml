@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mepo"
-version = "v1.59.0"
+version = "v1.60.0"
 authors = [
-    {name = "GMAO SI Team", email = "gmao.siteam@nasa.gov"},
+    {name = "GMAO SI Team", email = "siteam@gmao.gsfc.nasa.gov"},
 ]
-description = "Add description here"
+description = "Tool to manage (m)ultiple r(epo)sitories"
 requires-python = ">= 3.9"
 license = {file = "LICENSE"}
 readme = "README.md"
