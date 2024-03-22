@@ -11,9 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added `pyproject.toml` to aid with `pip` installation.
+
 ### Changed
 
-### Removed
+- Converted `mepo` to a Python project via the following renaming
+  -- `mepo.d` -> `src/mepo`
+  -- `mepo.d/utest` -> `tests`
+  -- `doc` --> `docs`
+- Helper script `mepo`, used for development, moved to the `bin` directory.
 
 ## [1.52.0] - 2024-01-10
 
