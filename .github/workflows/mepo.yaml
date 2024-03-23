@@ -27,5 +27,5 @@ jobs:
       timeout-minutes: 5
 
     - name: Run unit tests
-      run: python3 mepo.d/utest/test_mepo_commands.py -v
+      run: python3 tests/test_mepo_commands.py -v
       timeout-minutes: 5
