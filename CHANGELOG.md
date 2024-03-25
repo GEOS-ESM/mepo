@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   -- `mepo.d/utest` -> `tests`
   -- `doc` --> `docs`
 - Helper script `mepo`, used for development, moved to the `bin` directory.
+- Added README for `docs/make_md_docs.py` script
 
 ## [1.52.0] - 2024-01-10
 
