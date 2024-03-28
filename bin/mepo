@@ -5,8 +5,8 @@ import sys
 import traceback
 
 # Version check
-if sys.version_info < (3, 6, 0):
-    sys.exit('ERROR: Python version needs to be >= 3.6.0')
+if sys.version_info < (3, 9, 0):
+    sys.exit('ERROR: Python version needs to be >= 3.9.0')
 
 # Add direactory containing mepo to path
 SRC_D = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src')
