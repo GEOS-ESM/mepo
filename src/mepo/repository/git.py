@@ -5,7 +5,7 @@ import shlex
 
 from urllib.parse import urljoin
 
-from mepo.state.state import MepoState
+# from mepo.state.state import MepoState
 from mepo.utilities import shellcmd
 from mepo.utilities import colors
 from mepo.state.exceptions import RepoAlreadyClonedError
@@ -26,9 +26,10 @@ class GitRepository(object):
         else:
             self.__remote = remote_url
 
-        root_dir = MepoState.get_root_dir()
-        full_local_path=os.path.normpath(os.path.join(root_dir,local_path))
-        self.__full_local_path=full_local_path
+        # root_dir = MepoState.get_root_dir()
+        root_dir = os.getcwd()
+        full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
+        self.__full_local_path = full_local_path
         self.__git = 'git -C "{}"'.format(self.__full_local_path)
 
     def get_local_path(self):
