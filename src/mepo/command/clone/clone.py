@@ -4,10 +4,13 @@ import shutil
 import shlex
 from urllib.parse import urlparse
 
-from mepo.state.state    import MepoState, StateDoesNotExistError
+from mepo.state.state import MepoState, StateDoesNotExistError
+from mepo.state.component import MepoComponent
 from mepo.repository.git import GitRepository
-from mepo.command.init   import init as mepo_init
-from mepo.utilities      import shellcmd, colors, mepoconfig
+from mepo.utilities import shellcmd, colors, mepoconfig
+from mepo.config.config_file import ConfigFile
+
+MAX_NAMELEN = 15
 
 def run(args):
 
@@ -35,17 +38,6 @@ def run(args):
         partial = None
 
 
-    # If you pass in a config, with clone, it could be outside the repo.
-    # So use the full path
-    passed_in_config = False
-    if args.config:
-        passed_in_config = True
-        args.config = os.path.abspath(args.config)
-    else:
-        # If we don't pass in a config, we need to "reset" the arg to the
-        # default name because we pass args to mepo_init
-        args.config = 'components.yaml'
-
     if args.repo_url:
         p = urlparse(args.repo_url)
         last_url_node = p.path.rsplit('/')[-1]
@@ -62,43 +54,10 @@ def run(args):
             local_clone(args.repo_url,args.branch,git_url_directory,partial)
             os.chdir(git_url_directory)
 
-    # Copy the new file into the repo only if we pass it in
-    if passed_in_config:
-        try:
-            shutil.copy(args.config,os.getcwd())
-        except shutil.SameFileError as e:
-            pass
-
-    # This tries to read the state and if not, calls init,
-    # loops back, and reads the state
-    while True:
-        try:
-            allcomps = MepoState.read_state()
-        except StateDoesNotExistError:
-            mepo_init.run(args)
-            continue
-        break
-
-    max_namelen = len(max([comp.name for comp in allcomps], key=len))
-    for comp in allcomps:
-        if not comp.fixture:
-            git = GitRepository(comp.remote, comp.local)
-            version = comp.version.name
-            version = version.replace('origin/','')
-            recurse = comp.recurse_submodules
-
-            # According to Git, treeless clones do not interact well with
-            # submodules. So we need to see if any comp has the recurse
-            # option set to True. If so, we need to clone that comp "normally"
-
-            _partial = None if partial == 'treeless' and recurse else partial
-
-            # We need the type to handle hashes in components.yaml
-            type = comp.version.type
-            git.clone(version,recurse,type,comp.name,_partial)
-            if comp.sparse:
-                git.sparsify(comp.sparse)
-            print_clone_info(comp, max_namelen)
+    root_component_dir = os.path.dirname(os.path.abspath(args.config))
+    all_components = list()
+    __recursive_clone__(root_component_dir, all_components)
+    MepoState().write_state(all_components)
 
     if args.allrepos:
         for comp in allcomps:
@@ -109,9 +68,35 @@ def run(args):
                         colors.RESET + comp.name + colors.RESET))
                 git.checkout(args.branch,detach=True)
 
-def print_clone_info(comp, name_width):
+def __recursive_clone__(local_path, complist):
+    config_file = os.path.join(local_path, "components.yaml")
+    if os.path.isfile(config_file):
+        complist_dict_from_file = ConfigFile(config_file).read_file()
+        for name, details in complist_dict_from_file.items():
+            if "local" in details: # update local path of component
+                details["local"] = os.path.join(local_path, details["local"])
+            comp = MepoComponent().to_component(name, details, None)
+            complist.append(comp)
+            if not comp.fixture:
+                git = GitRepository(comp.remote, os.path.join(local_path, comp.local))
+                version = comp.version.name
+                recurse_submodules = comp.recurse_submodules
+                # According to Git, treeless clones do not interact well with
+                # submodules. So we need to see if any comp has the recurse
+                # option set to True. If so, we need to clone that comp "normally"
+                # TODO: Add 'partial' abilities
+                _partial = None # if partial == 'treeless' and recurse else partial
+                # We need the type to handle hashes in components.yaml
+                _type = comp.version.type
+                git.clone(version, recurse_submodules, _type, comp.name, _partial)
+                if comp.sparse:
+                    git.sparsify(comp.sparse)
+                __print_clone_info__(comp)
+                __recursive_clone__(os.path.join(local_path, comp.local), complist)
+
+def __print_clone_info__(comp):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
-    print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = name_width))
+    print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = MAX_NAMELEN))
 
 def local_clone(url,branch=None,directory=None,partial=None):
     cmd1 = 'git clone '

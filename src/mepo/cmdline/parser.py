@@ -19,7 +19,6 @@ class MepoArgParser(object):
         self.subparsers.dest = 'mepo_cmd'
 
     def parse(self):
-        self.__init()
         self.__clone()
         self.__list()
         self.__status()
@@ -45,25 +44,6 @@ class MepoArgParser(object):
         self.__save()
         self.__config()
         return self.parser.parse_args()
-
-    def __init(self):
-        init = self.subparsers.add_parser(
-            'init',
-            description = 'Initialize mepo based on `config-file`',
-            aliases=mepoconfig.get_command_alias('init'))
-        init.add_argument(
-            '--config',
-            metavar = 'config-file',
-            nargs = '?',
-            default = 'components.yaml',
-            help = 'default: %(default)s')
-        init.add_argument(
-            '--style',
-            metavar = 'style-type',
-            nargs = '?',
-            default = None,
-            choices = ['naked', 'prefix','postfix'],
-            help = 'Style of directory file, default: prefix, allowed options: %(choices)s')
 
     def __clone(self):
         clone = self.subparsers.add_parser(
@@ -91,15 +71,15 @@ class MepoArgParser(object):
             '--config',
             metavar = 'config-file',
             nargs = '?',
-            default = None,
-            help = 'Configuration file (ignored if init already called)')
+            default = 'components.yaml',
+            help = 'Configuration file (default: components.yaml)')
         clone.add_argument(
             '--style',
             metavar = 'style-type',
             nargs = '?',
             default = None,
             choices = ['naked', 'prefix','postfix'],
-            help = 'Style of directory file, default: prefix, allowed options: %(choices)s (ignored if init already called)')
+            help = 'Style of directory file, default: prefix, allowed options: %(choices)s')
         clone.add_argument(
             '--allrepos',
             action = 'store_true',
