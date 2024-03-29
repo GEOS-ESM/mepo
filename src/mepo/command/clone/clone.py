@@ -37,7 +37,6 @@ def run(args):
     else:
         partial = None
 
-
     if args.repo_url:
         p = urlparse(args.repo_url)
         last_url_node = p.path.rsplit('/')[-1]
@@ -56,7 +55,7 @@ def run(args):
 
     root_component_dir = os.path.dirname(os.path.abspath(args.config))
     all_components = list()
-    __recursive_clone__(root_component_dir, all_components)
+    __recursive_clone(root_component_dir, all_components)
     MepoState().write_state(all_components)
 
     if args.allrepos:
@@ -68,7 +67,7 @@ def run(args):
                         colors.RESET + comp.name + colors.RESET))
                 git.checkout(args.branch,detach=True)
 
-def __recursive_clone__(local_path, complist):
+def __recursive_clone(local_path, complist):
     config_file = os.path.join(local_path, "components.yaml")
     if os.path.isfile(config_file):
         complist_dict_from_file = ConfigFile(config_file).read_file()
@@ -91,10 +90,10 @@ def __recursive_clone__(local_path, complist):
                 git.clone(version, recurse_submodules, _type, comp.name, _partial)
                 if comp.sparse:
                     git.sparsify(comp.sparse)
-                __print_clone_info__(comp)
-                __recursive_clone__(os.path.join(local_path, comp.local), complist)
+                __print_clone_info(comp)
+                __recursive_clone(os.path.join(local_path, comp.local), complist)
 
-def __print_clone_info__(comp):
+def __print_clone_info(comp):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
     print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = MAX_NAMELEN))
 
