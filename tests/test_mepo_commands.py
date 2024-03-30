@@ -10,7 +10,6 @@ from io import StringIO
 
 from input import args
 
-from mepo.command.init    import init    as mepo_init
 from mepo.command.clone   import clone   as mepo_clone
 from mepo.command.list    import list    as mepo_list
 from mepo.command.status  import status  as mepo_status
@@ -38,22 +37,20 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, 'input')
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.fixture = 'GEOSfvdycore'
-        cls.tag = 'v1.13.0'
+        cls.tag = 'hierarchical-mepo-based-on-v2.13.0'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
         #cls.__copy_config_file()
-        args.config = 'components.yaml'
         args.style = 'prefix'
         os.chdir(cls.fixture_dir)
-        mepo_init.run(args)
-        args.config = None
         args.repo_url = None
         args.branch = None
         args.directory = None
         args.partial = 'blobless'
+        args.config = 'components.yaml'
         mepo_clone.run(args)
         # In order to better test compare, we need to do *something*
         args.comp_name = ['env','cmake','fvdycore']

@@ -1,5 +1,5 @@
-Repo     | Original             | Current
--------- | -------------------- | -------
-env      | (t) v4.8.0 (DH)      | (b) main
-cmake    | (t) v3.21.0 (DH)     | (b) develop
-fvdycore | (t) geos/v1.5.0 (DH) | (b) geos/develop
+Repo     | Original                                             | Current
+-------- | ---------------------------------------------------- | -------
+env      | (t) v4.25.1 (DH)                                     | (b) main
+cmake    | (b) feature/pchakrab/hierarchical-mepo (DH, c856a28) | (b) develop
+fvdycore | (t) geos/v2.8.1 (DH)                                 | (b) geos/develop
