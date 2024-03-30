@@ -55,7 +55,7 @@ def run(args):
 
     root_component_dir = os.path.dirname(os.path.abspath(args.config))
     all_components = list()
-    __recursive_clone(root_component_dir, all_components)
+    __recursive_clone(root_component_dir, all_components, partial)
     MepoState().write_state(all_components)
 
     if args.allrepos:
@@ -67,7 +67,7 @@ def run(args):
                         colors.RESET + comp.name + colors.RESET))
                 git.checkout(args.branch,detach=True)
 
-def __recursive_clone(local_path, complist):
+def __recursive_clone(local_path, complist, partial):
     config_file = os.path.join(local_path, "components.yaml")
     if os.path.isfile(config_file):
         complist_dict_from_file = ConfigFile(config_file).read_file()
@@ -84,14 +84,14 @@ def __recursive_clone(local_path, complist):
                 # submodules. So we need to see if any comp has the recurse
                 # option set to True. If so, we need to clone that comp "normally"
                 # TODO: Add 'partial' abilities
-                _partial = None # if partial == 'treeless' and recurse else partial
+                _partial = None if partial == 'treeless' and recurse else partial
                 # We need the type to handle hashes in components.yaml
                 _type = comp.version.type
                 git.clone(version, recurse_submodules, _type, comp.name, _partial)
                 if comp.sparse:
                     git.sparsify(comp.sparse)
                 __print_clone_info(comp)
-                __recursive_clone(os.path.join(local_path, comp.local), complist)
+                __recursive_clone(os.path.join(local_path, comp.local), complist, partial)
 
 def __print_clone_info(comp):
     ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
