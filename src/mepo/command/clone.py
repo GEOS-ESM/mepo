@@ -4,11 +4,14 @@ import shutil
 import shlex
 from urllib.parse import urlparse
 
-from mepo.state.state import MepoState, StateDoesNotExistError
-from mepo.state.component import MepoComponent
-from mepo.repository.git import GitRepository
-from mepo.utilities import shellcmd, colors, mepoconfig
-from mepo.config.config_file import ConfigFile
+from ..state.state import MepoState
+from ..state.state import StateDoesNotExistError
+from ..state.component import MepoComponent
+from ..repository.git import GitRepository
+from ..utilities import shellcmd
+from ..utilities import colors
+from ..utilities import mepoconfig
+from ..config.config_file import ConfigFile
 
 MAX_NAMELEN = 15
 
