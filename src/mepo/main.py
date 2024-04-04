@@ -1,5 +1,5 @@
-from mepo.cmdline.parser import MepoArgParser
-from mepo.command import command
+from .cmdline.parser import MepoArgParser
+from .command import command
 
 def main():
     args = MepoArgParser().parse()
