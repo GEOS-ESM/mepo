@@ -11,7 +11,7 @@ from ..repository.git import GitRepository
 from ..utilities import shellcmd
 from ..utilities import colors
 from ..utilities import mepoconfig
-from ..config.config_file import ConfigFile
+from ..registry import Registry
 
 MAX_NAMELEN = 15
 
@@ -56,7 +56,7 @@ def run(args):
             local_clone(args.repo_url,args.branch,git_url_directory,partial)
             os.chdir(git_url_directory)
 
-    root_component_dir = os.path.dirname(os.path.abspath(args.config))
+    root_component_dir = os.path.dirname(os.path.abspath(args.registry))
     all_components = list()
     __recursive_clone(root_component_dir, all_components, partial)
     MepoState().write_state(all_components)
@@ -71,9 +71,9 @@ def run(args):
                 git.checkout(args.branch,detach=True)
 
 def __recursive_clone(local_path, complist, partial):
-    config_file = os.path.join(local_path, "components.yaml")
-    if os.path.isfile(config_file):
-        complist_dict_from_file = ConfigFile(config_file).read_file()
+    registry = os.path.join(local_path, "components.yaml")
+    if os.path.isfile(registry):
+        complist_dict_from_file = Registry(registry).read_file()
         for name, details in complist_dict_from_file.items():
             if "local" in details: # update local path of component
                 details["local"] = os.path.join(local_path, details["local"])

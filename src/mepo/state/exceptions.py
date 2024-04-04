@@ -10,12 +10,12 @@ class RepoAlreadyClonedError(SystemExit):
     """Raised when the repository has already been cloned"""
     pass
 
-class ConfigFileNotFoundError(FileNotFoundError):
-    """Raised when the config file is not found"""
+class RegistryNotFoundError(FileNotFoundError):
+    """Raised when the registry is not found"""
     pass
 
 class SuffixNotRecognizedError(RuntimeError):
-    """Raised when the config suffix is not recognized"""
+    """Raised when the registry suffix is not recognized"""
     pass
 
 class NotInRootDirError(SystemExit):

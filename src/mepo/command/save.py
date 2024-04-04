@@ -3,7 +3,7 @@ import os
 from ..state.state import MepoState
 from ..state.component import MepoVersion
 from ..repository.git import GitRepository
-from ..config.config_file import ConfigFile
+from ..registry import Registry
 from ..utilities.version import sanitize_version_string
 
 def run(args):
@@ -17,9 +17,9 @@ def run(args):
     relpath_start = MepoState.get_root_dir()
     for comp in allcomps:
         complist.update(comp.to_dict(relpath_start))
-    config_file_root_dir=os.path.join(relpath_start,args.config_file)
-    ConfigFile(config_file_root_dir).write_yaml(complist)
-    print(f"Components written to '{config_file_root_dir}'")
+    registry_root_dir=os.path.join(relpath_start,args.registry)
+    Registry(registry_root_dir).write_yaml(complist)
+    print(f"Components written to '{registry_root_dir}'")
 
 def _update_comp(comp):
     git = GitRepository(comp.remote, comp.local)

@@ -1,7 +1,7 @@
-import pathlib
 import yaml
+import pathlib
 
-from mepo.state.exceptions import SuffixNotRecognizedError
+from .state.exceptions import SuffixNotRecognizedError
 
 # From https://github.com/yaml/pyyaml/issues/127#issuecomment-525800484
 class AddBlankLinesDumper(yaml.SafeDumper):
@@ -13,7 +13,7 @@ class AddBlankLinesDumper(yaml.SafeDumper):
         if len(self.indents) == 1:
             super().write_line_break()
 
-class ConfigFile(object):
+class Registry(object):
 
     __slots__ = ['__filename', '__filetype']
 
@@ -31,21 +31,21 @@ class ConfigFile(object):
         return getattr(self, 'read_'+self.__filetype)()
 
     def read_yaml(self):
-        '''Read yaml config file and return a dict containing contents'''
+        '''Read yaml registry and return a dict containing contents'''
         import yaml
         with open(self.__filename, 'r') as fin:
             d = yaml.safe_load(fin)
         return d
 
     def read_json(self):
-        '''Read json config file and return a dict containing contents'''
+        '''Read json registry and return a dict containing contents'''
         import json
         with open(self.__filename, 'r') as fin:
             d = json.load(fin)
         return d
 
     def read_cfg(self):
-        '''Read python config file and return a dict containing contents'''
+        '''Read python registry and return a dict containing contents'''
         raise NotImplementedError('Reading of cfg file has not yet been implemented')
 
     def write_yaml(self, d):

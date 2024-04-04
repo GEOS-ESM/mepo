@@ -69,7 +69,7 @@ def run(args):
             'repo_url': None,
             'directory': None,
             'branch': None,
-            'config': None,
+            'registry': None,
             'allrepos': False,
             'style': None})
         if not args.dry_run:
