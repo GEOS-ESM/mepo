@@ -1,10 +1,10 @@
 import os
 import shutil
 
-from mepo.state.state import MepoState
-from mepo.state.exceptions import NotInRootDirError
+from ..state.state import MepoState
+from ..state.exceptions import NotInRootDirError
 
-from mepo.command.clone import clone as mepo_clone
+from .clone import run as mepo_clone_run
 
 # This command will "reset" the mepo clone. This will delete all
 # the subrepos, remove the .mepo directory, and then re-clone all the
@@ -65,10 +65,16 @@ def run(args):
         # mepo_clone requires args which is an Argparse Namespace object
         # We will create a new Namespace object with the correct arguments
         # for mepo_clone
-        clone_args = type('Namespace', (object,), {'repo_url': None, 'directory': None, 'branch': None, 'config': None, 'allrepos': False, 'style': None})
+        clone_args = type('Namespace', (object,), {
+            'repo_url': None,
+            'directory': None,
+            'branch': None,
+            'config': None,
+            'allrepos': False,
+            'style': None})
         if not args.dry_run:
             print('Re-cloning all subrepos')
-            mepo_clone.run(clone_args)
+            mepo_clone_run(clone_args)
             print('Recloning done.')
         else:
             print(f'Dry-run only. Not re-cloning all subrepos')

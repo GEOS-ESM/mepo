@@ -1,5 +1,5 @@
-from mepo.state.state import MepoState
-from mepo.repository.git import GitRepository
+from ..state.state import MepoState
+from ..repository.git import GitRepository
 
 def run(args):
     allcomps = MepoState.read_state()
