@@ -1,8 +1,8 @@
-from mepo.state.state import MepoState
-from mepo.utilities import verify
-from mepo.repository.git import GitRepository
-from mepo.state.component import MepoVersion
-from mepo.utilities import colors
+from ..state.state import MepoState
+from ..state.component import MepoVersion
+from ..utilities import verify
+from ..utilities import colors
+from ..repository.git import GitRepository
 
 def run(args):
     allcomps = MepoState.read_state()
