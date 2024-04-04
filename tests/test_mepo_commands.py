@@ -10,11 +10,11 @@ from io import StringIO
 
 from input import args
 
-from mepo.command.clone   import clone   as mepo_clone
-from mepo.command.list    import list    as mepo_list
-from mepo.command.status  import status  as mepo_status
-from mepo.command.compare import compare as mepo_compare
-from mepo.command.develop import develop as mepo_develop
+from mepo.command.clone import run as mepo_clone
+from mepo.command.list import run as mepo_list
+from mepo.command.status import run as mepo_status
+from mepo.command.compare import run as mepo_compare
+from mepo.command.develop import run as mepo_develop
 
 class TestMepoCommands(unittest.TestCase):
 
@@ -50,19 +50,19 @@ class TestMepoCommands(unittest.TestCase):
         args.branch = None
         args.directory = None
         args.partial = 'blobless'
-        args.config = 'components.yaml'
-        mepo_clone.run(args)
+        args.registry = 'components.yaml'
+        mepo_clone(args)
         # In order to better test compare, we need to do *something*
         args.comp_name = ['env','cmake','fvdycore']
         args.quiet = False
-        mepo_develop.run(args)
+        mepo_develop(args)
 
     def setUp(self):
         pass
 
     def test_list(self):
         sys.stdout = output = StringIO()
-        mepo_list.run(args)
+        mepo_list(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'list_output.txt'), 'r') as fin:
             saved_output = fin.read()
@@ -73,7 +73,7 @@ class TestMepoCommands(unittest.TestCase):
         args.ignore_permissions=False
         args.nocolor=True
         args.hashes=False
-        mepo_status.run(args)
+        mepo_status(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'status_output.txt'), 'r') as fin:
             saved_output = fin.read()
@@ -84,7 +84,7 @@ class TestMepoCommands(unittest.TestCase):
         args.all=False
         args.nocolor=True
         args.wrap=True
-        mepo_compare.run(args)
+        mepo_compare(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'compare_brief_output.txt'), 'r') as fin:
             saved_output = fin.read()
@@ -95,7 +95,7 @@ class TestMepoCommands(unittest.TestCase):
         args.all=True
         args.nocolor=True
         args.wrap=True
-        mepo_compare.run(args)
+        mepo_compare(args)
         sys.stdout = sys.__stdout__
         with open(os.path.join(self.__class__.output_dir, 'compare_full_output.txt'), 'r') as fin:
             saved_output = fin.read()
