@@ -1,10 +1,11 @@
 import argparse
 
-from mepo.cmdline.branch_parser import MepoBranchArgParser
-from mepo.cmdline.stash_parser  import MepoStashArgParser
-from mepo.cmdline.tag_parser    import MepoTagArgParser
-from mepo.cmdline.config_parser import MepoConfigArgParser
-from mepo.utilities             import mepoconfig
+from .branch_parser import MepoBranchArgParser
+from .stash_parser import MepoStashArgParser
+from .tag_parser import MepoTagArgParser
+from .config_parser import MepoConfigArgParser
+
+from ..utilities import mepoconfig
 
 class MepoArgParser(object):
 
