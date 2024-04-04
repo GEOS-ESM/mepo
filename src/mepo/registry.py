@@ -1,7 +1,7 @@
 import yaml
 import pathlib
 
-from .state.exceptions import SuffixNotRecognizedError
+from .utilities.exceptions import SuffixNotRecognizedError
 
 # From https://github.com/yaml/pyyaml/issues/127#issuecomment-525800484
 class AddBlankLinesDumper(yaml.SafeDumper):

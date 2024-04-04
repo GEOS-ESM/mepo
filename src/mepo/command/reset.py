@@ -2,7 +2,7 @@ import os
 import shutil
 
 from ..state.state import MepoState
-from ..state.exceptions import NotInRootDirError
+from ..utilities.exceptions import NotInRootDirError
 
 from .clone import run as mepo_clone_run
 

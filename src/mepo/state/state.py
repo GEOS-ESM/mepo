@@ -7,8 +7,8 @@ import pickle
 from pathlib import Path
 
 from .component import MepoComponent
-from .exceptions import StateDoesNotExistError
-from .exceptions import StateAlreadyInitializedError
+from ..utilities.exceptions import StateDoesNotExistError
+from ..utilities.exceptions import StateAlreadyInitializedError
 
 from ..utilities import shellcmd
 
