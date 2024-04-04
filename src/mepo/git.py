@@ -5,10 +5,10 @@ import shlex
 
 from urllib.parse import urljoin
 
-from ..utilities import shellcmd
-from ..utilities import colors
+from .utilities import shellcmd
+from .utilities import colors
 
-from ..utilities.exceptions import RepoAlreadyClonedError
+from .utilities.exceptions import RepoAlreadyClonedError
 
 class GitRepository(object):
     """

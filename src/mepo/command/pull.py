@@ -2,7 +2,7 @@ from ..state.state import MepoState
 from ..state.component import MepoVersion
 from ..utilities import verify
 from ..utilities import colors
-from ..repository.git import GitRepository
+from ..git import GitRepository
 
 def run(args):
     allcomps = MepoState.read_state()

@@ -6,7 +6,7 @@ from ..utilities import colors
 from ..utilities.version import version_to_string
 from ..utilities.version import sanitize_version_string
 
-from ..repository.git import GitRepository
+from ..git import GitRepository
 
 VER_LEN = 30
 

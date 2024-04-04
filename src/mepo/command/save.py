@@ -2,7 +2,7 @@ import os
 
 from ..state.state import MepoState
 from ..state.component import MepoVersion
-from ..repository.git import GitRepository
+from ..git import GitRepository
 from ..registry import Registry
 from ..utilities.version import sanitize_version_string
 

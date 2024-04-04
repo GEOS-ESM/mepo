@@ -1,6 +1,6 @@
 from ..state.state import MepoState
 from ..state.component import MepoVersion
-from ..repository.git import GitRepository
+from ..git import GitRepository
 from ..utilities import colors
 
 def run(args):

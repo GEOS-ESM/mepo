@@ -1,6 +1,6 @@
 from ..state.state import MepoState
 from ..utilities import verify
-from ..repository.git import GitRepository
+from ..git import GitRepository
 
 # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
 import os, tempfile, subprocess

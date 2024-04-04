@@ -8,7 +8,7 @@ from .whereis import _get_relative_path
 
 from ..state.state import MepoState
 
-from ..repository.git import GitRepository
+from ..git import GitRepository
 
 from ..utilities.version import version_to_string
 from ..utilities.version import sanitize_version_string
