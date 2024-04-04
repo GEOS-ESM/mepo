@@ -1,5 +1,5 @@
 from ..utilities import verify
-from ..state.state import MepoState
+from ..state import MepoState
 from ..git import GitRepository
 
 def run(args):

@@ -1,8 +1,8 @@
 import os
 from shutil import get_terminal_size
 
-from ..state.state import MepoState
-from ..state.component import MepoVersion
+from ..state import MepoState
+from ..component import MepoVersion
 
 from ..utilities import colors
 from ..utilities import verify

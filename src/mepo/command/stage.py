@@ -1,7 +1,7 @@
-from ..state.state import MepoState
+from ..state import MepoState
 from ..utilities import verify
 from ..git import GitRepository
-from ..state.component import MepoVersion
+from ..component import MepoVersion
 
 def run(args):
     allcomps = MepoState.read_state()

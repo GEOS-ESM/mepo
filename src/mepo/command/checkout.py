@@ -1,4 +1,4 @@
-from ..state.state import MepoState
+from ..state import MepoState
 from ..utilities import verify
 from ..utilities import colors
 from ..git import GitRepository

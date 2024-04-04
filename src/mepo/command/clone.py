@@ -4,9 +4,9 @@ import shutil
 import shlex
 from urllib.parse import urlparse
 
-from ..state.state import MepoState
-from ..state.state import StateDoesNotExistError
-from ..state.component import MepoComponent
+from ..state import MepoState
+from ..state import StateDoesNotExistError
+from ..component import MepoComponent
 from ..git import GitRepository
 from ..utilities import shellcmd
 from ..utilities import colors

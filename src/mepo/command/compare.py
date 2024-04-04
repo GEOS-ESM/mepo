@@ -1,6 +1,6 @@
 from shutil import get_terminal_size
 
-from ..state.state import MepoState
+from ..state import MepoState
 
 from ..utilities import colors
 from ..utilities.version import version_to_string

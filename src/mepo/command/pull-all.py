@@ -1,5 +1,5 @@
-from ..state.state import MepoState
-from ..state.component import MepoVersion
+from ..state import MepoState
+from ..component import MepoVersion
 from ..git import GitRepository
 from ..utilities import colors
 

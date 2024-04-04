@@ -3,7 +3,7 @@ import time
 import multiprocessing as mp
 import atexit
 
-from ..state.state import MepoState
+from ..state import MepoState
 from ..git import GitRepository
 from ..utilities.version import version_to_string
 from ..utilities import colors

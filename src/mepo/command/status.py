@@ -6,7 +6,7 @@ import shlex
 
 from .whereis import _get_relative_path
 
-from ..state.state import MepoState
+from ..state import MepoState
 
 from ..git import GitRepository
 

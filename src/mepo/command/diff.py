@@ -5,7 +5,7 @@ import os
 
 from shutil import get_terminal_size
 
-from ..state.state import MepoState
+from ..state import MepoState
 from ..git import GitRepository
 from ..utilities import verify
 

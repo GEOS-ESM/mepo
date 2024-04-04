@@ -1,6 +1,6 @@
 import os
 
-from ..state.state import MepoState
+from ..state import MepoState
 from ..utilities import verify
 
 def run(args):
