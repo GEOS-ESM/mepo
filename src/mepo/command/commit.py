@@ -1,7 +1,8 @@
-from mepo.state.state import MepoState
-from mepo.utilities import verify
-from mepo.repository.git import GitRepository
-from mepo.command.stage.stage import stage_files
+from ..state.state import MepoState
+from ..utilities import verify
+from ..repository.git import GitRepository
+
+from .stage import stage_files
 
 # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
 import os, tempfile, subprocess

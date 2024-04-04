@@ -5,9 +5,9 @@ import os
 
 from shutil import get_terminal_size
 
-from mepo.state.state import MepoState
-from mepo.repository.git import GitRepository
-from mepo.utilities import verify
+from ..state.state import MepoState
+from ..repository.git import GitRepository
+from ..utilities import verify
 
 def run(args):
     foundDiff = False
