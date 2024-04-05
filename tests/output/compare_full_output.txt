@@ -1,12 +1,12 @@
 Repo                   | Original                                             | Current
 ---------------------- | ---------------------------------------------------- | -------
-GEOSfvdycore           | (t) hierarchical-mepo-based-on-v2.13.0 (DH)          | (t) hierarchical-mepo-based-on-v2.13.0 (DH)
+GEOSfvdycore           | (b) main                                             | (b) main
 env                    | (t) v4.25.1 (DH)                                     | (b) main
-cmake                  | (b) feature/pchakrab/hierarchical-mepo (DH, c856a28) | (b) develop
+cmake                  | (b) feature/pchakrab/hierarchical-mepo (DH, 3caa3ba) | (b) feature/pchakrab/hierarchical-mepo (DH, 3caa3ba)
 ecbuild                | (t) geos/v1.3.0 (DH)                                 | (t) geos/v1.3.0 (DH)
-GMAO_Shared            | (b) feature/pchakrab/hierarchical-mepo (DH, 24bd25a) | (b) feature/pchakrab/hierarchical-mepo (DH, 24bd25a)
+GMAO_Shared            | (b) feature/pchakrab/hierarchical-mepo (DH, 9a5560c) | (b) feature/pchakrab/hierarchical-mepo (DH, 9a5560c)
 GEOS_Util              | (t) v2.0.5 (DH)                                      | (t) v2.0.5 (DH)
-MAPL                   | (t) hierarchical-mepo-based-on-v2.13.0 (DH)          | (t) hierarchical-mepo-based-on-v2.13.0 (DH)
-FMS                    | (t) geos/2019.01.02+noaff.8 (DH)                     | (t) geos/2019.01.02+noaff.8 (DH)
-FVdycoreCubed_GridComp | (b) feature/pchakrab/hierarchical-mepo (DH, 07060e4) | (b) feature/pchakrab/hierarchical-mepo (DH, 07060e4)
+MAPL                   | (b) feature/pchakrab/hierarchical-mepo (DH, 7b57017) | (b) feature/pchakrab/hierarchical-mepo (DH, 7b57017)
+FMS                    | (t) geos/2019.01.02+noaff.8 (DH)                     | (b) geos/release/2019.01
+FVdycoreCubed_GridComp | (b) feature/pchakrab/hierarchical-mepo (DH, b40300d) | (b) feature/pchakrab/hierarchical-mepo (DH, b40300d)
 fvdycore               | (t) geos/v2.8.1 (DH)                                 | (b) geos/develop
