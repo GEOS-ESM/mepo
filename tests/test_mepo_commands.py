@@ -22,7 +22,7 @@ class TestMepoCommands(unittest.TestCase):
 
     @classmethod
     def __checkout_fixture(cls):
-        remote = "https://github.com/pchakraborty/{}.git".format(cls.fixture)
+        remote = f"git@github.com:pchakraborty/{cls.fixture}.git"
         git_clone = "git clone "
         if cls.tag:
             git_clone += f"-b {cls.tag}"
