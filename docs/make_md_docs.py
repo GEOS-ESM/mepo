@@ -19,7 +19,7 @@ mepod_dir_path = os.path.join(main_dir_path, "src", "mepo")
 # And then "command"
 command_dir_path = os.path.join(mepod_dir_path, "command")
 
-mepo_command_path = os.path.join(main_dir_path, "bin", "mepo")
+mepo_command_path = os.path.join(main_dir_path, "bin", "mepo3")
 
 def get_command_list(directory):
     # # Walk the tree
