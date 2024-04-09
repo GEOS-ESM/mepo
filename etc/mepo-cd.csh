@@ -1,1 +1,1 @@
-alias mepo-cd 'cd `mepo whereis -i \!:1`'
+alias mepo-cd 'cd `mepo3 whereis -i \!:1`'
