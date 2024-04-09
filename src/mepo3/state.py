@@ -14,7 +14,7 @@ from .utilities import shellcmd
 
 class MepoState(object):
 
-    __state_dir_name = '.mepo'
+    __state_dir_name = '.mepo3'
     __state_fileptr_name = 'state.pkl'
 
     @staticmethod
@@ -32,11 +32,11 @@ class MepoState(object):
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
                 return state_dir
-        raise OSError('mepo state dir [.mepo] does not exist')
+        raise OSError('mepo3 state dir [.mepo3] does not exist')
 
     @classmethod
     def get_root_dir(cls):
-        '''Return directory that contains .mepo'''
+        '''Return directory that contains .mepo3'''
         return os.path.dirname(cls.get_dir())
 
     @classmethod
@@ -44,7 +44,7 @@ class MepoState(object):
         state_file = os.path.join(cls.get_dir(), cls.__state_fileptr_name)
         if os.path.exists(state_file):
             return state_file
-        raise OSError('mepo state file [%s] does not exist' % state_file)
+        raise OSError('mepo3 state file [%s] does not exist' % state_file)
 
     @classmethod
     def exists(cls):
@@ -57,7 +57,7 @@ class MepoState(object):
     @classmethod
     def read_state(cls):
         if not cls.exists():
-            raise StateDoesNotExistError('Error! mepo state does not exist')
+            raise StateDoesNotExistError('Error! mepo3 state does not exist')
         with open(cls.get_file(), 'rb') as fin:
             allcomps = pickle.load(fin)
         return allcomps

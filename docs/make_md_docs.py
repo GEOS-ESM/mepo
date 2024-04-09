@@ -15,7 +15,7 @@ doc_dir_path = os.path.dirname(os.path.realpath(__file__))
 # Then we need to get to the mepo/mepo.d/command directory. First the "main" dir
 main_dir_path = os.path.dirname(doc_dir_path)
 # Now add "src/mepo"
-mepod_dir_path = os.path.join(main_dir_path, "src", "mepo")
+mepod_dir_path = os.path.join(main_dir_path, "src", "mepo3")
 # And then "command"
 command_dir_path = os.path.join(mepod_dir_path, "command")
 

@@ -13,5 +13,5 @@ SRC_D = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', 'src')
 sys.path.insert(0, SRC_D)
 
 if __name__ == '__main__':
-    from mepo.__main__ import main
+    from mepo3.__main__ import main
     main()

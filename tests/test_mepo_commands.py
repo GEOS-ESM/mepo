@@ -10,11 +10,11 @@ from io import StringIO
 
 from input import args
 
-from mepo.command.clone import run as mepo_clone
-from mepo.command.list import run as mepo_list
-from mepo.command.status import run as mepo_status
-from mepo.command.compare import run as mepo_compare
-from mepo.command.develop import run as mepo_develop
+from mepo3.command.clone import run as mepo_clone
+from mepo3.command.list import run as mepo_list
+from mepo3.command.status import run as mepo_status
+from mepo3.command.compare import run as mepo_compare
+from mepo3.command.develop import run as mepo_develop
 
 class TestMepoCommands(unittest.TestCase):
 

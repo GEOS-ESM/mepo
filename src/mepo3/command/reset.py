@@ -7,7 +7,7 @@ from ..utilities.exceptions import NotInRootDirError
 from .clone import run as mepo_clone_run
 
 # This command will "reset" the mepo clone. This will delete all
-# the subrepos, remove the .mepo directory, and then re-clone all the
+# the subrepos, remove the .mepo3 directory, and then re-clone all the
 # subrepos. This is useful if you want to start over with a fresh clone
 # of the project.
 
@@ -51,13 +51,13 @@ def run(args):
             else:
                 print(f'dry-run only. Not removing {relpath}')
 
-    # Next, we need to remove the .mepo directory
-    print(f'Removing .mepo', end='...')
+    # Next, we need to remove the .mepo3 directory
+    print(f'Removing .mepo3', end='...')
     if not args.dry_run:
-        shutil.rmtree('.mepo')
+        shutil.rmtree('.mepo3')
         print('done.')
     else:
-        print(f'dry-run only. Not removing .mepo')
+        print(f'dry-run only. Not removing .mepo3')
 
     # If they pass in the --reclone flag, then we will re-clone all the subrepos
     if args.reclone:
@@ -83,7 +83,7 @@ def _get_relative_path(local_path):
     """
     Get the relative path when given a local path.
 
-    local_path: The path to a subrepo as known by mepo (relative to the .mepo directory)
+    local_path: The path to a subrepo as known by mepo (relative to the .mepo3 directory)
     """
 
     # This creates a full path on the disk from the root of mepo and the local_path
