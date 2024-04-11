@@ -14,9 +14,9 @@ def run(args):
     else:
         style = None
 
-    allcomps = MepoState.initialize(args.config,style)
+    allcomps = MepoState.initialize(args.registry, style)
 
     if not style:
-        print(f'Initializing mepo using {args.config}')
+        print(f'Initializing mepo using {args.registry}')
     else:
-        print(f'Initializing mepo using {args.config} with {style} style')
+        print(f'Initializing mepo using {args.registry} with {style} style')

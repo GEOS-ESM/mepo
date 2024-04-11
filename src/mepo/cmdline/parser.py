@@ -92,7 +92,7 @@ class MepoArgParser(object):
             '--registry',
             metavar = 'registry',
             nargs = '?',
-            default = 'components.yaml',
+            default = None,
             help = 'Registry (default: components.yaml)')
         clone.add_argument(
             '--style',

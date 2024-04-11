@@ -1,2 +1,2 @@
-config_file = None
+registry = None
 allrepos = None

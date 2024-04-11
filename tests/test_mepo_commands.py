@@ -44,12 +44,10 @@ class TestMepoCommands(unittest.TestCase):
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
-        #cls.__copy_config_file()
-        args.config = 'components.yaml'
-        args.style = 'prefix'
         os.chdir(cls.fixture_dir)
-        mepo_init(args)
-        args.config = None
+        # mepo clone
+        args.style = 'prefix'
+        args.regsitry = None
         args.repo_url = None
         args.branch = None
         args.directory = None
@@ -67,7 +65,7 @@ class TestMepoCommands(unittest.TestCase):
         sys.stdout = output = StringIO()
         mepo_list(args)
         sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'list_output.txt'), 'r') as fin:
+        with open(os.path.join(self.__class__.output_dir, 'output_list.txt'), 'r') as fin:
             saved_output = fin.read()
         self.assertEqual(output.getvalue(), saved_output)
 

@@ -38,16 +38,17 @@ def run(args):
         partial = None
 
 
-    # If you pass in a config, with clone, it could be outside the repo.
+    # If you pass in a registry, with clone, it could be outside the repo.
     # So use the full path
-    passed_in_config = False
-    if args.config:
-        passed_in_config = True
-        args.config = os.path.abspath(args.config)
+    passed_in_registry = False
+    if args.registry:
+        passed_in_registry = True
+        args.registry = os.path.abspath(args.registry)
     else:
-        # If we don't pass in a config, we need to "reset" the arg to the
+        # If we don't pass in a registry, we need to "reset" the arg to the
         # default name because we pass args to mepo_init
-        args.config = 'components.yaml'
+        args.registry = 'components.yaml'
+    print(f"args.registry: {args.registry}, passed in registry: {passed_in_registry}")
 
     if args.repo_url:
         p = urlparse(args.repo_url)
@@ -66,9 +67,9 @@ def run(args):
             os.chdir(git_url_directory)
 
     # Copy the new file into the repo only if we pass it in
-    if passed_in_config:
+    if passed_in_registry:
         try:
-            shutil.copy(args.config,os.getcwd())
+            shutil.copy(args.registry, os.getcwd())
         except shutil.SameFileError as e:
             pass
 
