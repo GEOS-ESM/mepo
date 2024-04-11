@@ -48,7 +48,6 @@ def run(args):
         # If we don't pass in a registry, we need to "reset" the arg to the
         # default name because we pass args to mepo_init
         args.registry = 'components.yaml'
-    print(f"args.registry: {args.registry}, passed in registry: {passed_in_registry}")
 
     if args.repo_url:
         p = urlparse(args.repo_url)
