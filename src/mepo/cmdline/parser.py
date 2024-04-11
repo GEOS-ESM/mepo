@@ -1,10 +1,11 @@
 import argparse
 
-from mepo.cmdline.branch_parser import MepoBranchArgParser
-from mepo.cmdline.stash_parser  import MepoStashArgParser
-from mepo.cmdline.tag_parser    import MepoTagArgParser
-from mepo.cmdline.config_parser import MepoConfigArgParser
-from mepo.utilities             import mepoconfig
+from .branch_parser import MepoBranchArgParser
+from .stash_parser import MepoStashArgParser
+from .tag_parser import MepoTagArgParser
+from .config_parser import MepoConfigArgParser
+
+from ..utilities import mepoconfig
 
 class MepoArgParser(object):
 
@@ -88,11 +89,11 @@ class MepoArgParser(object):
             default = None,
             help = 'Branch/tag of URL to initially clone (Only allowed with URL!)')
         clone.add_argument(
-            '--config',
-            metavar = 'config-file',
+            '--registry',
+            metavar = 'registry',
             nargs = '?',
-            default = None,
-            help = 'Configuration file (ignored if init already called)')
+            default = 'components.yaml',
+            help = 'Registry (default: components.yaml)')
         clone.add_argument(
             '--style',
             metavar = 'style-type',
@@ -450,11 +451,11 @@ class MepoArgParser(object):
     def __save(self):
         save = self.subparsers.add_parser(
             'save',
-            description = 'Save current state in a yaml config file',
+            description = 'Save current state in a yaml registry',
             aliases=mepoconfig.get_command_alias('save'))
         save.add_argument(
-            'config_file',
-            metavar = 'config-file',
+            'registry',
+            metavar = 'registry',
             nargs = '?',
             default = 'components-new.yaml',
             help = 'default: %(default)s')

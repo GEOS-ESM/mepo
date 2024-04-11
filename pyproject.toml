@@ -20,7 +20,7 @@ dependencies = [
 Homepage = "https://github.com/GEOS-ESM/mepo"
 
 [project.scripts]
-mepo = "mepo.main:main"
+mepo = "mepo.__main__:main"
 
 [tool.setuptools]
 include-package-data = true
