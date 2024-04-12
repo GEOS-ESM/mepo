@@ -18,6 +18,9 @@ from mepo.command.status import run as mepo_status
 from mepo.command.compare import run as mepo_compare
 from mepo.command.develop import run as mepo_develop
 from mepo.command.checkout import run as mepo_checkout
+from mepo.command.branch_list import run as mepo_branch_list
+from mepo.command.branch_create import run as mepo_branch_create
+from mepo.command.branch_delete import run as mepo_branch_delete
 
 import importlib
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
@@ -139,6 +142,35 @@ class TestMepoCommands(unittest.TestCase):
         mepo_checkout_if_exists.run(args)
         # Since we do not expect this ref to exist, status should be that of clone
         self.__check_status("output_clone_status.txt")
+
+    def test_branch_list(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["ecbuild"]
+        args.all = True
+        args.nocolor = True
+        sys.stdout = output = StringIO()
+        mepo_branch_list(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_branch_list.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_branch_create_delete(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.branch_name = "the-best-branch-ever"
+        args.comp_name = ["ecbuild"]
+        # Create branch
+        sys.stdout = output = StringIO()
+        mepo_branch_create(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_branch_create.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+        # Delete the branch that was just created
+        args.force = False
+        sys.stdout = output = StringIO()
+        mepo_branch_delete(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_branch_delete.txt")
+        self.assertEqual(output.getvalue(), saved_output)
 
     def tearDown(self):
         pass
