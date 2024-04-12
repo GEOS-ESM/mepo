@@ -21,10 +21,16 @@ from mepo.command.checkout import run as mepo_checkout
 from mepo.command.branch_list import run as mepo_branch_list
 from mepo.command.branch_create import run as mepo_branch_create
 from mepo.command.branch_delete import run as mepo_branch_delete
+from mepo.command.tag_list import run as mepo_tag_list
+from mepo.command.tag_create import run as mepo_tag_create
+from mepo.command.tag_delete import run as mepo_tag_delete
+from mepo.command.fetch import run as mepo_fetch
+from mepo.command.pull import run as mepo_pull
 
 import importlib
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
 mepo_checkout_if_exists = importlib.import_module("mepo.command.checkout-if-exists")
+mepo_pull_all = importlib.import_module("mepo.command.pull-all")
 
 class TestMepoCommands(unittest.TestCase):
 
@@ -87,7 +93,7 @@ class TestMepoCommands(unittest.TestCase):
         os.chdir(self.__class__.fixture_dir)
         mepo_restore_state.run(args)
         self.__check_status("output_clone_status.txt")
-    
+
     def test_list(self):
         os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
@@ -145,6 +151,7 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_branch_list(self):
         os.chdir(self.__class__.fixture_dir)
+        # Not expecting new branches in this component (fingers crossed)
         args.comp_name = ["ecbuild"]
         args.all = True
         args.nocolor = True
@@ -156,8 +163,8 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_branch_create_delete(self):
         os.chdir(self.__class__.fixture_dir)
-        args.branch_name = "the-best-branch-ever"
         args.comp_name = ["ecbuild"]
+        args.branch_name = "the-best-branch-ever"
         # Create branch
         sys.stdout = output = StringIO()
         mepo_branch_create(args)
@@ -170,6 +177,66 @@ class TestMepoCommands(unittest.TestCase):
         mepo_branch_delete(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_branch_delete.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_tag_list(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["cmake"]
+        sys.stdout = output = StringIO()
+        mepo_tag_list(args)
+        sys.stdout = sys.__stdout__
+        # Tag awesome-tag actually exists in component cmake
+        self.assertTrue("awesome-tag" in output.getvalue())
+
+    def test_tag_create_delete(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["FMS", "MAPL"]
+        args.tag_name = "new-awesome-tag"
+        # Create tag
+        args.annotate = True
+        args.message = "The new awesome tag"
+        sys.stdout = output = StringIO()
+        mepo_tag_create(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_tag_create.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+        # Delete the tag that was just created
+        sys.stdout = output = StringIO()
+        mepo_tag_delete(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_tag_delete.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_fetch(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["FVdycoreCubed_GridComp"]
+        args.all = True
+        args.prune = True
+        args.tags = True
+        sys.stdout = output = StringIO()
+        mepo_fetch(args)
+        sys.stdout = sys.__stdout__
+        saved_output = "Fetching \x1b[1;33mFVdycoreCubed_GridComp\x1b[0;0m\n"
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_pull(self):
+        # TODO: compare output
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["FVdycoreCubed_GridComp"]
+        args.quiet = False
+        err_msg = "FVdycoreCubed_GridComp has detached head! Cannot pull."
+        with self.assertRaisesRegex(Exception, err_msg):
+            mepo_pull(args)
+
+    def test_pull_all(self):
+        # TODO: compare output
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["FVdycoreCubed_GridComp"]
+        args.quiet = False
+        sys.stdout = output = StringIO()
+        mepo_pull_all.run(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_pull_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
     def tearDown(self):
