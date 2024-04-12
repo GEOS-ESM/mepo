@@ -5,6 +5,7 @@ sys.path.insert(0, os.path.join(THIS_DIR, "..", "src"))
 import shutil
 import shlex
 import unittest
+import importlib
 import subprocess as sp
 from io import StringIO
 
@@ -16,10 +17,21 @@ from mepo.command.list import run as mepo_list
 from mepo.command.status import run as mepo_status
 from mepo.command.compare import run as mepo_compare
 from mepo.command.develop import run as mepo_develop
+from mepo.command.checkout import run as mepo_checkout
+
+import importlib
+mepo_restore_state = importlib.import_module("mepo.command.restore-state")
+mepo_checkout_if_exists = importlib.import_module("mepo.command.checkout-if-exists")
 
 class TestMepoCommands(unittest.TestCase):
 
     maxDiff=None
+
+    @classmethod
+    def __get_saved_output(cls, output_file):
+        with open(os.path.join(cls.output_dir, output_file), "r") as fin:
+            saved_output = fin.read()
+        return saved_output
 
     @classmethod
     def __checkout_fixture(cls):
@@ -44,6 +56,7 @@ class TestMepoCommands(unittest.TestCase):
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
+        cwd = os.getcwd()
         os.chdir(cls.fixture_dir)
         # mepo clone
         args.style = 'prefix'
@@ -53,54 +66,93 @@ class TestMepoCommands(unittest.TestCase):
         args.directory = None
         args.partial = 'blobless'
         mepo_clone(args)
-        # In order to better test compare, we need to do *something*
-        args.comp_name = ['env','cmake','fvdycore']
-        args.quiet = False
-        mepo_develop(args)
+        os.chdir(cwd)
 
     def setUp(self):
         pass
 
-    def test_list(self):
-        sys.stdout = output = StringIO()
-        mepo_list(args)
-        sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'output_list.txt'), 'r') as fin:
-            saved_output = fin.read()
-        self.assertEqual(output.getvalue(), saved_output)
-
-    def test_status(self):
+    def __check_status(self, saved_output_file):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
         args.ignore_permissions=False
         args.nocolor=True
         args.hashes=False
         mepo_status(args)
         sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'status_output.txt'), 'r') as fin:
-            saved_output = fin.read()
+        os.chdir(cwd)
+        saved_output = self.__class__.__get_saved_output(saved_output_file)
         self.assertEqual(output.getvalue(), saved_output)
 
-    def test_compare_brief(self):
+    def __restore_state(self):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
+        mepo_restore_state.run(args)
+        os.chdir(cwd)
+        self.__check_status("output_clone_status.txt")
+    
+    def test_list(self):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
-        args.all=False
-        args.nocolor=True
-        args.wrap=True
-        mepo_compare(args)
+        mepo_list(args)
         sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'compare_brief_output.txt'), 'r') as fin:
-            saved_output = fin.read()
+        os.chdir(cwd)
+        saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
-    def test_compare_full(self):
+    def test_develop(self):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["env", "cmake", "fvdycore"]
+        args.quiet = False
+        mepo_develop(args)
+        self.__check_status("output_develop_status.txt")
+        # Clean up
+        self.__restore_state()
+        os.chdir(cwd)
+
+    def test_checkout_compare(self):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
+        # Checkout 'develop' branch of MAPL and env
+        args.branch_name = "develop"
+        args.comp_name = ["MAPL"]
+        args.b = False
+        args.quiet = False
+        args.detach = False
+        mepo_checkout(args)
+        # Compare (default)
+        args.all = False
+        args.nocolor = True
+        args.wrap = True
         sys.stdout = output = StringIO()
-        args.all=True
-        args.nocolor=True
-        args.wrap=True
         mepo_compare(args)
         sys.stdout = sys.__stdout__
-        with open(os.path.join(self.__class__.output_dir, 'compare_full_output.txt'), 'r') as fin:
-            saved_output = fin.read()
+        saved_output = self.__class__.__get_saved_output("output_compare.txt")
         self.assertEqual(output.getvalue(), saved_output)
+        # Compare (All)
+        args.all = True
+        sys.stdout = output = StringIO()
+        mepo_compare(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_compare_all.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+        # Clean up
+        self.__restore_state()
+        os.chdir(cwd)
+
+    def test_checkout_if_exists(self):
+        cwd = os.getcwd()
+        os.chdir(self.__class__.fixture_dir)
+        args.ref_name = "aafjkgj-afgjhffg-affgurgnsfg-does-not-exist" # does not exist
+        args.quiet = True
+        args.detach = False
+        args.dry_run = False
+        mepo_checkout_if_exists.run(args)
+        # Since we do not expect this ref to exist, status should be that of clone
+        self.__check_status("output_clone_status.txt")
+        os.chdir(cwd)
 
     def tearDown(self):
         pass

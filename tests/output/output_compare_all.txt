@@ -1,11 +1,11 @@
 Repo                   | Original                         | Current
 ---------------------- | -------------------------------- | -------
 GEOSfvdycore           | (t) v1.13.0 (DH)                 | (t) v1.13.0 (DH)
-env                    | (t) v4.8.0 (DH)                  | (b) main
-cmake                  | (t) v3.21.0 (DH)                 | (b) develop
+env                    | (t) v4.8.0 (DH)                  | (t) v4.8.0 (DH)
+cmake                  | (t) v3.21.0 (DH)                 | (t) v3.21.0 (DH)
 ecbuild                | (t) geos/v1.3.0 (DH)             | (t) geos/v1.3.0 (DH)
 GMAO_Shared            | (t) v1.6.3 (DH)                  | (t) v1.6.3 (DH)
-MAPL                   | (t) v2.33.0 (DH)                 | (t) v2.33.0 (DH)
+MAPL                   | (t) v2.33.0 (DH)                 | (b) develop
 FMS                    | (t) geos/2019.01.02+noaff.8 (DH) | (t) geos/2019.01.02+noaff.8 (DH)
 FVdycoreCubed_GridComp | (t) v1.12.1 (DH)                 | (t) v1.12.1 (DH)
-fvdycore               | (t) geos/v1.5.0 (DH)             | (b) geos/develop
+fvdycore               | (t) geos/v1.5.0 (DH)             | (t) geos/v1.5.0 (DH)

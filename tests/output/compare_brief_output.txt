@@ -1,5 +1,0 @@
-Repo     | Original             | Current
--------- | -------------------- | -------
-env      | (t) v4.8.0 (DH)      | (b) main
-cmake    | (t) v3.21.0 (DH)     | (b) develop
-fvdycore | (t) geos/v1.5.0 (DH) | (b) geos/develop
