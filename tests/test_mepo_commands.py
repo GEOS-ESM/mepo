@@ -56,7 +56,6 @@ class TestMepoCommands(unittest.TestCase):
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
         cls.__checkout_fixture()
-        cwd = os.getcwd()
         os.chdir(cls.fixture_dir)
         # mepo clone
         args.style = 'prefix'
@@ -66,13 +65,11 @@ class TestMepoCommands(unittest.TestCase):
         args.directory = None
         args.partial = 'blobless'
         mepo_clone(args)
-        os.chdir(cwd)
 
     def setUp(self):
         pass
 
     def __check_status(self, saved_output_file):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
         args.ignore_permissions=False
@@ -80,29 +77,23 @@ class TestMepoCommands(unittest.TestCase):
         args.hashes=False
         mepo_status(args)
         sys.stdout = sys.__stdout__
-        os.chdir(cwd)
         saved_output = self.__class__.__get_saved_output(saved_output_file)
         self.assertEqual(output.getvalue(), saved_output)
 
     def __restore_state(self):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         mepo_restore_state.run(args)
-        os.chdir(cwd)
         self.__check_status("output_clone_status.txt")
     
     def test_list(self):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
         mepo_list(args)
         sys.stdout = sys.__stdout__
-        os.chdir(cwd)
         saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
     def test_develop(self):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         args.comp_name = ["env", "cmake", "fvdycore"]
         args.quiet = False
@@ -110,10 +101,8 @@ class TestMepoCommands(unittest.TestCase):
         self.__check_status("output_develop_status.txt")
         # Clean up
         self.__restore_state()
-        os.chdir(cwd)
 
     def test_checkout_compare(self):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         # Checkout 'develop' branch of MAPL and env
         args.branch_name = "develop"
@@ -140,10 +129,8 @@ class TestMepoCommands(unittest.TestCase):
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up
         self.__restore_state()
-        os.chdir(cwd)
 
     def test_checkout_if_exists(self):
-        cwd = os.getcwd()
         os.chdir(self.__class__.fixture_dir)
         args.ref_name = "aafjkgj-afgjhffg-affgurgnsfg-does-not-exist" # does not exist
         args.quiet = True
@@ -152,7 +139,6 @@ class TestMepoCommands(unittest.TestCase):
         mepo_checkout_if_exists.run(args)
         # Since we do not expect this ref to exist, status should be that of clone
         self.__check_status("output_clone_status.txt")
-        os.chdir(cwd)
 
     def tearDown(self):
         pass
