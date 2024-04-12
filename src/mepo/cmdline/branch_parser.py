@@ -20,10 +20,14 @@ class MepoBranchArgParser(object):
             action = 'store_true',
             help = 'list all (local+remote) branches')
         brlist.add_argument(
+            '--nocolor',
+            action = 'store_true',
+            help = 'do not display color')
+        brlist.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '*',
-            help = 'Component to list branches in')
+            help = 'component to list branches in')
 
     def __create(self):
         create = self.branch_subparsers.add_parser(
@@ -32,12 +36,12 @@ class MepoBranchArgParser(object):
         create.add_argument(
             'branch_name',
             metavar = 'branch-name',
-            help = "Name of branch")
+            help = "name of branch")
         create.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',
-            help = 'Component to create branches in')
+            help = 'component to create branches in')
 
     def __delete(self):
         delete = self.branch_subparsers.add_parser(
@@ -46,13 +50,13 @@ class MepoBranchArgParser(object):
         delete.add_argument(
             'branch_name',
             metavar = 'branch-name',
-            help = "Name of branch")
+            help = "name of branch")
         delete.add_argument(
             'comp_name',
             metavar = 'comp-name',
             nargs = '+',
-            help = 'Component to delete branches in')
+            help = 'component to delete branches in')
         delete.add_argument(
             '--force',
             action = 'store_true',
-            help = 'Delete branch even if it has not been fully merged')
+            help = 'delete branch even if it has not been fully merged')

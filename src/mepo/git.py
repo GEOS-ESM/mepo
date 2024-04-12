@@ -84,10 +84,12 @@ class GitRepository(object):
         cmd2 = self.__git + ' read-tree -mu HEAD'
         shellcmd.run(shlex.split(cmd2))
 
-    def list_branch(self, all=False):
+    def list_branch(self, all=False, nocolor=False):
         cmd = self.__git + ' branch'
         if all:
             cmd += ' -a'
+        if nocolor:
+            cmd += ' --color=never'
         return shellcmd.run(shlex.split(cmd), output=True)
 
     def list_tags(self):
