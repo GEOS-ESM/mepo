@@ -1,7 +1,6 @@
 import sys
 import time
 import multiprocessing as mp
-import atexit
 import shlex
 
 from ..state import MepoState
@@ -16,9 +15,10 @@ from .whereis import _get_relative_path
 def run(args):
     print('Checking status...'); sys.stdout.flush()
     allcomps = MepoState.read_state()
-    pool = mp.Pool()
-    atexit.register(pool.close)
-    result = pool.starmap(check_component_status, [(comp, args.ignore_permissions) for comp in allcomps])
+    with mp.Pool() as pool:
+        result = pool.starmap(
+            check_component_status,
+            [(comp, args.ignore_permissions) for comp in allcomps])
     print_status(allcomps, result, args.nocolor, args.hashes)
 
 def check_component_status(comp, ignore_permissions):
