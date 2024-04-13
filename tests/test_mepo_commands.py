@@ -104,7 +104,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
+        sys.stdout = output = StringIO() # suppress output
         mepo_restore_state.run(args)
+        sys.stdout == sys.__stdout__
         self.__mepo_status(self.__class__.output_clone_status)
 
     def test_list(self):
@@ -134,7 +136,9 @@ class TestMepoCommands(unittest.TestCase):
         args.b = False
         args.quiet = False
         args.detach = False
+        sys.stdout = output = StringIO() # suppress output
         mepo_checkout(args)
+        sys.stdout = sys.__stdout__
         # Compare (default)
         args.all = False
         args.nocolor = True
@@ -282,7 +286,7 @@ class TestMepoCommands(unittest.TestCase):
         saved_output = self.__class__.__get_saved_output("output_diff.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up
-        sp.run(f"git checkout {filename}".split())
+        sp.run(f"git checkout {filename}".split(), stderr=sp.DEVNULL)
         self.__mepo_status(self.__class__.output_clone_status)
 
     def test_whereis(self):
