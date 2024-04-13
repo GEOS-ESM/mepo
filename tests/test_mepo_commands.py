@@ -26,6 +26,10 @@ from mepo.command.tag_create import run as mepo_tag_create
 from mepo.command.tag_delete import run as mepo_tag_delete
 from mepo.command.fetch import run as mepo_fetch
 from mepo.command.pull import run as mepo_pull
+from mepo.command.push import run as mepo_push
+from mepo.command.diff import run as mepo_diff
+from mepo.command.whereis import run as mepo_whereis
+from mepo.command.reset import run as mepo_reset
 
 import importlib
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
@@ -55,17 +59,7 @@ class TestMepoCommands(unittest.TestCase):
         shutil.copy(src, dst)
 
     @classmethod
-    def setUpClass(cls):
-        cls.input_dir = os.path.join(THIS_DIR, 'input')
-        cls.output_dir = os.path.join(THIS_DIR, 'output')
-        cls.fixture = 'GEOSfvdycore'
-        cls.tag = 'v1.13.0'
-        cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
-        cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
-        if os.path.isdir(cls.fixture_dir):
-            shutil.rmtree(cls.fixture_dir)
-        cls.__checkout_fixture()
-        os.chdir(cls.fixture_dir)
+    def __mepo_clone(cls):
         # mepo clone
         args.style = 'prefix'
         args.regsitry = None
@@ -75,24 +69,43 @@ class TestMepoCommands(unittest.TestCase):
         args.partial = 'blobless'
         mepo_clone(args)
 
+    @classmethod
+    def setUpClass(cls):
+        cls.input_dir = os.path.join(THIS_DIR, 'input')
+        cls.output_dir = os.path.join(THIS_DIR, 'output')
+        cls.output_clone_status = cls.__get_saved_output("output_clone_status.txt")
+        cls.fixture = 'GEOSfvdycore'
+        cls.tag = 'v1.13.0'
+        cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
+        cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
+        if os.path.isdir(cls.fixture_dir):
+            shutil.rmtree(cls.fixture_dir)
+        cls.__checkout_fixture()
+        os.chdir(cls.fixture_dir)
+        cls.__mepo_clone()
+
     def setUp(self):
         pass
 
-    def __check_status(self, saved_output_file):
+    def __mepo_status(self, saved_output):
+        '''saved_output is either a string or a filename'''
         os.chdir(self.__class__.fixture_dir)
+        args.ignore_permissions = False
+        args.nocolor = True
+        args.hashes = False
         sys.stdout = output = StringIO()
-        args.ignore_permissions=False
-        args.nocolor=True
-        args.hashes=False
         mepo_status(args)
         sys.stdout = sys.__stdout__
-        saved_output = self.__class__.__get_saved_output(saved_output_file)
-        self.assertEqual(output.getvalue(), saved_output)
+        try:
+            self.assertEqual(output.getvalue(), saved_output)
+        except:
+            saved_output = self.__class__.__get_saved_output(saved_output)
+            self.assertEqual(output.getvalue(), saved_output)
 
-    def __restore_state(self):
+    def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
         mepo_restore_state.run(args)
-        self.__check_status("output_clone_status.txt")
+        self.__mepo_status(self.__class__.output_clone_status)
 
     def test_list(self):
         os.chdir(self.__class__.fixture_dir)
@@ -106,10 +119,12 @@ class TestMepoCommands(unittest.TestCase):
         os.chdir(self.__class__.fixture_dir)
         args.comp_name = ["env", "cmake", "fvdycore"]
         args.quiet = False
+        sys.stdout = output = StringIO() # suppressing output to stdout
         mepo_develop(args)
-        self.__check_status("output_develop_status.txt")
+        sys.stdout = sys.__stdout__
+        self.__mepo_status("output_develop_status.txt")
         # Clean up
-        self.__restore_state()
+        self.__mepo_restore_state()
 
     def test_checkout_compare(self):
         os.chdir(self.__class__.fixture_dir)
@@ -137,7 +152,7 @@ class TestMepoCommands(unittest.TestCase):
         saved_output = self.__class__.__get_saved_output("output_compare_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up
-        self.__restore_state()
+        self.__mepo_restore_state()
 
     def test_checkout_if_exists(self):
         os.chdir(self.__class__.fixture_dir)
@@ -147,7 +162,7 @@ class TestMepoCommands(unittest.TestCase):
         args.dry_run = False
         mepo_checkout_if_exists.run(args)
         # Since we do not expect this ref to exist, status should be that of clone
-        self.__check_status("output_clone_status.txt")
+        self.__mepo_status(self.__class__.output_clone_status)
 
     def test_branch_list(self):
         os.chdir(self.__class__.fixture_dir)
@@ -220,7 +235,6 @@ class TestMepoCommands(unittest.TestCase):
         self.assertEqual(output.getvalue(), saved_output)
 
     def test_pull(self):
-        # TODO: compare output
         os.chdir(self.__class__.fixture_dir)
         args.comp_name = ["FVdycoreCubed_GridComp"]
         args.quiet = False
@@ -229,7 +243,6 @@ class TestMepoCommands(unittest.TestCase):
             mepo_pull(args)
 
     def test_pull_all(self):
-        # TODO: compare output
         os.chdir(self.__class__.fixture_dir)
         args.comp_name = ["FVdycoreCubed_GridComp"]
         args.quiet = False
@@ -238,6 +251,64 @@ class TestMepoCommands(unittest.TestCase):
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_pull_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
+
+    def test_push(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = ["FVdycoreCubed_GridComp"]
+        args.quiet = False
+        sys.stdout = output = StringIO()
+        with self.assertRaises(sp.CalledProcessError):
+            mepo_push(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_push.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_diff(self):
+        os.chdir(self.__class__.fixture_dir)
+        os.chdir("./src/Components/@FVdycoreCubed_GridComp")
+        filename = "GEOS_FV3_Utilities.F90"
+        # Add a line
+        with open(filename, "w") as fout:
+            fout.write(" ")
+        args.comp_name = ["FVdycoreCubed_GridComp"]
+        args.name_only = True
+        args.name_status = False
+        args.ignore_permissions = False
+        args.staged = False
+        args.ignore_space_change = False
+        sys.stdout = output = StringIO()
+        mepo_diff(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_diff.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+        # Clean up
+        sp.run(f"git checkout {filename}".split())
+        self.__mepo_status(self.__class__.output_clone_status)
+
+    def test_whereis(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.comp_name = None
+        args.ignore_case = False
+        sys.stdout = output = StringIO()
+        mepo_whereis(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_whereis.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+
+    def test_reset(self):
+        os.chdir(self.__class__.fixture_dir)
+        args.force = True
+        args.reclone = False
+        args.dry_run = False
+        sys.stdout = output = StringIO()
+        mepo_reset(args)
+        sys.stdout = sys.__stdout__
+        saved_output = self.__class__.__get_saved_output("output_reset.txt")
+        self.assertEqual(output.getvalue(), saved_output)
+        # Clean up - reclone (suppress output)
+        sys.stdout = output = StringIO()
+        self.__class__.__mepo_clone()
+        sys.stdout = sys.__stdout__
 
     def tearDown(self):
         pass

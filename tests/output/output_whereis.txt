@@ -1,0 +1,9 @@
+GEOSfvdycore           | .
+env                    | @env
+cmake                  | @cmake
+ecbuild                | @cmake/@ecbuild
+GMAO_Shared            | src/Shared/@GMAO_Shared
+MAPL                   | src/Shared/@MAPL
+FMS                    | src/Shared/@FMS
+FVdycoreCubed_GridComp | src/Components/@FVdycoreCubed_GridComp
+fvdycore               | src/Components/@FVdycoreCubed_GridComp/@fvdycore

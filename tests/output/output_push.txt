@@ -1,0 +1,7 @@
+fatal: You are not currently on a branch.
+To push the history leading to the current (detached HEAD)
+state now, use
+
+    git push https://github.com/GEOS-ESM/FVdycoreCubed_GridComp.git HEAD:<name-of-remote-branch>
+
+
