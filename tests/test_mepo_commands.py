@@ -213,7 +213,7 @@ class TestMepoCommands(unittest.TestCase):
         args.tag_name = "new-awesome-tag"
         # Create tag
         args.annotate = True
-        args.message = "The new awesome tag"
+        args.message = "\"The new awesome tag\""
         sys.stdout = output = StringIO()
         mepo_tag_create(args)
         sys.stdout = sys.__stdout__
