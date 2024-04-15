@@ -284,8 +284,9 @@ class TestMepoCommands(unittest.TestCase):
         mepo_diff(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_diff.txt")
-        # Ignore the extra "-----" at the end of output
-        self.assertEqual(output.getvalue().split()[:-1], saved_output.split())
+        # Ignore the last line of output (horizontal line
+        # with length that of the width of the terminal)
+        self.assertEqual(output.getvalue().split()[:-1], saved_output.split()[:-1])
         # Clean up
         sp.run(f"git checkout {filename}".split(), stderr=sp.DEVNULL)
         self.__mepo_status(self.__class__.output_clone_status)
