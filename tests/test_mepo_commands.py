@@ -212,8 +212,8 @@ class TestMepoCommands(unittest.TestCase):
         args.comp_name = ["FMS", "MAPL"]
         args.tag_name = "new-awesome-tag"
         # Create tag
-        args.annotate = True
-        args.message = "\"The new awesome tag\""
+        args.annotate = False
+        args.message = None
         sys.stdout = output = StringIO()
         mepo_tag_create(args)
         sys.stdout = sys.__stdout__
