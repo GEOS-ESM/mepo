@@ -11,7 +11,6 @@ from io import StringIO
 
 from input import args
 
-from mepo.command.init import run as mepo_init
 from mepo.command.clone import run as mepo_clone
 from mepo.command.list import run as mepo_list
 from mepo.command.status import run as mepo_status
@@ -38,8 +37,6 @@ mepo_pull_all = importlib.import_module("mepo.command.pull-all")
 
 class TestMepoCommands(unittest.TestCase):
 
-    maxDiff=None
-
     @classmethod
     def __get_saved_output(cls, output_file):
         with open(os.path.join(cls.output_dir, output_file), "r") as fin:
@@ -48,25 +45,28 @@ class TestMepoCommands(unittest.TestCase):
 
     @classmethod
     def __checkout_fixture(cls):
-        remote = 'https://github.com/GEOS-ESM/{}.git'.format(cls.fixture)
-        cmd = 'git clone -b {} {} {}'.format(cls.tag, remote, cls.fixture_dir)
+        remote = f"https://github.com/GEOS-ESM/{cls.fixture}.git"
+        git_clone = "git clone "
+        if cls.tag:
+            git_clone += f"-b {cls.tag}"
+        cmd = f"{git_clone} {remote} {cls.fixture_dir}"
         sp.run(shlex.split(cmd))
 
     @classmethod
     def __copy_config_file(cls):
-        src = os.path.join(cls.input_dir, 'components.yaml')
+        src = os.path.join(cls.input_dir, "components.yaml")
         dst = os.path.join(cls.fixture_dir)
         shutil.copy(src, dst)
 
     @classmethod
     def __mepo_clone(cls):
         # mepo clone
-        args.style = 'prefix'
+        args.style = "prefix"
         args.regsitry = None
         args.repo_url = None
         args.branch = None
         args.directory = None
-        args.partial = 'blobless'
+        args.partial = "blobless"
         mepo_clone(args)
 
     @classmethod
@@ -319,10 +319,10 @@ class TestMepoCommands(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @classmethod
-    def tearDownClass(cls):
-        os.chdir(THIS_DIR)
-        shutil.rmtree(cls.tmpdir)
+    # @classmethod
+    # def tearDownClass(cls):
+    #     os.chdir(THIS_DIR)
+    #     shutil.rmtree(cls.tmpdir)
 
 if __name__ == '__main__':
     unittest.main()

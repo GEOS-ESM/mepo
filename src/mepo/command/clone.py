@@ -54,7 +54,7 @@ def run(args):
         last_url_node = p.path.rsplit('/')[-1]
         url_suffix = pathlib.Path(last_url_node).suffix
         if args.directory:
-            local_clone(args.repo_url,args.branch,args.directory,partial)
+            local_clone(args.repo_url, args.branch, args.directory, partial)
             os.chdir(args.directory)
         else:
             if url_suffix == '.git':
@@ -62,7 +62,7 @@ def run(args):
             else:
                 git_url_directory = last_url_node
 
-            local_clone(args.repo_url,args.branch,git_url_directory,partial)
+            local_clone(args.repo_url, args.branch, git_url_directory, partial)
             os.chdir(git_url_directory)
 
     # Copy the new file into the repo only if we pass it in
@@ -97,8 +97,8 @@ def run(args):
             _partial = None if partial == 'treeless' and recurse else partial
 
             # We need the type to handle hashes in components.yaml
-            type = comp.version.type
-            git.clone(version,recurse,type,comp.name,_partial)
+            _type = comp.version.type
+            git.clone(version, recurse, _type, comp.name, _partial)
             if comp.sparse:
                 git.sparsify(comp.sparse)
             print_clone_info(comp, max_namelen)
