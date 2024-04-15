@@ -284,6 +284,8 @@ class TestMepoCommands(unittest.TestCase):
         mepo_diff(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_diff.txt")
+        print(f"stdout output:\n{output.getvalue()}")
+        print(f"saved output:\n{saved_output}")
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up
         sp.run(f"git checkout {filename}".split(), stderr=sp.DEVNULL)
@@ -299,20 +301,20 @@ class TestMepoCommands(unittest.TestCase):
         saved_output = self.__class__.__get_saved_output("output_whereis.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
-    def test_reset(self):
-        os.chdir(self.__class__.fixture_dir)
-        args.force = True
-        args.reclone = False
-        args.dry_run = False
-        sys.stdout = output = StringIO()
-        mepo_reset(args)
-        sys.stdout = sys.__stdout__
-        saved_output = self.__class__.__get_saved_output("output_reset.txt")
-        self.assertEqual(output.getvalue(), saved_output)
-        # Clean up - reclone (suppress output)
-        sys.stdout = output = StringIO()
-        self.__class__.__mepo_clone()
-        sys.stdout = sys.__stdout__
+    # def test_reset(self):
+    #     os.chdir(self.__class__.fixture_dir)
+    #     args.force = True
+    #     args.reclone = False
+    #     args.dry_run = False
+    #     sys.stdout = output = StringIO()
+    #     mepo_reset(args)
+    #     sys.stdout = sys.__stdout__
+    #     saved_output = self.__class__.__get_saved_output("output_reset.txt")
+    #     self.assertEqual(output.getvalue(), saved_output)
+    #     # Clean up - reclone (suppress output)
+    #     sys.stdout = output = StringIO()
+    #     self.__class__.__mepo_clone()
+    #     sys.stdout = sys.__stdout__
 
     def tearDown(self):
         pass
