@@ -62,7 +62,7 @@ class TestMepoCommands(unittest.TestCase):
     def __mepo_clone(cls):
         # mepo clone
         args.style = "prefix"
-        args.regsitry = None
+        args.registry = None
         args.repo_url = None
         args.branch = None
         args.directory = None
@@ -71,12 +71,12 @@ class TestMepoCommands(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.input_dir = os.path.join(THIS_DIR, 'input')
-        cls.output_dir = os.path.join(THIS_DIR, 'output')
+        cls.input_dir = os.path.join(THIS_DIR, "input")
+        cls.output_dir = os.path.join(THIS_DIR, "output")
         cls.output_clone_status = cls.__get_saved_output("output_clone_status.txt")
-        cls.fixture = 'GEOSfvdycore'
-        cls.tag = 'v2.13.0'
-        cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
+        cls.fixture = "GEOSfvdycore"
+        cls.tag = "v2.13.0"
+        cls.tmpdir = os.path.join(THIS_DIR, "tmp")
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
@@ -130,7 +130,7 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_checkout_compare(self):
         os.chdir(self.__class__.fixture_dir)
-        # Checkout 'develop' branch of MAPL and env
+        # Checkout "develop" branch of MAPL and env
         args.branch_name = "develop"
         args.comp_name = ["MAPL"]
         args.b = False
@@ -325,5 +325,5 @@ class TestMepoCommands(unittest.TestCase):
         os.chdir(THIS_DIR)
         shutil.rmtree(cls.tmpdir)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
