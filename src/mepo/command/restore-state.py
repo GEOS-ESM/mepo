@@ -1,7 +1,6 @@
 import sys
 import time
 import multiprocessing as mp
-import atexit
 
 from ..state import MepoState
 from ..git import GitRepository
@@ -11,9 +10,8 @@ from ..utilities import colors
 def run(args):
     print('Checking status...'); sys.stdout.flush()
     allcomps = MepoState.read_state()
-    pool = mp.Pool()
-    atexit.register(pool.close)
-    result = pool.map(check_component_status, allcomps)
+    with mp.Pool() as pool:
+        result = pool.map(check_component_status, allcomps)
     restore_state(allcomps, result)
 
 def check_component_status(comp):
@@ -27,5 +25,11 @@ def restore_state(allcomps, result):
         current_version = result[index][0].split(' ')[1]
         orig_version = comp.version.name
         if current_version != orig_version:
-            print(colors.YELLOW + "Restoring " + colors.RESET + "{} to {} from {}.".format(comp.name, colors.GREEN + orig_version + colors.RESET, colors.RED + current_version + colors.RESET))
+            print(colors.YELLOW
+                  + "Restoring "
+                  + colors.RESET
+                  + "{} to {} from {}.".format(
+                      comp.name,
+                      colors.GREEN + orig_version + colors.RESET,
+                      colors.RED + current_version + colors.RESET))
             git.checkout(comp.version.name)
