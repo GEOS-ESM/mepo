@@ -75,7 +75,7 @@ class TestMepoCommands(unittest.TestCase):
         cls.output_dir = os.path.join(THIS_DIR, 'output')
         cls.output_clone_status = cls.__get_saved_output("output_clone_status.txt")
         cls.fixture = 'GEOSfvdycore'
-        cls.tag = 'v1.13.0'
+        cls.tag = 'v2.13.0'
         cls.tmpdir = os.path.join(THIS_DIR, 'tmp')
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
@@ -159,6 +159,7 @@ class TestMepoCommands(unittest.TestCase):
         self.__mepo_restore_state()
 
     def test_checkout_if_exists(self):
+        # Fixture component
         os.chdir(self.__class__.fixture_dir)
         args.ref_name = "aafjkgj-afgjhffg-affgurgnsfg-does-not-exist" # does not exist
         args.quiet = True
@@ -319,10 +320,10 @@ class TestMepoCommands(unittest.TestCase):
     def tearDown(self):
         pass
 
-    # @classmethod
-    # def tearDownClass(cls):
-    #     os.chdir(THIS_DIR)
-    #     shutil.rmtree(cls.tmpdir)
+    @classmethod
+    def tearDownClass(cls):
+        os.chdir(THIS_DIR)
+        shutil.rmtree(cls.tmpdir)
 
 if __name__ == '__main__':
     unittest.main()
