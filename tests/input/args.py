@@ -1,2 +1,0 @@
-registry = None
-allrepos = None
