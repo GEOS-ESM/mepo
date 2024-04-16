@@ -1,0 +1,1 @@
+../../mepo/command/config_delete.py

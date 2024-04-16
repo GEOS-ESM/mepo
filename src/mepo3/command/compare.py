@@ -1,0 +1,1 @@
+../../mepo/command/compare.py

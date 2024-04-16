@@ -1,0 +1,11 @@
+Checking status...
+GEOSfvdycore           | (t) mepo3-testing (DH)
+env                    | (b) main
+cmake                  | (b) develop
+ecbuild                | (t) geos/v1.3.0 (DH)
+GMAO_Shared            | (b) feature/pchakrab/hierarchical-mepo (DH, 4faf224)
+GEOS_Util              | (t) v2.0.5 (DH)
+MAPL                   | (b) feature/pchakrab/hierarchical-mepo (DH, 7b57017)
+FMS                    | (t) geos/2019.01.02+noaff.8 (DH)
+FVdycoreCubed_GridComp | (b) feature/pchakrab/hierarchical-mepo (DH, 92dbd83)
+fvdycore               | (b) geos/develop
