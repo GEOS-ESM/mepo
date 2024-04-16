@@ -8,8 +8,7 @@ import unittest
 import importlib
 import subprocess as sp
 from io import StringIO
-
-from input import args
+from types import SimpleNamespace
 
 from mepo.command.clone import run as mepo_clone
 from mepo.command.list import run as mepo_list
@@ -30,7 +29,6 @@ from mepo.command.diff import run as mepo_diff
 from mepo.command.whereis import run as mepo_whereis
 from mepo.command.reset import run as mepo_reset
 
-import importlib
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
 mepo_checkout_if_exists = importlib.import_module("mepo.command.checkout-if-exists")
 mepo_pull_all = importlib.import_module("mepo.command.pull-all")
@@ -61,13 +59,16 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __mepo_clone(cls):
         # mepo clone
-        args.style = "prefix"
-        args.registry = None
-        args.repo_url = None
-        args.branch = None
-        args.directory = None
-        args.partial = "blobless"
+        args = SimpleNamespace(
+            style="prefix",
+            registry=None,
+            repo_url=None,
+            allrepos=None,
+            branch=None,
+            directory=None,
+            partial="blobless",)
         mepo_clone(args)
+        print(); sys.stdout.flush()
 
     @classmethod
     def setUpClass(cls):
@@ -90,37 +91,39 @@ class TestMepoCommands(unittest.TestCase):
     def __mepo_status(self, saved_output):
         '''saved_output is either a string or a filename'''
         os.chdir(self.__class__.fixture_dir)
-        args.ignore_permissions = False
-        args.nocolor = True
-        args.hashes = False
+        args = SimpleNamespace(
+            ignore_permissions=False,
+            nocolor=True,
+            hashes=False,)
         sys.stdout = output = StringIO()
         mepo_status(args)
         sys.stdout = sys.__stdout__
-        try:
-            self.assertEqual(output.getvalue(), saved_output)
-        except:
-            saved_output = self.__class__.__get_saved_output(saved_output)
-            self.assertEqual(output.getvalue(), saved_output)
+        try: # assume saved_output is a file
+            saved_output_s = self.__class__.__get_saved_output(saved_output)
+        except FileNotFoundError:
+            saved_output_s = saved_output
+        self.assertEqual(output.getvalue(), saved_output_s)
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO() # suppress output
-        mepo_restore_state.run(args)
-        sys.stdout == sys.__stdout__
+        mepo_restore_state.run(SimpleNamespace())
+        sys.stdout = sys.__stdout__
         self.__mepo_status(self.__class__.output_clone_status)
 
     def test_list(self):
         os.chdir(self.__class__.fixture_dir)
         sys.stdout = output = StringIO()
-        mepo_list(args)
+        mepo_list(SimpleNamespace())
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
     def test_develop(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["env", "cmake", "fvdycore"]
-        args.quiet = False
+        args = SimpleNamespace(
+            comp_name=["env", "cmake", "fvdycore"],
+            quiet=False,)
         sys.stdout = output = StringIO() # suppressing output to stdout
         mepo_develop(args)
         sys.stdout = sys.__stdout__
@@ -131,27 +134,29 @@ class TestMepoCommands(unittest.TestCase):
     def test_checkout_compare(self):
         os.chdir(self.__class__.fixture_dir)
         # Checkout "develop" branch of MAPL and env
-        args.branch_name = "develop"
-        args.comp_name = ["MAPL"]
-        args.b = False
-        args.quiet = False
-        args.detach = False
+        args = SimpleNamespace(
+            branch_name="develop",
+            comp_name=["MAPL"],
+            b=False,
+            quiet=False,
+            detach=False,)
         sys.stdout = output = StringIO() # suppress output
         mepo_checkout(args)
         sys.stdout = sys.__stdout__
         # Compare (default)
-        args.all = False
-        args.nocolor = True
-        args.wrap = True
+        args_cmp = SimpleNamespace(
+            all=False,
+            nocolor=True,
+            wrap=True,)
         sys.stdout = output = StringIO()
-        mepo_compare(args)
+        mepo_compare(args_cmp)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_compare.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Compare (All)
-        args.all = True
+        args_cmp.all = True
         sys.stdout = output = StringIO()
-        mepo_compare(args)
+        mepo_compare(args_cmp)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_compare_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -161,10 +166,11 @@ class TestMepoCommands(unittest.TestCase):
     def test_checkout_if_exists(self):
         # Fixture component
         os.chdir(self.__class__.fixture_dir)
-        args.ref_name = "aafjkgj-afgjhffg-affgurgnsfg-does-not-exist" # does not exist
-        args.quiet = True
-        args.detach = False
-        args.dry_run = False
+        args = SimpleNamespace(
+            ref_name="not-expected-to-exist",
+            quiet=True,
+            detach=False,
+            dry_run=False,)
         mepo_checkout_if_exists.run(args)
         # Since we do not expect this ref to exist, status should be that of clone
         self.__mepo_status(self.__class__.output_clone_status)
@@ -172,9 +178,10 @@ class TestMepoCommands(unittest.TestCase):
     def test_branch_list(self):
         os.chdir(self.__class__.fixture_dir)
         # Not expecting new branches in this component (fingers crossed)
-        args.comp_name = ["ecbuild"]
-        args.all = True
-        args.nocolor = True
+        args = SimpleNamespace(
+            comp_name=["ecbuild"],
+            all=True,
+            nocolor=True,)
         sys.stdout = output = StringIO()
         mepo_branch_list(args)
         sys.stdout = sys.__stdout__
@@ -183,8 +190,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_branch_create_delete(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["ecbuild"]
-        args.branch_name = "the-best-branch-ever"
+        args = SimpleNamespace(
+            comp_name=["ecbuild"],
+            branch_name="the-best-branch-ever",)
         # Create branch
         sys.stdout = output = StringIO()
         mepo_branch_create(args)
@@ -201,20 +209,20 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_tag_list(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["cmake"]
+        args = SimpleNamespace(comp_name=["env"])
         sys.stdout = output = StringIO()
         mepo_tag_list(args)
         sys.stdout = sys.__stdout__
-        # Tag awesome-tag actually exists in component cmake
-        self.assertTrue("awesome-tag" in output.getvalue())
+        self.assertTrue("cuda11.7.0-gcc11.2.0nvptx-openmpi4.0.6" in output.getvalue())
 
     def test_tag_create_delete(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["FMS", "MAPL"]
-        args.tag_name = "new-awesome-tag"
+        args = SimpleNamespace(
+            comp_name=["FMS", "MAPL"],
+            tag_name="new-awesome-tag",
+            annotate=False,
+            message=None,)
         # Create tag
-        args.annotate = False
-        args.message = None
         sys.stdout = output = StringIO()
         mepo_tag_create(args)
         sys.stdout = sys.__stdout__
@@ -229,10 +237,12 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_fetch(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["FVdycoreCubed_GridComp"]
-        args.all = True
-        args.prune = True
-        args.tags = True
+        args = SimpleNamespace(
+            comp_name=["FVdycoreCubed_GridComp"],
+            all=True,
+            prune=True,
+            tags=True,
+            force=False,)
         sys.stdout = output = StringIO()
         mepo_fetch(args)
         sys.stdout = sys.__stdout__
@@ -241,16 +251,18 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_pull(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["FVdycoreCubed_GridComp"]
-        args.quiet = False
+        args = SimpleNamespace(
+            comp_name=["FVdycoreCubed_GridComp"],
+            quiet=False,)
         err_msg = "FVdycoreCubed_GridComp has detached head! Cannot pull."
         with self.assertRaisesRegex(Exception, err_msg):
             mepo_pull(args)
 
     def test_pull_all(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["FVdycoreCubed_GridComp"]
-        args.quiet = False
+        args = SimpleNamespace(
+            comp_name=["FVdycoreCubed_GridComp"],
+            quiet=False,)
         sys.stdout = output = StringIO()
         mepo_pull_all.run(args)
         sys.stdout = sys.__stdout__
@@ -259,8 +271,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_push(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = ["FVdycoreCubed_GridComp"]
-        args.quiet = False
+        args = SimpleNamespace(
+            comp_name=["FVdycoreCubed_GridComp"],
+            quiet=False,)
         sys.stdout = output = StringIO()
         with self.assertRaises(sp.CalledProcessError):
             mepo_push(args)
@@ -275,12 +288,13 @@ class TestMepoCommands(unittest.TestCase):
         # Add a line
         with open(filename, "w") as fout:
             fout.write(" ")
-        args.comp_name = ["FVdycoreCubed_GridComp"]
-        args.name_only = True
-        args.name_status = False
-        args.ignore_permissions = False
-        args.staged = False
-        args.ignore_space_change = False
+        args = SimpleNamespace(
+            comp_name=["FVdycoreCubed_GridComp"],
+            name_only=True,
+            name_status=False,
+            ignore_permissions=False,
+            staged=False,
+            ignore_space_change=False,)
         sys.stdout = output = StringIO()
         mepo_diff(args)
         sys.stdout = sys.__stdout__
@@ -294,8 +308,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_whereis(self):
         os.chdir(self.__class__.fixture_dir)
-        args.comp_name = None
-        args.ignore_case = False
+        args = SimpleNamespace(
+            comp_name=None,
+            ignore_case=False,)
         sys.stdout = output = StringIO()
         mepo_whereis(args)
         sys.stdout = sys.__stdout__
@@ -304,9 +319,10 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_reset(self):
         os.chdir(self.__class__.fixture_dir)
-        args.force = True
-        args.reclone = False
-        args.dry_run = False
+        args = SimpleNamespace(
+            force=True,
+            reclone=False,
+            dry_run=False,)
         sys.stdout = output = StringIO()
         mepo_reset(args)
         sys.stdout = sys.__stdout__
