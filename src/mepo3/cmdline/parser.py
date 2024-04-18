@@ -7,7 +7,7 @@ from .config_parser import MepoConfigArgParser
 
 from ..utilities import mepoconfig
 
-class MepoArgParser(object):
+class MepoArgParser:
 
     __slots__ = ['parser', 'subparsers']
 
