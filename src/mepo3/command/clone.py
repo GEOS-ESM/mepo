@@ -88,8 +88,7 @@ def __recursive_clone(local_path, complist, partial):
                 # TODO: Add 'partial' abilities
                 _partial = None if partial == 'treeless' and recurse else partial
                 # We need the type to handle hashes in components.yaml
-                _type = comp.version.type
-                git.clone(version, recurse_submodules, _type, comp.name, _partial)
+                git.clone(version, recurse_submodules, comp.name, _partial)
                 if comp.sparse:
                     git.sparsify(comp.sparse)
                 __print_clone_info(comp)

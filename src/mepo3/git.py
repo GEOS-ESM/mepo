@@ -46,7 +46,7 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, type, comp_name, partial=None):
+    def clone(self, version, recurse, comp_name, partial=None):
         cmd1 = 'git clone '
 
         if partial == 'blobless':
