@@ -90,9 +90,9 @@ class GitRepository:
         cmd2 = self.__git + ' read-tree -mu HEAD'
         shellcmd.run(shlex.split(cmd2))
 
-    def list_branch(self, all=False, nocolor=False):
+    def list_branch(self, _all=False, nocolor=False):
         cmd = self.__git + ' branch'
-        if all:
+        if _all:
             cmd += ' -a'
         if nocolor:
             cmd += ' --color=never'
@@ -395,33 +395,33 @@ class GitRepository:
         if output.startswith('HEAD ->'): # an actual branch
             detached = False
             name = output.split(',')[0].split('->')[1].strip()
-            tYpe = 'b'
+            _type = 'b'
         elif output.startswith('HEAD,'): # detached head
             detached = True
             tmp = output.split(',')[1].strip()
             if tmp.startswith('tag:'): # tag
                 name = tmp[5:]
-                tYpe = 't'
+                _type = 't'
             else:
                 # This was needed for when we weren't explicitly detaching on clone
                 #cmd_for_branch = self.__git + ' reflog HEAD -n 1'
                 #reflog_output = shellcmd.run(shlex.split(cmd_for_branch), output=True)
                 #name = reflog_output.split()[-1].strip()
                 name = output.split()[-1].strip()
-                tYpe = 'b'
+                _type = 'b'
         elif output.startswith('HEAD'): # Assume hash
             cmd = self.__git + ' rev-parse HEAD'
             hash_out = shellcmd.run(shlex.split(cmd), output=True)
             detached = True
             name = hash_out.rstrip()
-            tYpe = 'h'
+            _type = 'h'
         elif output.startswith('grafted'):
             cmd = self.__git + ' describe --always'
             hash_out = shellcmd.run(shlex.split(cmd), output=True)
             detached = True
             name = hash_out.rstrip()
-            tYpe = 'h'
-        return (name, tYpe, detached)
+            _type = 'h'
+        return (name, _type, detached)
 
 def get_current_remote_url():
     cmd = 'git remote get-url origin'
