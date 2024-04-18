@@ -1,6 +1,7 @@
 from ..state import MepoState
 from ..utilities import verify
 from ..git import GitRepository
+from ..git import get_editor as get_git_editor
 
 # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
 import os, tempfile, subprocess
@@ -21,7 +22,7 @@ def run(args):
     if create_annotated_tag:
         # Pop up an editor if a message is not provided
         if not args.message:
-            EDITOR = git_var('GIT_EDITOR')
+            EDITOR = get_git_editor()
             initial_message = b"" # set up the file
 
             # Use delete=False to keep the file around as we send the file name to git commit -F
@@ -41,23 +42,6 @@ def run(args):
         if not args.message:
             tf.close()
             os.unlink(tf.name)
-
-def git_var(what):
-    '''
-    return GIT_EDITOR or GIT_PAGER, for instance
-
-    Found at https://stackoverflow.com/a/44174750/1876449
-
-    '''
-    proc = subprocess.Popen(['git', 'var', what], shell=False,
-        stdout=subprocess.PIPE)
-    output = proc.stdout.read()
-    status = proc.wait()
-    if status != 0:
-        raise Exception("git_var failed with [%]" % what)
-    output = output.rstrip(b'\n')
-    output = output.decode('utf8', errors='ignore') # or similar for py3k
-    return output
 
 def _get_comps_to_list(specified_comps, allcomps):
     comps_to_list = allcomps
