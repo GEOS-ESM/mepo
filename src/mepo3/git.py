@@ -1,16 +1,22 @@
 import os
 import shutil
-import subprocess
 import shlex
+import subprocess as sp
 
 from urllib.parse import urljoin
 
 from .utilities import shellcmd
 from .utilities import colors
-
 from .utilities.exceptions import RepoAlreadyClonedError
 
-class GitRepository(object):
+def get_editor():
+    """
+    Return GIT_EDITOR
+    """
+    result = sp.run('git var GIT_EDITOR'.split(), stdout=sp.PIPE, stderr=sp.PIPE, check=True)
+    return result.stdout.rstrip().decode('utf-8') # byte to utf-8
+
+class GitRepository:
     """
     Class to consolidate git commands
     """
@@ -54,7 +60,7 @@ class GitRepository(object):
         cmd1 += '--quiet {} {}'.format(self.__remote, self.__full_local_path)
         try:
             shellcmd.run(shlex.split(cmd1))
-        except subprocess.CalledProcessError:
+        except sp.CalledProcessError:
             raise RepoAlreadyClonedError(f'Error! Repo [{comp_name}] already cloned')
 
         cmd2 = 'git -C {} checkout {}'.format(self.__full_local_path, version)
@@ -72,8 +78,8 @@ class GitRepository(object):
         cmd += '--quiet {}'.format(version)
         shellcmd.run(shlex.split(cmd))
         if detach:
-           cmd2 = self.__git + ' checkout --detach'
-           shellcmd.run(shlex.split(cmd2))
+            cmd2 = self.__git + ' checkout --detach'
+            shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__full_local_path, '.git', 'info', 'sparse-checkout')
