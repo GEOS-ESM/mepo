@@ -1,4 +1,4 @@
-name: Unit testing and linting of mepo
+name: mepo - unit testing and linting
 
 on: [push]
 
