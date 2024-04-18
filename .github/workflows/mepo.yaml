@@ -26,8 +26,12 @@ jobs:
         pip install -r requirements.txt
       timeout-minutes: 5
 
-    - name: Run unit tests
+    - name: Run mepo unit tests
       run: python tests/test_mepo_commands.py -v
+      timeout-minutes: 5
+
+    - name: Run mepo3 unit tests
+      run: python tests/test_mepo3_commands.py -v
       timeout-minutes: 5
 
   lint:
@@ -45,6 +49,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
       timeout-minutes: 5
-    - name: Run pylint
-      run: pylint --disable=E1121,C0114,C0116,C0301 --exit-zero src/mepo
+    - name: Run pylint on mepo
+      run: pylint --exit-zero src/mepo
+      timeout-minutes: 5
+    - name: Run pylint on mepo3
+      run: pylint --exit-zero src/mepo3
       timeout-minutes: 5
