@@ -1,18 +1,10 @@
 import os
-import sys
-import yaml
 import glob
 import pickle
 
-from pathlib import Path
-
-from .component import MepoComponent
 from .utilities.exceptions import StateDoesNotExistError
-from .utilities.exceptions import StateAlreadyInitializedError
 
-from .utilities import shellcmd
-
-class MepoState(object):
+class MepoState:
 
     __state_dir_name = '.mepo3'
     __state_fileptr_name = 'state.pkl'
@@ -44,7 +36,7 @@ class MepoState(object):
         state_file = os.path.join(cls.get_dir(), cls.__state_fileptr_name)
         if os.path.exists(state_file):
             return state_file
-        raise OSError('mepo3 state file [%s] does not exist' % state_file)
+        raise OSError(f'mepo3 state file [{state_file}] does not exist')
 
     @classmethod
     def exists(cls):
