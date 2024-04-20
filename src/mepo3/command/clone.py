@@ -40,7 +40,8 @@ def handle_partial(arg_partial):
     partial's default value is None, and possible choices are off/blobless/treeless
     """
     ALLOWED = ['blobless', 'treeless']
-    if arg_partial=='off':
+    partial = arg_partial
+    if partial=='off':
         partial = None # off => None
     if mepoconfig.has_option('clone', 'partial'): # mepoconfig wins
         partial = mepoconfig.get('clone', 'partial')
