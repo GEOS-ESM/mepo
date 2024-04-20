@@ -300,9 +300,9 @@ class GitRepository:
             cmd = self.__git + ' diff --name-only'
         else:
             if comp_type == "b":
-                cmd = self.__git + ' diff --name-only origin/{}'.format(orig_ver)
+                cmd = self.__git + f' diff --name-only origin/{orig_ver}'
             else:
-                cmd = self.__git + ' diff --name-only {}'.format(orig_ver)
+                cmd = self.__git + f' diff --name-only {orig_ver}'
         output = shellcmd.run(shlex.split(cmd), output=True).strip()
         return output.split('\n') if output else []
 
@@ -318,7 +318,7 @@ class GitRepository:
         return changed_files
 
     def stage_file(self, myfile):
-        cmd = self.__git + ' add {}'.format(myfile)
+        cmd = self.__git + f' add {myfile}'
         shellcmd.run(shlex.split(cmd))
 
     def get_staged_files(self):
@@ -327,7 +327,7 @@ class GitRepository:
         return output.split('\n') if output else []
 
     def unstage_file(self, myfile):
-        cmd = self.__git + ' reset -- {}'.format(myfile)
+        cmd = self.__git + f' reset -- {myfile}'
         shellcmd.run(shlex.split(cmd))
 
     def commit_files(self, message, tf_file=None):
@@ -340,15 +340,15 @@ class GitRepository:
         shellcmd.run(cmd)
 
     def push(self):
-        cmd = self.__git + ' push -u {}'.format(self.__remote)
+        cmd = self.__git + f' push -u {self.__remote}'
         return shellcmd.run(shlex.split(cmd), output=True).strip()
 
     def get_remote_latest_commit_id(self, branch, commit_type):
         if commit_type == 'h':
-            cmd = self.__git + ' cat-file -e {}'.format(branch)
+            cmd = self.__git + f' cat-file -e {branch}'
             status = shellcmd.run(shlex.split(cmd), status=True)
             if status != 0:
-                msg = 'Hash {} does not exist on {}'.format(branch, self.__remote)
+                msg = f'Hash {branch} does not exist on {self.__remote}'
                 msg += " Have you run 'mepo push'?"
                 raise RuntimeError(msg)
             return branch
@@ -362,7 +362,7 @@ class GitRepository:
                 reftype = 'tags'
             else:
                 raise RuntimeError("Should not get here")
-            cmd = self.__git + ' ls-remote {} refs/{}/{}'.format(self.__remote, reftype, branch)
+            cmd = self.__git + f' ls-remote {self.__remote} refs/{reftype}/{branch}'
             output = shellcmd.run(shlex.split(cmd), stdout=True).strip()
             if not output:
                 #msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)

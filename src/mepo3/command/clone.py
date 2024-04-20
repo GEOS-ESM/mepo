@@ -1,12 +1,10 @@
 import os
 import pathlib
-import shlex
 from urllib.parse import urlparse
 
 from ..state import MepoState
 from ..component import MepoComponent
 from ..git import GitRepository
-from ..utilities import shellcmd
 from ..utilities import colors
 from ..utilities import mepoconfig
 from ..registry import Registry
@@ -21,7 +19,7 @@ def run(args):
     clone_fixture(args.url, args.branch, args.directory, partial)
 
     fixture_dir = os.path.dirname(os.path.abspath(args.registry))
-    allcomps = list()
+    allcomps = []
     recursive_clone(fixture_dir, partial, allcomps)
     MepoState().write_state(allcomps) # create mepo state
 
