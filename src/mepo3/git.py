@@ -24,18 +24,16 @@ class GitRepository:
 
     def __init__(self, remote_url, local_path):
         self.__local = local_path
-
         if remote_url.startswith('..'):
             rel_remote = os.path.basename(remote_url)
             fixture_url = get_current_remote_url()
-            self.__remote = urljoin(fixture_url,rel_remote)
+            self.__remote = urljoin(fixture_url, rel_remote)
         else:
             self.__remote = remote_url
-
         root_dir = os.getcwd()
         full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
         self.__full_local_path = full_local_path
-        self.__git = 'git -C "{}"'.format(self.__full_local_path)
+        self.__git = f'git -C "{self.__full_local_path}"'
 
     def get_local_path(self):
         return self.__local
@@ -46,36 +44,29 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, comp_name, partial=None):
-        cmd1 = 'git clone '
+    def clone(self, version, recurse=None, partial=None):
+        """
+        Execute 'git clone' command
+        version is tag or branch
+        """
+        PARTIAL = {
+            'blobless': ' --filter=blob:none',
+            'treeless': ' --filter=tree:0'}
 
-        if partial == 'blobless':
-            cmd1 += '--filter=blob:none '
-        elif partial == 'treeless':
-            cmd1 += '--filter=tree:0 '
-
+        cmd1 = 'git clone'
+        if partial:
+            cmd1 += PARTIAL[partial]
         if recurse:
-            cmd1 += '--recurse-submodules '
+            cmd1 += ' --recurse-submodules'
+        cmd1 += f' --quiet {self.__remote} {self.__full_local_path}'
+        shellcmd.run(shlex.split(cmd1))
 
-        cmd1 += '--quiet {} {}'.format(self.__remote, self.__full_local_path)
-        try:
-            shellcmd.run(shlex.split(cmd1))
-        except sp.CalledProcessError:
-            raise RepoAlreadyClonedError(f'Error! Repo [{comp_name}] already cloned')
-
-        cmd2 = 'git -C {} checkout {}'.format(self.__full_local_path, version)
-        shellcmd.run(shlex.split(cmd2))
-        cmd3 = 'git -C {} checkout --detach'.format(self.__full_local_path)
-        shellcmd.run(shlex.split(cmd3))
-
-        # NOTE: The above looks odd because of a quirk of git. You can't do
-        #       git checkout --detach branch unless the branch is local. But
-        #       since this is at clone time, all branches are remote. Thus,
-        #       we have to do a git checkout branch and then detach.
+        if version is not None:
+            self.checkout(version, detach=True)
 
     def checkout(self, version, detach=False):
         cmd = self.__git + ' checkout '
-        cmd += '--quiet {}'.format(version)
+        cmd += f'--quiet {version}'
         shellcmd.run(shlex.split(cmd))
         if detach:
             cmd2 = self.__git + ' checkout --detach'
@@ -103,7 +94,7 @@ class GitRepository:
         return shellcmd.run(shlex.split(cmd), output=True)
 
     def rev_list(self, tag):
-        cmd = self.__git + ' rev-list -n 1 {}'.format(tag)
+        cmd = self.__git + f' rev-list -n 1 {tag}'
         return shellcmd.run(shlex.split(cmd), output=True)
 
     def rev_parse(self, short=False):
@@ -127,7 +118,7 @@ class GitRepository:
     def push_stash(self, message):
         cmd = self.__git + ' stash push'
         if message:
-            cmd += ' -m {}'.format(message)
+            cmd += f' -m {message}'
         return shellcmd.run(shlex.split(cmd), output=True)
 
     def show_stash(self, patch):
@@ -138,7 +129,7 @@ class GitRepository:
         return output.rstrip()
 
     def run_diff(self, args=None, ignore_submodules=False):
-        cmd = 'git -C {}'.format(self.__full_local_path)
+        cmd = f'git -C {self.__full_local_path}'
         if args.ignore_permissions:
             cmd += ' -c core.fileMode=false'
         cmd += ' diff --color'
@@ -168,7 +159,7 @@ class GitRepository:
         return shellcmd.run(shlex.split(cmd), output=True)
 
     def create_branch(self, branch_name):
-        cmd = self.__git + ' branch {}'.format(branch_name)
+        cmd = self.__git + f' branch {branch_name}'
         shellcmd.run(shlex.split(cmd))
 
     def create_tag(self, tag_name, annotate, message, tf_file=None):
@@ -187,11 +178,11 @@ class GitRepository:
         delete = '-d'
         if force:
             delete = '-D'
-        cmd = self.__git + ' branch {} {}'.format(delete, branch_name)
+        cmd = self.__git + f' branch {delete} {branch_name}'
         shellcmd.run(shlex.split(cmd))
 
     def delete_tag(self, tag_name):
-        cmd = self.__git + ' tag -d {}'.format(tag_name)
+        cmd = self.__git + f' tag -d {tag_name}'
         shellcmd.run(shlex.split(cmd))
 
     def push_tag(self, tag_name, force, delete):
@@ -200,7 +191,7 @@ class GitRepository:
             cmd += ' --force'
         if delete:
             cmd += ' --delete'
-        cmd += ' origin {}'.format(tag_name)
+        cmd += f' origin {tag_name}'
         shellcmd.run(shlex.split(cmd))
 
     def verify_branch_or_tag(self, ref_name):
@@ -217,7 +208,7 @@ class GitRepository:
         return status, ref_type
 
     def check_status(self, ignore_permissions=False, ignore_submodules=False):
-        cmd = 'git -C {}'.format(self.__full_local_path)
+        cmd = f'git -C {self.__full_local_path}'
         if ignore_permissions:
             cmd += ' -c core.fileMode=false'
         cmd += ' status --porcelain=v2'

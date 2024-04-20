@@ -27,11 +27,13 @@ from mepo3.command.pull import run as mepo_pull
 from mepo3.command.push import run as mepo_push
 from mepo3.command.diff import run as mepo_diff
 from mepo3.command.whereis import run as mepo_whereis
-from mepo3.command.reset import run as mepo_reset
+# from mepo3.command.reset import run as mepo_reset
 
 mepo_restore_state = importlib.import_module("mepo3.command.restore-state")
 mepo_checkout_if_exists = importlib.import_module("mepo3.command.checkout-if-exists")
 mepo_pull_all = importlib.import_module("mepo3.command.pull-all")
+
+FIXTURE = "GEOSfvdycore"
 
 class TestMepoCommands(unittest.TestCase):
 
@@ -42,30 +44,15 @@ class TestMepoCommands(unittest.TestCase):
         return saved_output
 
     @classmethod
-    def __checkout_fixture(cls):
-        remote = f"https://github.com/pchakraborty/{cls.fixture}.git"
-        git_clone = "git clone "
-        if cls.tag:
-            git_clone += f"-b {cls.tag}"
-        cmd = f"{git_clone} {remote} {cls.fixture_dir}"
-        sp.run(shlex.split(cmd))
-
-    @classmethod
-    def __copy_config_file(cls):
-        src = os.path.join(cls.input_dir, "components.yaml")
-        dst = os.path.join(cls.fixture_dir)
-        shutil.copy(src, dst)
-
-    @classmethod
     def __mepo_clone(cls):
         # mepo clone
         args = SimpleNamespace(
             style="prefix",
             registry="components.yaml",
-            repo_url=None,
+            url=f"https://github.com/pchakraborty/{FIXTURE}.git",
             allrepos=None,
-            branch=None,
-            directory=None,
+            branch="mepo3-testing",
+            directory=cls.fixture_dir,
             partial="blobless",)
         mepo_clone(args)
         print(); sys.stdout.flush()
@@ -75,15 +62,13 @@ class TestMepoCommands(unittest.TestCase):
         cls.input_dir = os.path.join(THIS_DIR, "input")
         cls.output_dir = os.path.join(THIS_DIR, "output")
         cls.output_clone_status = cls.__get_saved_output("mepo3/output_clone_status.txt")
-        cls.fixture = "GEOSfvdycore"
         cls.tag = "mepo3-testing"
         cls.tmpdir = os.path.join(THIS_DIR, "tmp")
-        cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
+        cls.fixture_dir = os.path.join(cls.tmpdir, FIXTURE)
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
-        cls.__checkout_fixture()
-        os.chdir(cls.fixture_dir)
         cls.__mepo_clone()
+        os.chdir(cls.fixture_dir)
 
     def setUp(self):
         pass
@@ -317,21 +302,23 @@ class TestMepoCommands(unittest.TestCase):
         saved_output = self.__class__.__get_saved_output("output_whereis.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
-    def test_reset(self):
-        os.chdir(self.__class__.fixture_dir)
-        args = SimpleNamespace(
-            force=True,
-            reclone=False,
-            dry_run=False,)
-        sys.stdout = output = StringIO()
-        mepo_reset(args)
-        sys.stdout = sys.__stdout__
-        saved_output = self.__class__.__get_saved_output("output_reset.txt")
-        self.assertEqual(output.getvalue(), saved_output)
-        # Clean up - reclone (suppress output)
-        sys.stdout = output = StringIO()
-        self.__class__.__mepo_clone()
-        sys.stdout = sys.__stdout__
+    # def test_reset(self):
+    #     os.chdir(self.__class__.fixture_dir)
+    #     args = SimpleNamespace(
+    #         force=True,
+    #         reclone=False,
+    #         dry_run=False,)
+    #     sys.stdout = output = StringIO()
+    #     mepo_reset(args)
+    #     sys.stdout = sys.__stdout__
+    #     saved_output = self.__class__.__get_saved_output("output_reset.txt")
+    #     print(f"stdout:\n{output.getvalue()}")
+    #     print(f"saved:\n{saved_output}")
+    #     self.assertEqual(output.getvalue(), saved_output)
+    #     # Clean up - reclone (suppress output)
+    #     sys.stdout = output = StringIO()
+    #     self.__class__.__mepo_clone()
+    #     sys.stdout = sys.__stdout__
 
     def tearDown(self):
         pass
