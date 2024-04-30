@@ -77,7 +77,20 @@ class MepoState(object):
         if not cls.exists():
             raise StateDoesNotExistError('Error! mepo state does not exist')
         with open(cls.get_file(), 'rb') as fin:
-            allcomps = pickle.load(fin)
+            try:
+                allcomps = pickle.load(fin)
+            except ModuleNotFoundError:
+                # mepo1 to mepo2 includes renaming of directories
+                # Since pickle requires that "the class definition must be
+                # importable and live in the same module as when the object was
+                # stored", we need to patch sys.modules to be able to read state
+                # that was created using mepo1
+                import mepo
+                sys.modules['state'] = mepo.state
+                sys.modules['state.component'] = mepo.component
+                sys.modules['utilities'] = mepo.utilities
+                fin.seek(0)
+                allcomps = pickle.load(fin)
         return allcomps
 
     @classmethod
