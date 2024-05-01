@@ -9,6 +9,7 @@ from pathlib import Path
 from mepo.config.config_file import ConfigFile
 from mepo.state.component import MepoComponent
 from mepo.utilities import shellcmd
+from mepo.utilities import colors
 from mepo.state.exceptions import StateDoesNotExistError, StateAlreadyInitializedError
 
 class MepoState(object):
@@ -71,6 +72,21 @@ class MepoState(object):
             complist.append(MepoComponent().to_component(name, comp, directory_style))
         cls.write_state(complist)
 
+    @staticmethod
+    def __mepo1_patch():
+        """
+        mepo1 to mepo2 includes reanming of directories
+           mepo.d/state/state.py -> src/mepo/state/state.py
+        Since pickle requires that "the class definition must be importable
+        and live in the same module as when the object was stored", we need to
+        patch sys.modules to be able to read mepo1 state
+        """
+        print(colors.YELLOW + 'Converting mepo1 state to mepo2 state' + colors.RESET)
+        import mepo.state
+        import mepo.utilities
+        sys.modules['state'] = mepo.state
+        sys.modules['utilities'] = mepo.utilities
+
     @classmethod
     def read_state(cls):
         if not cls.exists():
@@ -79,17 +95,7 @@ class MepoState(object):
             with open(cls.get_file(), 'rb') as fin:
                 allcomps = pickle.load(fin)
         except ModuleNotFoundError:
-            # Patch start
-            # mepo1 to mepo2 includes reanming
-            #   mepo.d/state/state.py -> src/mepo/state/state.py
-            # Since pickle requires that "the class definition must be importable
-            # and live in the same module as when the object was stored", we need to
-            # patch sys.modules to be able to read mepo1 state
-            import mepo.state
-            import mepo.utilities
-            sys.modules['state'] = mepo.state
-            sys.modules['utilities'] = mepo.utilities
-            # Patch end
+            cls.__mepo1_patch()
             with open(cls.get_file(), 'rb') as fin:
                 allcomps = pickle.load(fin)
         return allcomps
