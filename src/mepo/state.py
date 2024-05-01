@@ -8,9 +8,10 @@ from pathlib import Path
 
 from .registry import Registry
 from .component import MepoComponent
+from .utilities import shellcmd
+from .utilities import colors
 from .utilities.exceptions import StateDoesNotExistError
 from .utilities.exceptions import StateAlreadyInitializedError
-from .utilities import shellcmd
 
 class MepoState(object):
 
@@ -72,6 +73,34 @@ class MepoState(object):
             complist.append(MepoComponent().to_component(name, comp, directory_style))
         cls.write_state(complist)
 
+    @staticmethod
+    def __mepo1_patch():
+        """
+        mepo1 to mepo2 includes renaming of directories
+        Since pickle requires that "the class definition must be importable
+        and live in the same module as when the object was stored", we need to
+        patch sys.modules to be able to read mepo1 state
+        """
+        print(
+            colors.YELLOW
+            + 'Converting mepo1 state to mepo2 state\n'
+            + "Run <mepo update-state> to permanently convert to mepo2 state"
+            + colors.RESET)
+        import mepo
+        sys.modules['state'] = mepo.state
+        sys.modules['state.component'] = mepo.component
+        sys.modules['utilities'] = mepo.utilities
+
+    @staticmethod
+    def mepo1_patch_undo():
+        """
+        Undo changes made my __mepo1_patch(). Called during <mepo update-state>
+        """
+        import mepo
+        entries_to_remove = ['state', 'state.component', 'utilities']
+        for key in entries_to_remove:
+            sys.modules.pop(key, None)
+
     @classmethod
     def read_state(cls):
         if not cls.exists():
@@ -80,15 +109,7 @@ class MepoState(object):
             try:
                 allcomps = pickle.load(fin)
             except ModuleNotFoundError:
-                # mepo1 to mepo2 includes renaming of directories
-                # Since pickle requires that "the class definition must be
-                # importable and live in the same module as when the object was
-                # stored", we need to patch sys.modules to be able to read state
-                # that was created using mepo1
-                import mepo
-                sys.modules['state'] = mepo.state
-                sys.modules['state.component'] = mepo.component
-                sys.modules['utilities'] = mepo.utilities
+                cls.__mepo1_patch()
                 fin.seek(0)
                 allcomps = pickle.load(fin)
         return allcomps

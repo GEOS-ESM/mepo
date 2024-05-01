@@ -45,6 +45,7 @@ class MepoArgParser(object):
         self.__push()
         self.__save()
         self.__config()
+        self.__update_state()
         return self.parser.parse_args()
 
     def __init(self):
@@ -466,3 +467,9 @@ class MepoArgParser(object):
             description = "Runs config commands.",
             aliases=mepoconfig.get_command_alias('config'))
         MepoConfigArgParser(config)
+
+    def __update_state(self):
+        update_state = self.subparsers.add_parser(
+            'update-state',
+            description = 'Permanently update mepo1 state to current',
+            aliases=mepoconfig.get_command_alias('update-state'))
