@@ -8,7 +8,7 @@ def run(args):
     # needed to avoid pickle trying to use the path to the old modules
     allcomps = []
     for comp in allcomps_old:
-        tmp_dict = comp.to_dict(None)
+        tmp_dict = comp.to_registry_format()
         name = list(tmp_dict)[0]
         comp = tmp_dict[name]
         allcomps.append(MepoComponent().to_component(name, comp, None))

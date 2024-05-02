@@ -166,7 +166,7 @@ class MepoComponent(object):
         self.__set_original_version(comp_details)
         return self
 
-    def to_dict(self, start):
+    def to_registry_format(self):
         details = dict()
         # Fixtures are allowed exactly two entries
         if self.fixture:
@@ -194,6 +194,13 @@ class MepoComponent(object):
             if self.ignore_submodules:
                 details['ignore_submodules'] = self.ignore_submodules
         return {self.name: details}
+
+    def to_dict(self):
+        d = {}
+        for k in self.__slots__:
+            v = getattr(self, k)
+            d.update({k: v})
+        return d
 
 def get_current_remote_url():
     cmd = 'git remote get-url origin'

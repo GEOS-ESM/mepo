@@ -16,7 +16,7 @@ def run(args):
     complist = dict()
     relpath_start = MepoState.get_root_dir()
     for comp in allcomps:
-        complist.update(comp.to_dict(relpath_start))
+        complist.update(comp.to_registry_format())
     registry_root_dir=os.path.join(relpath_start,args.registry)
     Registry(registry_root_dir).write_yaml(complist)
     print(f"Components written to '{registry_root_dir}'")
