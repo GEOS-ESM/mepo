@@ -113,8 +113,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def test_list(self):
         os.chdir(self.__class__.fixture_dir)
+        args = SimpleNamespace(one_per_line=False)
         sys.stdout = output = StringIO()
-        mepo_list(SimpleNamespace())
+        mepo_list(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
