@@ -14,7 +14,16 @@ original_final_node_list = []
 
 class MepoComponent(object):
 
-    __slots__ = ['name', 'local', 'remote', 'version', 'sparse', 'develop', 'recurse_submodules', 'fixture', 'ignore_submodules']
+    __slots__ = [
+        'name',
+        'local',
+        'remote',
+        'version',
+        'sparse',
+        'develop',
+        'recurse_submodules',
+        'fixture',
+        'ignore_submodules']
 
     def __init__(self):
         self.name = None
@@ -35,8 +44,15 @@ class MepoComponent(object):
         except AttributeError:
             _ignore_submodules = None
 
-        return '{} - local: {}, remote: {}, version: {}, sparse: {}, develop: {}, recurse_submodules: {}, fixture: {}, ignore_submodules: {}'.format(
-            self.name, self.local, self.remote, self.version, self.sparse, self.develop, self.recurse_submodules, self.fixture, _ignore_submodules)
+        return (f'{self.name} -\n'
+                f'  local: {self.local}\n'
+                f'  remote: {self.remote}\n'
+                f'  version: {self.version}\n'
+                f'  sparse: {self.sparse}\n'
+                f'  develop: {self.develop}\n'
+                f'  recurse_submodules: {self.recurse_submodules}\n'
+                f'  fixture: {self.fixture}\n'
+                f'  ignore_submodules: {_ignore_submodules}')
 
     def __set_original_version(self, comp_details):
         if self.fixture:
