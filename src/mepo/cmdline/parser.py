@@ -119,6 +119,10 @@ class MepoArgParser(object):
             'list',
             description = 'List all components that are being tracked',
             aliases=mepoconfig.get_command_alias('list'))
+        listcomps.add_argument(
+            '-1', '--one-per-line',
+            action = 'store_true',
+            help = 'one component per line')
 
     def __status(self):
         status = self.subparsers.add_parser(
