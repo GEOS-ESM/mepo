@@ -1,7 +1,6 @@
-import os
-
 from ..state import MepoState
 from ..component import MepoComponent
+from ..utilities.chdir import chdir as mepo_chdir
 
 def run(args):
     '''Permanently convert mepo1 state to mepo2 state'''
@@ -18,10 +17,8 @@ def run(args):
         # This needs to be run from the fixture directory so that
         # MepoComponent::__set_original_version
         # picks the right repo for setting version
-        cwd = os.getcwd()
-        os.chdir(MepoState.get_root_dir())
-        comp_new = MepoComponent().to_component(tmp_name, tmp_details, None)
-        os.chdir(cwd)
+        with mepo_chdir(MepoState.get_root_dir()):
+            comp_new = MepoComponent().to_component(tmp_name, tmp_details, None)
         allcomps.append(comp_new)
     # Write new state
     MepoState.write_state(allcomps)

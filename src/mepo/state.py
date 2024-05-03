@@ -12,6 +12,7 @@ from .utilities import shellcmd
 from .utilities import colors
 from .utilities.exceptions import StateDoesNotExistError
 from .utilities.exceptions import StateAlreadyInitializedError
+from .utilities.chdir import chdir as mepo_chdir
 
 class MepoState(object):
 
@@ -134,7 +135,5 @@ class MepoState(object):
         if os.path.isfile(state_fileptr_fullpath):
             os.remove(state_fileptr_fullpath)
         #os.symlink(new_state_file, state_fileptr_fullpath)
-        curr_dir=os.getcwd()
-        os.chdir(state_dir)
-        os.symlink(state_file_name, state_fileptr)
-        os.chdir(curr_dir)
+        with mepo_chdir(state_dir):
+            os.symlink(state_file_name, state_fileptr)
