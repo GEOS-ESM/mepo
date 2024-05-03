@@ -117,9 +117,9 @@ class MepoComponent(object):
     def to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get('fixture', False)
+        # local/remote - start
         if self.fixture:
             self.__validate_fixture(comp_details)
-
             self.local = '.'
             repo_url = get_current_remote_url()
             p = urlparse(repo_url)
@@ -159,6 +159,7 @@ class MepoComponent(object):
             #print(f'final self.local: {self.local}')
 
             self.remote = comp_details['remote']
+        # local/remote - end
         self.sparse = comp_details.get('sparse', None) # sparse is optional
         self.develop = comp_details.get('develop', None) # develop is optional
         self.recurse_submodules = comp_details.get('recurse_submodules', None) # recurse_submodules is optional
