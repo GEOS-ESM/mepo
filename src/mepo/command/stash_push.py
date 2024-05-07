@@ -2,6 +2,7 @@ from ..state import MepoState
 from ..utilities import verify
 from ..git import GitRepository
 
+
 def run(args):
     allcomps = MepoState.read_state()
     verify.valid_components(args.comp_name, allcomps)
@@ -9,4 +10,4 @@ def run(args):
     for comp in comps2pushst:
         git = GitRepository(comp.remote, comp.local)
         git.push_stash(args.message)
-        #print('+ {}'.format(comp.name))
+        # print('+ {}'.format(comp.name))

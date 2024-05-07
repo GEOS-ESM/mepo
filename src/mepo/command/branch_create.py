@@ -2,6 +2,7 @@ from ..state import MepoState
 from ..utilities import verify
 from ..git import GitRepository
 
+
 def run(args):
     allcomps = MepoState.read_state()
     verify.valid_components(args.comp_name, allcomps)

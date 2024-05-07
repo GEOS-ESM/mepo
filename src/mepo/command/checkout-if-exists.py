@@ -3,6 +3,7 @@ from ..utilities import verify
 from ..git import GitRepository
 from ..utilities import colors
 
+
 def run(args):
     allcomps = MepoState.read_state()
     for comp in allcomps:
@@ -12,14 +13,22 @@ def run(args):
 
         if status == 0:
             if args.dry_run:
-                print("%s %s exists in %s" %
-                        (ref_type,
-                         colors.YELLOW + ref_name + colors.RESET,
-                         colors.RESET + comp.name + colors.RESET))
+                print(
+                    "%s %s exists in %s"
+                    % (
+                        ref_type,
+                        colors.YELLOW + ref_name + colors.RESET,
+                        colors.RESET + comp.name + colors.RESET,
+                    )
+                )
             else:
                 if not args.quiet:
-                    print("Checking out %s %s in %s" %
-                            (ref_type.lower(),
-                             colors.YELLOW + ref_name + colors.RESET,
-                             colors.RESET + comp.name + colors.RESET))
-                git.checkout(ref_name,args.detach)
+                    print(
+                        "Checking out %s %s in %s"
+                        % (
+                            ref_type.lower(),
+                            colors.YELLOW + ref_name + colors.RESET,
+                            colors.RESET + comp.name + colors.RESET,
+                        )
+                    )
+                git.checkout(ref_name, args.detach)

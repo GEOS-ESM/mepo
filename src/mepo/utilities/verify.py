@@ -11,7 +11,9 @@ def valid_components(specified_comp_names, allcomps, ignore_case=False):
     """
 
     # Make a list of all the component names depending on ignore_case
-    all_component_names = [x.name.casefold() if ignore_case else x.name for x in allcomps]
+    all_component_names = [
+        x.name.casefold() if ignore_case else x.name for x in allcomps
+    ]
 
     # Loop over all the components we want to verify...
     for component_name in specified_comp_names:
@@ -21,6 +23,7 @@ def valid_components(specified_comp_names, allcomps, ignore_case=False):
 
         # Validate the component
         _validate_component(component_to_find, all_component_names)
+
 
 def _validate_component(component, all_components):
     """
@@ -32,4 +35,4 @@ def _validate_component(component, all_components):
     """
 
     if component not in all_components:
-        raise Exception('Unknown component name [{}]'.format(component))
+        raise Exception("Unknown component name [{}]".format(component))

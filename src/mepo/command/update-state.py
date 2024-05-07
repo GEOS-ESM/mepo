@@ -2,8 +2,9 @@ from ..state import MepoState
 from ..component import MepoComponent
 from ..utilities.chdir import chdir as mepo_chdir
 
+
 def run(args):
-    '''Permanently convert mepo1 state to mepo2 state'''
+    """Permanently convert mepo1 state to mepo2 state"""
     allcomps_old = MepoState.read_state()
     MepoState.mepo1_patch_undo()
     # Convert component to dict and then package it as component again. That is
@@ -22,4 +23,4 @@ def run(args):
         allcomps.append(comp_new)
     # Write new state
     MepoState.write_state(allcomps)
-    print('\nConverted mepo1 state to mepo2\n')
+    print("\nConverted mepo1 state to mepo2\n")

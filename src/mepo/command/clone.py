@@ -12,6 +12,7 @@ from ..utilities import shellcmd
 from ..utilities import colors
 from ..utilities import mepoconfig
 
+
 def run(args):
 
     # This protects against someone using branch without a URL
@@ -26,17 +27,18 @@ def run(args):
         # We need to set partial to None if it's off, otherwise we use the
         # string. This is safe because argparse only allows for 'off',
         # 'blobless', or 'treeless'
-        partial = None if args.partial == 'off' else args.partial
-    elif mepoconfig.has_option('clone','partial'):
-        allowed = ['blobless','treeless']
-        partial = mepoconfig.get('clone','partial')
+        partial = None if args.partial == "off" else args.partial
+    elif mepoconfig.has_option("clone", "partial"):
+        allowed = ["blobless", "treeless"]
+        partial = mepoconfig.get("clone", "partial")
         if partial not in allowed:
-            raise Exception(f'Detected partial clone type [{partial}] from .mepoconfig is not an allowed partial clone type: {allowed}')
+            raise Exception(
+                f"Detected partial clone type [{partial}] from .mepoconfig is not an allowed partial clone type: {allowed}"
+            )
         else:
-            print(f'Found partial clone type [{partial}] in .mepoconfig')
+            print(f"Found partial clone type [{partial}] in .mepoconfig")
     else:
         partial = None
-
 
     # If you pass in a registry, with clone, it could be outside the repo.
     # So use the full path
@@ -47,17 +49,17 @@ def run(args):
     else:
         # If we don't pass in a registry, we need to "reset" the arg to the
         # default name because we pass args to mepo_init
-        args.registry = 'components.yaml'
+        args.registry = "components.yaml"
 
     if args.repo_url:
         p = urlparse(args.repo_url)
-        last_url_node = p.path.rsplit('/')[-1]
+        last_url_node = p.path.rsplit("/")[-1]
         url_suffix = pathlib.Path(last_url_node).suffix
         if args.directory:
             local_clone(args.repo_url, args.branch, args.directory, partial)
             os.chdir(args.directory)
         else:
-            if url_suffix == '.git':
+            if url_suffix == ".git":
                 git_url_directory = pathlib.Path(last_url_node).stem
             else:
                 git_url_directory = last_url_node
@@ -87,14 +89,14 @@ def run(args):
         if not comp.fixture:
             git = GitRepository(comp.remote, comp.local)
             version = comp.version.name
-            version = version.replace('origin/','')
+            version = version.replace("origin/", "")
             recurse = comp.recurse_submodules
 
             # According to Git, treeless clones do not interact well with
             # submodules. So we need to see if any comp has the recurse
             # option set to True. If so, we need to clone that comp "normally"
 
-            _partial = None if partial == 'treeless' and recurse else partial
+            _partial = None if partial == "treeless" and recurse else partial
 
             # We need the type to handle hashes in components.yaml
             _type = comp.version.type
@@ -107,31 +109,37 @@ def run(args):
         for comp in allcomps:
             if not comp.fixture:
                 git = GitRepository(comp.remote, comp.local)
-                print("Checking out %s in %s" %
-                        (colors.YELLOW + args.branch + colors.RESET,
-                        colors.RESET + comp.name + colors.RESET))
-                git.checkout(args.branch,detach=True)
+                print(
+                    "Checking out %s in %s"
+                    % (
+                        colors.YELLOW + args.branch + colors.RESET,
+                        colors.RESET + comp.name + colors.RESET,
+                    )
+                )
+                git.checkout(args.branch, detach=True)
+
 
 def print_clone_info(comp, name_width):
-    ver_name_type = '({}) {}'.format(comp.version.type, comp.version.name)
-    print('{:<{width}} | {:<s}'.format(comp.name, ver_name_type, width = name_width))
+    ver_name_type = "({}) {}".format(comp.version.type, comp.version.name)
+    print("{:<{width}} | {:<s}".format(comp.name, ver_name_type, width=name_width))
 
-def local_clone(url,branch=None,directory=None,partial=None):
-    cmd1 = 'git clone '
 
-    if partial == 'blobless':
-        cmd1 += '--filter=blob:none '
-    elif partial == 'treeless':
-        cmd1 += '--filter=tree:0 '
+def local_clone(url, branch=None, directory=None, partial=None):
+    cmd1 = "git clone "
+
+    if partial == "blobless":
+        cmd1 += "--filter=blob:none "
+    elif partial == "treeless":
+        cmd1 += "--filter=tree:0 "
     else:
         partial = None
 
     if branch:
-        cmd1 += '--branch {} '.format(branch)
-    cmd1 += '--quiet {}'.format(url)
+        cmd1 += "--branch {} ".format(branch)
+    cmd1 += "--quiet {}".format(url)
     if directory:
         cmd1 += ' "{}"'.format(directory)
     shellcmd.run(shlex.split(cmd1))
     if branch:
-        cmd2 = f'git -C {directory} checkout --detach {branch}'
+        cmd2 = f"git -C {directory} checkout --detach {branch}"
         shellcmd.run(shlex.split(cmd2))
