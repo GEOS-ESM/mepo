@@ -3,3 +3,4 @@ pylint
 build
 twine
 pyinstaller
+black

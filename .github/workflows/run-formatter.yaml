@@ -1,4 +1,4 @@
-name: mepo - unit testing and linting
+name: Run formatter
 
 on: [push]
 
