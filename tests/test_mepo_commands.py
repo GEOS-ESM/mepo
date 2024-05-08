@@ -1,8 +1,6 @@
 import os
 import sys
 
-THIS_DIR = os.path.dirname(os.path.realpath(__file__))
-sys.path.insert(0, os.path.join(THIS_DIR, "..", "src"))
 import shutil
 import shlex
 import unittest
@@ -11,29 +9,30 @@ import subprocess as sp
 from io import StringIO
 from types import SimpleNamespace
 
-from mepo.command.clone import run as mepo_clone
-from mepo.command.list import run as mepo_list
-from mepo.command.status import run as mepo_status
-from mepo.command.compare import run as mepo_compare
-from mepo.command.develop import run as mepo_develop
-from mepo.command.checkout import run as mepo_checkout
-from mepo.command.branch_list import run as mepo_branch_list
-from mepo.command.branch_create import run as mepo_branch_create
-from mepo.command.branch_delete import run as mepo_branch_delete
-from mepo.command.tag_list import run as mepo_tag_list
-from mepo.command.tag_create import run as mepo_tag_create
-from mepo.command.tag_delete import run as mepo_tag_delete
-from mepo.command.fetch import run as mepo_fetch
-from mepo.command.pull import run as mepo_pull
-from mepo.command.push import run as mepo_push
-from mepo.command.diff import run as mepo_diff
-from mepo.command.whereis import run as mepo_whereis
-from mepo.command.reset import run as mepo_reset
-
+import mepo.command.clone as mepo_clone
+import mepo.command.list as mepo_list
+import mepo.command.status as mepo_status
+import mepo.command.compare as mepo_compare
+import mepo.command.develop as mepo_develop
+import mepo.command.checkout as mepo_checkout
+import mepo.command.branch_list as mepo_branch_list
+import mepo.command.branch_create as mepo_branch_create
+import mepo.command.branch_delete as mepo_branch_delete
+import mepo.command.tag_list as mepo_tag_list
+import mepo.command.tag_create as mepo_tag_create
+import mepo.command.tag_delete as mepo_tag_delete
+import mepo.command.fetch as mepo_fetch
+import mepo.command.pull as mepo_pull
+import mepo.command.push as mepo_push
+import mepo.command.diff as mepo_diff
+import mepo.command.whereis as mepo_whereis
+import mepo.command.reset as mepo_reset
+# Import commands with dash in the name
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
 mepo_checkout_if_exists = importlib.import_module("mepo.command.checkout-if-exists")
 mepo_pull_all = importlib.import_module("mepo.command.pull-all")
 
+TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 class TestMepoCommands(unittest.TestCase):
 
@@ -70,18 +69,18 @@ class TestMepoCommands(unittest.TestCase):
             directory=None,
             partial="blobless",
         )
-        mepo_clone(args)
+        mepo_clone.run(args)
         print()
         sys.stdout.flush()
 
     @classmethod
     def setUpClass(cls):
-        cls.input_dir = os.path.join(THIS_DIR, "input")
-        cls.output_dir = os.path.join(THIS_DIR, "output")
+        cls.input_dir = os.path.join(TEST_DIR, "input")
+        cls.output_dir = os.path.join(TEST_DIR, "output")
         cls.output_clone_status = cls.__get_saved_output("output_clone_status.txt")
         cls.fixture = "GEOSfvdycore"
         cls.tag = "v2.13.0"
-        cls.tmpdir = os.path.join(THIS_DIR, "tmp")
+        cls.tmpdir = os.path.join(TEST_DIR, "tmp")
         cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
         if os.path.isdir(cls.fixture_dir):
             shutil.rmtree(cls.fixture_dir)
@@ -101,7 +100,7 @@ class TestMepoCommands(unittest.TestCase):
             hashes=False,
         )
         sys.stdout = output = StringIO()
-        mepo_status(args)
+        mepo_status.run(args)
         sys.stdout = sys.__stdout__
         try:  # assume saved_output is a file
             saved_output_s = self.__class__.__get_saved_output(saved_output)
@@ -120,7 +119,7 @@ class TestMepoCommands(unittest.TestCase):
         os.chdir(self.__class__.fixture_dir)
         args = SimpleNamespace(one_per_line=False)
         sys.stdout = output = StringIO()
-        mepo_list(args)
+        mepo_list.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -132,7 +131,7 @@ class TestMepoCommands(unittest.TestCase):
             quiet=False,
         )
         sys.stdout = output = StringIO()  # suppressing output to stdout
-        mepo_develop(args)
+        mepo_develop.run(args)
         sys.stdout = sys.__stdout__
         self.__mepo_status("output_develop_status.txt")
         # Clean up
@@ -149,7 +148,7 @@ class TestMepoCommands(unittest.TestCase):
             detach=False,
         )
         sys.stdout = output = StringIO()  # suppress output
-        mepo_checkout(args)
+        mepo_checkout.run(args)
         sys.stdout = sys.__stdout__
         # Compare (default)
         args_cmp = SimpleNamespace(
@@ -158,14 +157,14 @@ class TestMepoCommands(unittest.TestCase):
             wrap=True,
         )
         sys.stdout = output = StringIO()
-        mepo_compare(args_cmp)
+        mepo_compare.run(args_cmp)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_compare.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Compare (All)
         args_cmp.all = True
         sys.stdout = output = StringIO()
-        mepo_compare(args_cmp)
+        mepo_compare.run(args_cmp)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_compare_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -194,7 +193,7 @@ class TestMepoCommands(unittest.TestCase):
             nocolor=True,
         )
         sys.stdout = output = StringIO()
-        mepo_branch_list(args)
+        mepo_branch_list.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_branch_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -207,14 +206,14 @@ class TestMepoCommands(unittest.TestCase):
         )
         # Create branch
         sys.stdout = output = StringIO()
-        mepo_branch_create(args)
+        mepo_branch_create.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_branch_create.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Delete the branch that was just created
         args.force = False
         sys.stdout = output = StringIO()
-        mepo_branch_delete(args)
+        mepo_branch_delete.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_branch_delete.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -223,7 +222,7 @@ class TestMepoCommands(unittest.TestCase):
         os.chdir(self.__class__.fixture_dir)
         args = SimpleNamespace(comp_name=["env"])
         sys.stdout = output = StringIO()
-        mepo_tag_list(args)
+        mepo_tag_list.run(args)
         sys.stdout = sys.__stdout__
         self.assertTrue("cuda11.7.0-gcc11.2.0nvptx-openmpi4.0.6" in output.getvalue())
 
@@ -237,13 +236,13 @@ class TestMepoCommands(unittest.TestCase):
         )
         # Create tag
         sys.stdout = output = StringIO()
-        mepo_tag_create(args)
+        mepo_tag_create.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_tag_create.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Delete the tag that was just created
         sys.stdout = output = StringIO()
-        mepo_tag_delete(args)
+        mepo_tag_delete.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_tag_delete.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -258,7 +257,7 @@ class TestMepoCommands(unittest.TestCase):
             force=False,
         )
         sys.stdout = output = StringIO()
-        mepo_fetch(args)
+        mepo_fetch.run(args)
         sys.stdout = sys.__stdout__
         saved_output = "Fetching \x1b[1;33mFVdycoreCubed_GridComp\x1b[0;0m\n"
         self.assertEqual(output.getvalue(), saved_output)
@@ -271,7 +270,7 @@ class TestMepoCommands(unittest.TestCase):
         )
         err_msg = "FVdycoreCubed_GridComp has detached head! Cannot pull."
         with self.assertRaisesRegex(Exception, err_msg):
-            mepo_pull(args)
+            mepo_pull.run(args)
 
     def test_pull_all(self):
         os.chdir(self.__class__.fixture_dir)
@@ -293,7 +292,7 @@ class TestMepoCommands(unittest.TestCase):
         )
         sys.stdout = output = StringIO()
         with self.assertRaises(sp.CalledProcessError):
-            mepo_push(args)
+            mepo_push.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_push.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -314,7 +313,7 @@ class TestMepoCommands(unittest.TestCase):
             ignore_space_change=False,
         )
         sys.stdout = output = StringIO()
-        mepo_diff(args)
+        mepo_diff.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_diff.txt")
         # Ignore the last line of output (horizontal line
@@ -331,7 +330,7 @@ class TestMepoCommands(unittest.TestCase):
             ignore_case=False,
         )
         sys.stdout = output = StringIO()
-        mepo_whereis(args)
+        mepo_whereis.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_whereis.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -344,7 +343,7 @@ class TestMepoCommands(unittest.TestCase):
             dry_run=False,
         )
         sys.stdout = output = StringIO()
-        mepo_reset(args)
+        mepo_reset.run(args)
         sys.stdout = sys.__stdout__
         saved_output = self.__class__.__get_saved_output("output_reset.txt")
         self.assertEqual(output.getvalue(), saved_output)
@@ -358,7 +357,7 @@ class TestMepoCommands(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        os.chdir(THIS_DIR)
+        os.chdir(TEST_DIR)
         shutil.rmtree(cls.tmpdir)
 
 
