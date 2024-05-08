@@ -19,5 +19,5 @@ jobs:
         pip install -r requirements.txt
       timeout-minutes: 5
     - name: Run pylint
-      run: pylint --disable=E1121,C0114,C0116,C0301 --exit-zero src/mepo
+      run: pylint --exit-zero src/mepo
       timeout-minutes: 5
