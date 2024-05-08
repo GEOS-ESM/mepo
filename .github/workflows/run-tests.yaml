@@ -27,5 +27,7 @@ jobs:
       timeout-minutes: 5
 
     - name: Run tests
-      run: python tests/test_mepo_commands.py -v
+      run: |
+        export PYTHONPATH=$(pwd)/src:$PYTHONPATH
+        python tests/test_mepo_commands.py -v
       timeout-minutes: 5
