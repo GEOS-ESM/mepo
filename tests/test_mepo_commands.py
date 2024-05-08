@@ -1,12 +1,12 @@
 import os
-import sys
 
+import io
 import shutil
 import shlex
 import unittest
 import importlib
+import contextlib
 import subprocess as sp
-from io import StringIO
 from types import SimpleNamespace
 
 import mepo.command.clone as mepo_clone
@@ -70,8 +70,7 @@ class TestMepoCommands(unittest.TestCase):
             partial="blobless",
         )
         mepo_clone.run(args)
-        print()
-        sys.stdout.flush()
+        print(flush=True)
 
     @classmethod
     def setUpClass(cls):
@@ -99,9 +98,8 @@ class TestMepoCommands(unittest.TestCase):
             nocolor=True,
             hashes=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_status.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_status.run(args)
         try:  # assume saved_output is a file
             saved_output_s = self.__class__.__get_saved_output(saved_output)
         except FileNotFoundError:
@@ -110,17 +108,15 @@ class TestMepoCommands(unittest.TestCase):
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
-        sys.stdout = output = StringIO()  # suppress output
-        mepo_restore_state.run(SimpleNamespace())
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_restore_state.run(SimpleNamespace())
         self.__mepo_status(self.__class__.output_clone_status)
 
     def test_list(self):
         os.chdir(self.__class__.fixture_dir)
         args = SimpleNamespace(one_per_line=False)
-        sys.stdout = output = StringIO()
-        mepo_list.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_list.run(args)
         saved_output = self.__class__.__get_saved_output("output_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -130,9 +126,8 @@ class TestMepoCommands(unittest.TestCase):
             comp_name=["env", "cmake", "fvdycore"],
             quiet=False,
         )
-        sys.stdout = output = StringIO()  # suppressing output to stdout
-        mepo_develop.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_develop.run(args)
         self.__mepo_status("output_develop_status.txt")
         # Clean up
         self.__mepo_restore_state()
@@ -147,25 +142,22 @@ class TestMepoCommands(unittest.TestCase):
             quiet=False,
             detach=False,
         )
-        sys.stdout = output = StringIO()  # suppress output
-        mepo_checkout.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_checkout.run(args)
         # Compare (default)
         args_cmp = SimpleNamespace(
             all=False,
             nocolor=True,
             wrap=True,
         )
-        sys.stdout = output = StringIO()
-        mepo_compare.run(args_cmp)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_compare.run(args_cmp)
         saved_output = self.__class__.__get_saved_output("output_compare.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Compare (All)
         args_cmp.all = True
-        sys.stdout = output = StringIO()
-        mepo_compare.run(args_cmp)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_compare.run(args_cmp)
         saved_output = self.__class__.__get_saved_output("output_compare_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up
@@ -192,9 +184,8 @@ class TestMepoCommands(unittest.TestCase):
             all=True,
             nocolor=True,
         )
-        sys.stdout = output = StringIO()
-        mepo_branch_list.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_branch_list.run(args)
         saved_output = self.__class__.__get_saved_output("output_branch_list.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -205,25 +196,22 @@ class TestMepoCommands(unittest.TestCase):
             branch_name="the-best-branch-ever",
         )
         # Create branch
-        sys.stdout = output = StringIO()
-        mepo_branch_create.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_branch_create.run(args)
         saved_output = self.__class__.__get_saved_output("output_branch_create.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Delete the branch that was just created
         args.force = False
-        sys.stdout = output = StringIO()
-        mepo_branch_delete.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_branch_delete.run(args)
         saved_output = self.__class__.__get_saved_output("output_branch_delete.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
     def test_tag_list(self):
         os.chdir(self.__class__.fixture_dir)
         args = SimpleNamespace(comp_name=["env"])
-        sys.stdout = output = StringIO()
-        mepo_tag_list.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_tag_list.run(args)
         self.assertTrue("cuda11.7.0-gcc11.2.0nvptx-openmpi4.0.6" in output.getvalue())
 
     def test_tag_create_delete(self):
@@ -235,15 +223,13 @@ class TestMepoCommands(unittest.TestCase):
             message=None,
         )
         # Create tag
-        sys.stdout = output = StringIO()
-        mepo_tag_create.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_tag_create.run(args)
         saved_output = self.__class__.__get_saved_output("output_tag_create.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Delete the tag that was just created
-        sys.stdout = output = StringIO()
-        mepo_tag_delete.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_tag_delete.run(args)
         saved_output = self.__class__.__get_saved_output("output_tag_delete.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -256,9 +242,8 @@ class TestMepoCommands(unittest.TestCase):
             tags=True,
             force=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_fetch.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_fetch.run(args)
         saved_output = "Fetching \x1b[1;33mFVdycoreCubed_GridComp\x1b[0;0m\n"
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -278,9 +263,8 @@ class TestMepoCommands(unittest.TestCase):
             comp_name=["FVdycoreCubed_GridComp"],
             quiet=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_pull_all.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_pull_all.run(args)
         saved_output = self.__class__.__get_saved_output("output_pull_all.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -290,10 +274,9 @@ class TestMepoCommands(unittest.TestCase):
             comp_name=["FVdycoreCubed_GridComp"],
             quiet=False,
         )
-        sys.stdout = output = StringIO()
-        with self.assertRaises(sp.CalledProcessError):
-            mepo_push.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            with self.assertRaises(sp.CalledProcessError):
+                mepo_push.run(args)
         saved_output = self.__class__.__get_saved_output("output_push.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -312,9 +295,8 @@ class TestMepoCommands(unittest.TestCase):
             staged=False,
             ignore_space_change=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_diff.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_diff.run(args)
         saved_output = self.__class__.__get_saved_output("output_diff.txt")
         # Ignore the last line of output (horizontal line
         # with length that of the width of the terminal)
@@ -329,9 +311,8 @@ class TestMepoCommands(unittest.TestCase):
             comp_name=None,
             ignore_case=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_whereis.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_whereis.run(args)
         saved_output = self.__class__.__get_saved_output("output_whereis.txt")
         self.assertEqual(output.getvalue(), saved_output)
 
@@ -342,15 +323,13 @@ class TestMepoCommands(unittest.TestCase):
             reclone=False,
             dry_run=False,
         )
-        sys.stdout = output = StringIO()
-        mepo_reset.run(args)
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            mepo_reset.run(args)
         saved_output = self.__class__.__get_saved_output("output_reset.txt")
         self.assertEqual(output.getvalue(), saved_output)
         # Clean up - reclone (suppress output)
-        sys.stdout = output = StringIO()
-        self.__class__.__mepo_clone()
-        sys.stdout = sys.__stdout__
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            self.__class__.__mepo_clone()
 
     def tearDown(self):
         pass
