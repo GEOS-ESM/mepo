@@ -3,8 +3,9 @@ name = "mepo"
 version = "2.0.0"
 description = "A tool for managing (m)ultiple r(epo)s"
 authors = ["GMAO SI Team <siteam@gmao.gsfc.nasa.gov>"]
-license = "LICENSE"
+license = "Apache-2.0"
 readme = "README.md"
+repository = "https://github.com/GEOS-ESM/mepo.git"
 
 [tool.poetry.dependencies]
 python = "^3.9"
