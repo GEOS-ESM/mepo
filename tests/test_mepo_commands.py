@@ -27,12 +27,14 @@ import mepo.command.push as mepo_push
 import mepo.command.diff as mepo_diff
 import mepo.command.whereis as mepo_whereis
 import mepo.command.reset as mepo_reset
+
 # Import commands with dash in the name
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
 mepo_checkout_if_exists = importlib.import_module("mepo.command.checkout-if-exists")
 mepo_pull_all = importlib.import_module("mepo.command.pull-all")
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
+
 
 class TestMepoCommands(unittest.TestCase):
 
