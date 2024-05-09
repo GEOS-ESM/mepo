@@ -34,17 +34,17 @@ class Registry(object):
         git_tag_types = {"branch", "tag", "hash"}
         num_fixtures = 0
         for k, v in d.items():
-            if 'fixture' in v:
+            if "fixture" in v:
                 # In case of a fixture, develop is the only additional key
                 num_fixtures += 1
-                assert (list(v.keys()) == ['fixture', 'develop'])
+                assert list(v.keys()) == ["fixture", "develop"]
             else:
                 # For non-fixture, one and only one of branch/tag/hash allowed
                 xsection = git_tag_types.intersection(set(v.keys()))
                 if len(xsection) != 1:
                     raise ValueError(f"{k} needs one and only one of {git_tag_types}")
         # Can have only one fixture
-        assert (num_fixtures == 1)
+        assert num_fixtures == 1
 
     def read_file(self):
         """Call read_yaml, read_json etc. using dispatch pattern"""

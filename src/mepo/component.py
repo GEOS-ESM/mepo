@@ -103,12 +103,10 @@ class MepoComponent(object):
                 is_detached = True
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
-
     def to_component_1(self, d):
         for k in self.__slots__:
             setattr(self, k, d[k])
         return self
-
 
     def to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
