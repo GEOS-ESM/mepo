@@ -57,8 +57,7 @@ class MepoArgParser(object):
             aliases=mepoconfig.get_command_alias("init"),
         )
         init.add_argument(
-            "--config",
-            metavar="config-file",
+            "--registry",
             nargs="?",
             default="components.yaml",
             help="default: %(default)s",
