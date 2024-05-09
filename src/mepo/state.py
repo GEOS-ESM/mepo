@@ -1,6 +1,6 @@
 import os
 import sys
-import yaml
+import json
 import glob
 import pickle
 
@@ -13,12 +13,13 @@ from .utilities import colors
 from .utilities.exceptions import StateDoesNotExistError
 from .utilities.exceptions import StateAlreadyInitializedError
 from .utilities.chdir import chdir as mepo_chdir
+from .utilities.version import MepoVersion
 
 
 class MepoState(object):
 
     __state_dir_name = ".mepo"
-    __state_fileptr_name = "state.pkl"
+    __state_fileptr_name = "state.json"
 
     @staticmethod
     def get_parent_dirs():
@@ -31,6 +32,7 @@ class MepoState(object):
 
     @classmethod
     def get_dir(cls):
+        """Return location of mepo state dir"""
         for mydir in cls.get_parent_dirs():
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
@@ -39,18 +41,19 @@ class MepoState(object):
 
     @classmethod
     def get_root_dir(cls):
-        """Return directory that contains .mepo"""
+        """Return fixture (root) directory that contains mepo state dir"""
         return os.path.dirname(cls.get_dir())
 
     @classmethod
     def get_file(cls):
+        """Return location of mepo state file"""
         state_file = os.path.join(cls.get_dir(), cls.__state_fileptr_name)
         if os.path.exists(state_file):
             return state_file
         raise OSError("mepo state file [%s] does not exist" % state_file)
 
     @classmethod
-    def exists(cls):
+    def __state_exists(cls):
         try:
             cls.get_file()
             return True
@@ -59,19 +62,11 @@ class MepoState(object):
 
     @classmethod
     def initialize(cls, project_registry, directory_style):
-        if cls.exists():
+        if cls.__state_exists():
             raise StateAlreadyInitializedError("Error! mepo state already exists")
         input_components = Registry(project_registry).read_file()
-
-        num_fixture = 0
         complist = list()
         for name, comp in input_components.items():
-            # We only allow one fixture
-            if "fixture" in comp:
-                num_fixture += comp["fixture"]
-            if num_fixture > 1:
-                raise Exception("Only one fixture allowed")
-
             complist.append(MepoComponent().to_component(name, comp, directory_style))
         cls.write_state(complist)
 
@@ -108,32 +103,35 @@ class MepoState(object):
 
     @classmethod
     def read_state(cls):
-        if not cls.exists():
+        if not cls.__state_exists():
             raise StateDoesNotExistError("Error! mepo state does not exist")
-        with open(cls.get_file(), "rb") as fin:
-            try:
-                allcomps = pickle.load(fin)
-            except ModuleNotFoundError:
-                cls.__mepo1_patch()
-                fin.seek(0)
-                allcomps = pickle.load(fin)
+        with open(cls.get_file(), "r") as fin:
+            allcomps_d = json.load(fin)
+        # List of dicts -> state (list of MepoComponent objects)
+        allcomps = []
+        for comp in allcomps_d:
+            comp["version"] = MepoVersion(*comp["version"])
+            allcomps.append(MepoComponent().to_component_1(comp))
         return allcomps
 
     @classmethod
-    def write_state(cls, state_details):
-        if cls.exists():
+    def write_state(cls, allcomps):
+        if cls.__state_exists():
             state_dir = cls.get_dir()
-            pattern = os.path.join(cls.get_dir(), "state.*.pkl")
+            pattern = os.path.join(cls.get_dir(), "state.*.json")
             states = [os.path.basename(x) for x in glob.glob(os.path.join(pattern))]
             new_state_id = max([int(x.split(".")[1]) for x in states]) + 1
-            state_file_name = "state." + str(new_state_id) + ".pkl"
+            state_file_name = "state." + str(new_state_id) + ".json"
         else:
             state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
             os.mkdir(state_dir)
-            state_file_name = "state.0.pkl"
+            state_file_name = "state.0.json"
         new_state_file = os.path.join(state_dir, state_file_name)
-        with open(new_state_file, "wb") as fout:
-            pickle.dump(state_details, fout, -1)
+        allcomps_d = []
+        for comp in allcomps:
+            allcomps_d.append(comp.to_dict())
+        with open(new_state_file, "w") as fout:
+            json.dump(allcomps_d, fout)
         state_fileptr = cls.__state_fileptr_name
         state_fileptr_fullpath = os.path.join(state_dir, state_fileptr)
         if os.path.isfile(state_fileptr_fullpath):
