@@ -30,6 +30,22 @@ class Registry(object):
                 "suffix {} not supported".format(file_suffix)
             )
 
+    def __validate(self, d):
+        git_tag_types = {"branch", "tag", "hash"}
+        num_fixtures = 0
+        for k, v in d.items():
+            if 'fixture' in v:
+                # In case of a fixture, develop is the only additional key
+                num_fixtures += 1
+                assert (list(v.keys()) == ['fixture', 'develop'])
+            else:
+                # For non-fixture, one and only one of branch/tag/hash allowed
+                xsection = git_tag_types.intersection(set(v.keys()))
+                if len(xsection) != 1:
+                    raise ValueError(f"{k} needs one and only one of {git_tag_types}")
+        # Can have only one fixture
+        assert (num_fixtures == 1)
+
     def read_file(self):
         """Call read_yaml, read_json etc. using dispatch pattern"""
         return getattr(self, "read_" + self.__filetype)()
@@ -40,6 +56,7 @@ class Registry(object):
 
         with open(self.__filename, "r") as fin:
             d = yaml.safe_load(fin)
+        self.__validate(d)
         return d
 
     def read_json(self):
@@ -48,6 +65,7 @@ class Registry(object):
 
         with open(self.__filename, "r") as fin:
             d = json.load(fin)
+        self.__validate(d)
         return d
 
     def read_cfg(self):

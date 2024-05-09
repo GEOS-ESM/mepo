@@ -103,61 +103,24 @@ class MepoComponent(object):
                 is_detached = True
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
-    def __validate_fixture(self, comp_details):
-        unallowed_keys = [
-            "remote",
-            "local",
-            "branch",
-            "hash",
-            "tag",
-            "sparse",
-            "recurse_submodules",
-            "ignore_submodules",
-        ]
-        if any([comp_details.get(key) for key in unallowed_keys]):
-            raise Exception("Fixtures are only allowed fixture and develop")
 
-    def __validate_component(self, comp_name, comp_details):
-        types_of_git_tags = ["branch", "tag", "hash"]
-        git_tag_intersection = set(types_of_git_tags).intersection(
-            set(comp_details.keys())
-        )
-        if len(git_tag_intersection) == 0:
-            raise Exception(
-                textwrap.fill(
-                    textwrap.dedent(
-                        f"""
-                Component {comp_name} has none of {types_of_git_tags}. mepo
-                requires one of them."""
-                    )
-                )
-            )
-        elif len(git_tag_intersection) != 1:
-            raise Exception(
-                textwrap.fill(
-                    textwrap.dedent(
-                        f"""
-                Component {comp_name} has {git_tag_intersection} and only one of
-                {types_of_git_tags} are allowed."""
-                    )
-                )
-            )
+    def to_component_1(self, d):
+        for k in self.__slots__:
+            setattr(self, k, d[k])
+        return self
+
 
     def to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get("fixture", False)
         # local/remote - start
         if self.fixture:
-            self.__validate_fixture(comp_details)
             self.local = "."
             repo_url = get_current_remote_url()
             p = urlparse(repo_url)
             last_url_node = p.path.rsplit("/")[-1]
             self.remote = "../" + last_url_node
         else:
-            self.__validate_component(comp_name, comp_details)
-            # print(f"original self.local: {comp_details['local']}")
-
             # Assume the flag for repostories is commercial-at
             repo_flag = "@"
 
