@@ -1,4 +1,3 @@
-import sys
 import time
 import multiprocessing as mp
 import shlex
@@ -14,8 +13,7 @@ from .whereis import _get_relative_path
 
 
 def run(args):
-    print("Checking status...")
-    sys.stdout.flush()
+    print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
     with mp.Pool() as pool:
         result = pool.starmap(

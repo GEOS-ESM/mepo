@@ -20,8 +20,7 @@ def run(args):
         result = check_component_diff(comp, args)
         if result:
             if not foundDiff:
-                print("Diffing...")
-                sys.stdout.flush()
+                print("Diffing...", flush=True)
                 foundDiff = True
             print_diff(comp, args, result)
 

@@ -9,8 +9,7 @@ from ..utilities import colors
 
 
 def run(args):
-    print("Checking status...")
-    sys.stdout.flush()
+    print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
     with mp.Pool() as pool:
         result = pool.map(check_component_status, allcomps)
