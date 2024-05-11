@@ -1,18 +1,21 @@
+"""Current state of mepo managed repositories"""
+
 import time
-import multiprocessing as mp
 import shlex
+import multiprocessing as mp
 
 from ..state import MepoState
 from ..git import GitRepository
-from ..utilities.version import version_to_string
-from ..utilities.version import sanitize_version_string
 from ..utilities import colors
 from ..utilities import shellcmd
+from ..utilities.version import version_to_string
+from ..utilities.version import sanitize_version_string
 
 from .whereis import _get_relative_path
 
 
 def run(args):
+    """Entry point"""
     print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
     with mp.Pool() as pool:
