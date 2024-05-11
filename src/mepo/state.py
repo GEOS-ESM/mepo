@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import glob
+import stat
 import pickle
 
 from pathlib import Path
@@ -20,6 +21,7 @@ class MepoState(object):
 
     __state_dir_name = ".mepo"
     __state_fileptr_name = "state.json"
+    __state_fileptr_name_old = "state.pkl"
 
     @staticmethod
     def get_parent_dirs():
@@ -45,29 +47,36 @@ class MepoState(object):
         return os.path.dirname(cls.get_dir())
 
     @classmethod
-    def get_file(cls):
+    def get_file(cls, old_style=False):
         """Return location of mepo state file"""
-        state_file = os.path.join(cls.get_dir(), cls.__state_fileptr_name)
+        if old_style:
+            fileptr_name = cls.__state_fileptr_name_old
+        else:
+            fileptr_name = cls.__state_fileptr_name
+        state_file = os.path.join(cls.get_dir(), fileptr_name)
         if os.path.exists(state_file):
             return state_file
-        raise OSError("mepo state file [%s] does not exist" % state_file)
+        else:
+            raise OSError("mepo state file [{state_file}] does not exist")
 
     @classmethod
-    def __state_exists(cls):
+    def state_exists(cls, old_style=False):
         try:
-            cls.get_file()
+            cls.get_file(old_style)
             return True
         except OSError:
             return False
 
     @classmethod
     def initialize(cls, project_registry, directory_style):
-        if cls.__state_exists():
+        if cls.state_exists():
             raise StateAlreadyInitializedError("Error! mepo state already exists")
         input_components = Registry(project_registry).read_file()
         complist = list()
         for name, comp in input_components.items():
-            complist.append(MepoComponent().to_component(name, comp, directory_style))
+            complist.append(
+                MepoComponent().registry_to_component(name, comp, directory_style)
+            )
         cls.write_state(complist)
 
     @staticmethod
@@ -78,12 +87,6 @@ class MepoState(object):
         and live in the same module as when the object was stored", we need to
         patch sys.modules to be able to read mepo1 state
         """
-        print(
-            colors.YELLOW
-            + "Converting mepo1 state to mepo2 state\n"
-            + "Run <mepo update-state> to permanently convert to mepo2 state"
-            + colors.RESET
-        )
         import mepo
 
         sys.modules["state"] = mepo.state
@@ -103,39 +106,58 @@ class MepoState(object):
 
     @classmethod
     def read_state(cls):
-        if not cls.__state_exists():
+        if cls.state_exists():
+            with open(cls.get_file(), "r") as fin:
+                allcomps_d = json.load(fin)
+            # List of dicts -> state (list of MepoComponent objects)
+            allcomps = []
+            for comp in allcomps_d:
+                allcomps.append(MepoComponent().deserialize(comp))
+            return allcomps
+        elif cls.state_exists(old_style=True):
+            print(
+                colors.YELLOW
+                + "Detected mepo1 style state\n"
+                + "Run <mepo update-state> to permanently convert to mepo2 style"
+                + colors.RESET
+            )
+            cls.__mepo1_patch()
+            with open(cls.get_file(old_style=True), "rb") as fin:
+                allcomps = pickle.load(fin)
+        else:
             raise StateDoesNotExistError("Error! mepo state does not exist")
-        with open(cls.get_file(), "r") as fin:
-            allcomps_d = json.load(fin)
-        # List of dicts -> state (list of MepoComponent objects)
-        allcomps = []
-        for comp in allcomps_d:
-            comp["version"] = MepoVersion(*comp["version"])
-            allcomps.append(MepoComponent().to_component_1(comp))
         return allcomps
 
     @classmethod
-    def write_state(cls, allcomps):
-        if cls.__state_exists():
+    def __get_new_state_file(cls):
+        """Return full path to the new state file to write to"""
+        if cls.state_exists():
             state_dir = cls.get_dir()
             pattern = os.path.join(cls.get_dir(), "state.*.json")
             states = [os.path.basename(x) for x in glob.glob(os.path.join(pattern))]
             new_state_id = max([int(x.split(".")[1]) for x in states]) + 1
-            state_file_name = "state." + str(new_state_id) + ".json"
+            state_filename = "state." + str(new_state_id) + ".json"
         else:
             state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)
-            os.mkdir(state_dir)
-            state_file_name = "state.0.json"
-        new_state_file = os.path.join(state_dir, state_file_name)
-        allcomps_d = []
+            os.makedirs(state_dir, exist_ok=True)
+            state_filename = "state.0.json"
+        return os.path.join(state_dir, state_filename)
+
+    @classmethod
+    def write_state(cls, allcomps):
+        new_state_file = cls.__get_new_state_file()
+        allcomps_s = []
         for comp in allcomps:
-            allcomps_d.append(comp.to_dict())
+            allcomps_s.append(comp.serialize())
         with open(new_state_file, "w") as fout:
-            json.dump(allcomps_d, fout)
-        state_fileptr = cls.__state_fileptr_name
-        state_fileptr_fullpath = os.path.join(state_dir, state_fileptr)
+            json.dump(allcomps_s, fout)
+        # Make the state file read-only
+        os.chmod(new_state_file, stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)
+        # Update symlink
+        state_dir = os.path.dirname(new_state_file)
+        state_fileptr_fullpath = os.path.join(state_dir, cls.__state_fileptr_name)
         if os.path.isfile(state_fileptr_fullpath):
             os.remove(state_fileptr_fullpath)
-        # os.symlink(new_state_file, state_fileptr_fullpath)
         with mepo_chdir(state_dir):
-            os.symlink(state_file_name, state_fileptr)
+            new_state_filename = os.path.basename(new_state_file)
+            os.symlink(new_state_filename, cls.__state_fileptr_name)

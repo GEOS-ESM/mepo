@@ -103,12 +103,7 @@ class MepoComponent(object):
                 is_detached = True
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
-    def to_component_1(self, d):
-        for k in self.__slots__:
-            setattr(self, k, d[k])
-        return self
-
-    def to_component(self, comp_name, comp_details, comp_style):
+    def registry_to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get("fixture", False)
         # local/remote - start
@@ -192,10 +187,22 @@ class MepoComponent(object):
                 details["ignore_submodules"] = self.ignore_submodules
         return {self.name: details}
 
-    def to_dict(self):
+    def deserialize(self, d):
+        for k in self.__slots__:
+            v = d[k]
+            if k == "version":
+                # list -> namedtuple
+                v = MepoVersion(*v)  # * for arg unpacking
+            setattr(self, k, v)
+        return self
+
+    def serialize(self):
         d = {}
         for k in self.__slots__:
             v = getattr(self, k)
+            if k == "version":
+                # namedtuple -> list
+                v = list(v)
             d.update({k: v})
         return d
 

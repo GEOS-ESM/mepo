@@ -1,26 +1,23 @@
+"""Permanently convert mepo1 state to mepo2 state"""
+
 from ..state import MepoState
-from ..component import MepoComponent
-from ..utilities.chdir import chdir as mepo_chdir
 
 
-def run(args):
-    """Permanently convert mepo1 state to mepo2 state"""
-    allcomps_old = MepoState.read_state()
-    MepoState.mepo1_patch_undo()
-    # Convert component to dict and then package it as component again. That is
-    # needed to avoid pickle trying to use the path to the old modules
-    allcomps = []
-    for comp in allcomps_old:
-        # print(comp)
-        tmp_dict = comp.to_registry_format()
-        tmp_name = list(tmp_dict)[0]
-        tmp_details = tmp_dict[tmp_name]
-        # This needs to be run from the fixture directory so that
-        # MepoComponent::__set_original_version
-        # picks the right repo for setting version
-        with mepo_chdir(MepoState.get_root_dir()):
-            comp_new = MepoComponent().to_component(tmp_name, tmp_details, None)
-        allcomps.append(comp_new)
-    # Write new state
-    MepoState.write_state(allcomps)
-    print("\nConverted mepo1 state to mepo2\n")
+def run(_):
+    """Entry point"""
+    if __old_style_exists_but_new_style_does_not():
+        # mepo2 style does not exist
+        allcomps = MepoState.read_state()
+        MepoState.mepo1_patch_undo()
+        # Write new state
+        MepoState.write_state(allcomps)
+        print("\nConverted mepo1 state to mepo2\n")
+    else:
+        print("Detected mepo2 style state - nothing to do")
+
+
+def __old_style_exists_but_new_style_does_not():
+    if MepoState.state_exists(old_style=True):
+        if not MepoState.state_exists(old_style=False):
+            return True
+    return False
