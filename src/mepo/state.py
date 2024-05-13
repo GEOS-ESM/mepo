@@ -57,7 +57,7 @@ class MepoState(object):
         if os.path.exists(state_file):
             return state_file
         else:
-            raise OSError("mepo state file [{state_file}] does not exist")
+            raise OSError(f"mepo state file [{state_file}] does not exist")
 
     @classmethod
     def state_exists(cls, old_style=False):
