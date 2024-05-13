@@ -1,7 +1,7 @@
 from importlib import import_module
 
-from .cmdline.parser import MepoArgParser
-from .utilities import mepoconfig
+from mepo.cmdline.parser import MepoArgParser
+from mepo.utilities import mepoconfig
 
 
 def main():

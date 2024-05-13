@@ -3,6 +3,7 @@ from ..utilities import verify
 from ..git import GitRepository
 from ..component import MepoVersion
 
+
 def run(args):
     allcomps = MepoState.read_state()
     verify.valid_components(args.comp_name, allcomps)
@@ -11,9 +12,10 @@ def run(args):
         git = GitRepository(comp.remote, comp.local)
         stage_files(git, comp, args.untracked)
 
+
 def stage_files(git, comp, untracked=False, commit=False):
     curr_ver = MepoVersion(*git.get_version())
-    if curr_ver.detached: # detached head
+    if curr_ver.detached:  # detached head
         raise Exception(f"{comp.name} has detached head! Cannot stage.")
     for myfile in git.get_changed_files(untracked=untracked):
         git.stage_file(myfile)
@@ -22,4 +24,3 @@ def stage_files(git, comp, untracked=False, commit=False):
             print(f"Staged: {print_output}")
         else:
             print(f"+ {print_output}")
-

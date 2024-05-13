@@ -3,6 +3,7 @@ from ..utilities import shellcmd
 from ..utilities import verify
 from ..git import GitRepository
 
+
 def run(args):
     allcomps = MepoState.read_state()
     comps2unstg = _get_comps_to_unstage(args.comp_name, allcomps)
@@ -11,7 +12,8 @@ def run(args):
         staged_files = git.get_staged_files()
         for myfile in staged_files:
             git.unstage_file(myfile)
-            print('- {}: {}'.format(comp.name, myfile))
+            print("- {}: {}".format(comp.name, myfile))
+
 
 def _get_comps_to_unstage(specified_comps, allcomps):
     comps_to_unstage = allcomps

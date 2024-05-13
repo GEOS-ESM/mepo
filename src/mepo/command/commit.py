@@ -8,6 +8,7 @@ from .stage import stage_files
 # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
 import os, tempfile, subprocess
 
+
 def run(args):
     allcomps = MepoState.read_state()
     verify.valid_components(args.comp_name, allcomps)
@@ -18,7 +19,7 @@ def run(args):
     # Pop up an editor if a message is not provided
     if not args.message:
         EDITOR = get_git_editor()
-        initial_message = b"" # set up the file
+        initial_message = b""  # set up the file
 
         # Use delete=False to keep the file around as we send the file name to git commit -F
         tf = tempfile.NamedTemporaryFile(delete=False)
@@ -34,10 +35,10 @@ def run(args):
 
         staged_files = git.get_staged_files()
         if staged_files:
-            git.commit_files(args.message,tf_file)
+            git.commit_files(args.message, tf_file)
 
         for myfile in staged_files:
-            print('+ {}: {}'.format(comp.name, myfile))
+            print("+ {}: {}".format(comp.name, myfile))
 
     # Now close and by-hand delete the temp file
     if not args.message:

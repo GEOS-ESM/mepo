@@ -1,25 +1,30 @@
-import sys
+"""Current state of mepo managed repositories"""
+
 import time
-import multiprocessing as mp
 import shlex
+import multiprocessing as mp
 
 from ..state import MepoState
 from ..git import GitRepository
-from ..utilities.version import version_to_string
-from ..utilities.version import sanitize_version_string
 from ..utilities import colors
 from ..utilities import shellcmd
+from ..utilities.version import version_to_string
+from ..utilities.version import sanitize_version_string
 
 from .whereis import _get_relative_path
 
+
 def run(args):
-    print('Checking status...'); sys.stdout.flush()
+    """Entry point"""
+    print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
     with mp.Pool() as pool:
         result = pool.starmap(
             check_component_status,
-            [(comp, args.ignore_permissions) for comp in allcomps])
+            [(comp, args.ignore_permissions) for comp in allcomps],
+        )
     print_status(allcomps, result, args.nocolor, args.hashes)
+
 
 def check_component_status(comp, ignore_permissions):
     git = GitRepository(comp.remote, comp.local)
@@ -36,13 +41,18 @@ def check_component_status(comp, ignore_permissions):
     internal_state_branch_name = git.get_version()[0]
 
     # This can return non "origin/" names for detached head branches
-    curr_ver = version_to_string(git.get_version(),git)
-    orig_ver = version_to_string(comp.version,git)
+    curr_ver = version_to_string(git.get_version(), git)
+    orig_ver = version_to_string(comp.version, git)
 
     # This command is to try and work with git tag oddities
-    curr_ver = sanitize_version_string(orig_ver,curr_ver,git)
+    curr_ver = sanitize_version_string(orig_ver, curr_ver, git)
 
-    return (curr_ver, internal_state_branch_name, git.check_status(ignore_permissions,_ignore_submodules))
+    return (
+        curr_ver,
+        internal_state_branch_name,
+        git.check_status(ignore_permissions, _ignore_submodules),
+    )
+
 
 def print_status(allcomps, result, nocolor=False, hashes=False):
     orig_width = len(max([comp.name for comp in allcomps], key=len))
@@ -52,8 +62,7 @@ def print_status(allcomps, result, nocolor=False, hashes=False):
         if hashes:
             comp_path = _get_relative_path(comp.local)
             comp_hash = shellcmd.run(
-                cmd=shlex.split(f"git -C {comp_path} rev-parse HEAD"),
-                output=True
+                cmd=shlex.split(f"git -C {comp_path} rev-parse HEAD"), output=True
             ).replace("\n", "")
             current_version = f"{current_version} ({comp_hash})"
         # This should handle tag weirdness...
@@ -69,8 +78,8 @@ def print_status(allcomps, result, nocolor=False, hashes=False):
         else:
             component_name = comp.name
             width = orig_width
-        FMT0 = '{:<%s.%ss} | {:<s}' % (width, width)
+        FMT0 = "{:<%s.%ss} | {:<s}" % (width, width)
         print(FMT0.format(component_name, current_version))
-        if (output):
-            for line in output.split('\n'):
-                print('   |', line.rstrip())
+        if output:
+            for line in output.split("\n"):
+                print("   |", line.rstrip())

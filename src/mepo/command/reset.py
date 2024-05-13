@@ -11,6 +11,7 @@ from .clone import run as mepo_clone_run
 # subrepos. This is useful if you want to start over with a fresh clone
 # of the project.
 
+
 def run(args):
     allcomps = MepoState.read_state()
 
@@ -21,14 +22,19 @@ def run(args):
     curdir = os.getcwd()
     ## Then check that they are the same, if they are not, then throw a NotInRootDirError
     if rootdir != curdir:
-        raise NotInRootDirError('Error! As a safety precaution, you must be in the root directory of the project to reset')
+        raise NotInRootDirError(
+            "Error! As a safety precaution, you must be in the root directory of the project to reset"
+        )
 
     # If we get this far, then we are in the root directory of the project
 
     # If a user has called this command without the force flag, we
     # will ask them to confirm that they want to reset the project
     if not args.force and not args.dry_run:
-        print(f"Are you sure you want to reset the project? If so, type 'yes' and press enter.", end=' ')
+        print(
+            f"Are you sure you want to reset the project? If so, type 'yes' and press enter.",
+            end=" ",
+        )
         answer = input()
         if answer != "yes":
             print("Reset cancelled.")
@@ -43,21 +49,21 @@ def run(args):
         else:
             # Get the relative path to the component
             relpath = _get_relative_path(comp.local)
-            print(f'Removing {relpath}', end='...')
+            print(f"Removing {relpath}", end="...")
             # Remove the component if not dry run
             if not args.dry_run:
                 shutil.rmtree(relpath)
-                print('done.')
+                print("done.")
             else:
-                print(f'dry-run only. Not removing {relpath}')
+                print(f"dry-run only. Not removing {relpath}")
 
     # Next, we need to remove the .mepo directory
-    print(f'Removing mepo state', end='...')
+    print(f"Removing mepo state", end="...")
     if not args.dry_run:
         shutil.rmtree(MepoState.get_dir())
-        print('done.')
+        print("done.")
     else:
-        print(f'dry-run only. Not removing mepo state')
+        print(f"dry-run only. Not removing mepo state")
 
     # If they pass in the --reclone flag, then we will re-clone all the subrepos
     if args.reclone:
@@ -65,19 +71,25 @@ def run(args):
         # mepo_clone requires args which is an Argparse Namespace object
         # We will create a new Namespace object with the correct arguments
         # for mepo_clone
-        clone_args = type('Namespace', (object,), {
-            'repo_url': None,
-            'directory': None,
-            'branch': None,
-            'registry': None,
-            'allrepos': False,
-            'style': None})
+        clone_args = type(
+            "Namespace",
+            (object,),
+            {
+                "repo_url": None,
+                "directory": None,
+                "branch": None,
+                "registry": None,
+                "allrepos": False,
+                "style": None,
+            },
+        )
         if not args.dry_run:
-            print('Re-cloning all subrepos')
+            print("Re-cloning all subrepos")
             mepo_clone_run(clone_args)
-            print('Recloning done.')
+            print("Recloning done.")
         else:
-            print(f'Dry-run only. Not re-cloning all subrepos')
+            print(f"Dry-run only. Not re-cloning all subrepos")
+
 
 def _get_relative_path(local_path):
     """
@@ -87,7 +99,7 @@ def _get_relative_path(local_path):
     """
 
     # This creates a full path on the disk from the root of mepo and the local_path
-    full_local_path=os.path.join(MepoState.get_root_dir(),local_path)
+    full_local_path = os.path.join(MepoState.get_root_dir(), local_path)
 
     # We return the path relative to where we currently are
     return os.path.relpath(full_local_path, os.getcwd())
