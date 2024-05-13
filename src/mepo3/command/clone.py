@@ -21,11 +21,11 @@ def run(args):
     fixture_dir = os.path.dirname(os.path.abspath(args.registry))
     allcomps = []
     recursive_clone(fixture_dir, partial, allcomps)
-    MepoState().write_state(allcomps) # create mepo state
+    MepoState().write_state(allcomps)  # create mepo state
 
     if args.allrepos:
         if args.branch is None:
-            raise ValueError('allrepos option must be used with a branch/tag')
+            raise ValueError("allrepos option must be used with a branch/tag")
         for comp in allcomps:
             git = GitRepository(comp.remote, comp.local)
             branch = colors.YELLOW + args.branch + args.RESET
@@ -39,22 +39,22 @@ def handle_partial(arg_partial):
     through .mepoconfig
     partial's default value is None, and possible choices are off/blobless/treeless
     """
-    ALLOWED = ['blobless', 'treeless']
+    ALLOWED = ["blobless", "treeless"]
     partial = arg_partial
-    if partial=='off':
-        partial = None # off => None
-    if mepoconfig.has_option('clone', 'partial'): # mepoconfig wins
-        partial = mepoconfig.get('clone', 'partial')
+    if partial == "off":
+        partial = None  # off => None
+    if mepoconfig.has_option("clone", "partial"):  # mepoconfig wins
+        partial = mepoconfig.get("clone", "partial")
         if partial not in ALLOWED:
-            raise ValueError(f'Invalid partial type [{partial}] in .mepoconfig')
-        print(f'Found partial clone type [{partial}] in .mepoconfig')
+            raise ValueError(f"Invalid partial type [{partial}] in .mepoconfig")
+        print(f"Found partial clone type [{partial}] in .mepoconfig")
     return partial
 
 
 def clone_fixture(arg_url, arg_branch, arg_directory, partial):
     if arg_directory is None:
         p = urlparse(arg_url)
-        last_url_node = p.path.rsplit('/')[-1]
+        last_url_node = p.path.rsplit("/")[-1]
         arg_directory = pathlib.Path(last_url_node).stem
     git = GitRepository(arg_url, arg_directory)
     git.clone(arg_branch, partial)
@@ -69,7 +69,7 @@ def recursive_clone(local_path, partial, complist):
                 details["local"] = os.path.join(local_path, details["local"])
             comp = MepoComponent().registry_to_component(name, details, None)
             complist.append(comp)
-            if 'fixture' in details:
+            if "fixture" in details:
                 continue
             # if not comp.fixture:
             git = GitRepository(comp.remote, os.path.join(local_path, comp.local))
@@ -78,7 +78,7 @@ def recursive_clone(local_path, partial, complist):
             # According to Git, treeless clones do not interact well with
             # submodules. So if any comp has the recurse option set to True,
             # we do a non-partial clone
-            _partial = None if partial == 'treeless' and submodules else partial
+            _partial = None if partial == "treeless" and submodules else partial
             git.clone(version, submodules, _partial)
             if comp.sparse:
                 git.sparsify(comp.sparse)
@@ -88,5 +88,5 @@ def recursive_clone(local_path, partial, complist):
 
 def print_clone_info(comp):
     WIDTH = 27
-    ver_name_type = f'({comp.version.type}) {comp.version.name}'
+    ver_name_type = f"({comp.version.type}) {comp.version.name}"
     print(f"{comp.name:<{WIDTH}} | {ver_name_type:<s}")
