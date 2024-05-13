@@ -108,7 +108,7 @@ class MepoComponent(object):
         self.fixture = comp_details.get("fixture", False)
         # local/remote - start
         if self.fixture:
-            self.local = "."
+            self.local = os.path.abspath(".")
             repo_url = get_current_remote_url()
             p = urlparse(repo_url)
             last_url_node = p.path.rsplit("/")[-1]
