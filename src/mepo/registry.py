@@ -43,7 +43,7 @@ class Registry(object):
                 xsection = git_tag_types.intersection(set(v.keys()))
                 if len(xsection) != 1:
                     raise ValueError(f"{k} needs one and only one of {git_tag_types}")
-        # Can have only one fixture
+        # Can have one and only one fixture
         assert num_fixtures == 1
 
     def read_file(self):
