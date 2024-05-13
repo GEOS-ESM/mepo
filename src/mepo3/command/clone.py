@@ -67,7 +67,7 @@ def recursive_clone(local_path, partial, complist):
         for name, details in Registry(registry).read_file().items():
             if "local" in details:
                 details["local"] = os.path.join(local_path, details["local"])
-            comp = MepoComponent().to_component(name, details, None)
+            comp = MepoComponent().registry_to_component(name, details, None)
             complist.append(comp)
             if 'fixture' in details:
                 continue
@@ -87,5 +87,6 @@ def recursive_clone(local_path, partial, complist):
 
 
 def print_clone_info(comp):
+    WIDTH = 27
     ver_name_type = f'({comp.version.type}) {comp.version.name}'
-    print(f'{comp.name} | {ver_name_type}')
+    print(f"{comp.name:<{WIDTH}} | {ver_name_type:<s}")

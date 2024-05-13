@@ -1,6 +1,7 @@
 import os
 import glob
 import json
+import stat
 
 try:
     import contextlib.chdir as mepo_chdir

@@ -5,7 +5,6 @@ import subprocess as sp
 
 from urllib.parse import urljoin
 
-from .state import MepoState
 from .utilities import shellcmd
 from .utilities import colors
 from .utilities.exceptions import RepoAlreadyClonedError
@@ -36,7 +35,7 @@ class GitRepository:
             self.__remote = urljoin(fixture_url, rel_remote)
         else:
             self.__remote = remote_url
-        root_dir = MepoState.get_root_dir()
+        root_dir = os.getcwd()
         full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
         self.__full_local_path = full_local_path
         self.__git = f'git -C "{self.__full_local_path}"'
