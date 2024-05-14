@@ -108,11 +108,14 @@ class MepoState(object):
     def read_state(cls):
         if cls.state_exists():
             with open(cls.get_file(), "r") as fin:
-                allcomps_d = json.load(fin)
+                allcomps_s = json.load(fin)
             # List of dicts -> state (list of MepoComponent objects)
             allcomps = []
-            for comp in allcomps_d:
-                allcomps.append(MepoComponent().deserialize(comp))
+            for comp_s in allcomps_s:
+                comp = MepoComponent().deserialize(comp_s)
+                # Relative path to absolute
+                comp.local = os.path.join(cls.get_root_dir(), comp.local)
+                allcomps.append(comp)
             return allcomps
         elif cls.state_exists(old_style=True):
             print(
@@ -148,6 +151,8 @@ class MepoState(object):
         new_state_file = cls.__get_new_state_file()
         allcomps_s = []
         for comp in allcomps:
+            # Save relative path (to fixture dir) to state
+            comp.local = os.path.relpath(comp.local, start=cls.get_root_dir())
             allcomps_s.append(comp.serialize())
         with open(new_state_file, "w") as fout:
             json.dump(allcomps_s, fout)
