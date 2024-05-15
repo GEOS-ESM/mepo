@@ -1,0 +1,11 @@
+Checking status...
+GEOSfvdycore           | (t) v2.13.0 (DH)
+env                    | (b) main
+cmake                  | (b) develop
+ecbuild                | (t) geos/v1.3.0 (DH)
+GMAO_Shared            | (t) v1.9.6 (DH)
+GEOS_Util              | (t) v2.0.5 (DH)
+MAPL                   | (t) v2.43.0 (DH)
+FMS                    | (t) geos/2019.01.02+noaff.8 (DH)
+FVdycoreCubed_GridComp | (t) v2.10.0 (DH)
+fvdycore               | (b) geos/develop
