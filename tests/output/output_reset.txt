@@ -1,0 +1,10 @@
+Removing src/Components/@FVdycoreCubed_GridComp/@fvdycore...done.
+Removing src/Components/@FVdycoreCubed_GridComp...done.
+Removing src/Shared/@FMS...done.
+Removing src/Shared/@MAPL...done.
+Removing src/Shared/@GMAO_Shared/@GEOS_Util...done.
+Removing src/Shared/@GMAO_Shared...done.
+Removing @cmake/@ecbuild...done.
+Removing @cmake...done.
+Removing @env...done.
+Removing mepo state...done.

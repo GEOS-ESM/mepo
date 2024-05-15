@@ -1,0 +1,11 @@
+ecbuild | * (HEAD detached at geos/v1.3.0)
+        |   release/stable
+        |   remotes/origin/HEAD -> origin/release/stable
+        |   remotes/origin/develop
+        |   remotes/origin/feature/FindMKL-portability-improvement
+        |   remotes/origin/feature/ecbuild_use_package_quiet
+        |   remotes/origin/feature/mathomp4/add-jemalloc
+        |   remotes/origin/feature/netcdf4-cmake
+        |   remotes/origin/geos/main
+        |   remotes/origin/master
+        |   remotes/origin/release/stable

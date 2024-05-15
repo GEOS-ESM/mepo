@@ -1,1 +1,0 @@
-GEOSfvdycore env cmake ecbuild GMAO_Shared MAPL FMS FVdycoreCubed_GridComp fvdycore 

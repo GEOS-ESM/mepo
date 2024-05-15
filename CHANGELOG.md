@@ -16,11 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Converted `mepo` to a Python project via the following renaming
-  -- `mepo.d` -> `src/mepo`
-  -- `mepo.d/utest` -> `tests`
-  -- `doc` --> `docs`
+  -- Added `src/mepo/__init__.py`
+  -- Renamed `mepo.d` -> `src/mepo`
+  -- Renamed `mepo.d/utest` -> `tests`
+  -- Renamed `doc` --> `docs`
+  -- A `mepo` config file is now called a `mepo` registry
+  -- More code reorganization
+  
 - Helper script `mepo`, used for development, moved to the `bin` directory.
 - Added README for `docs/make_md_docs.py` script
+
+- Expanded testing to cover more `mepo` commands
 
 ## [1.52.0] - 2024-01-10
 

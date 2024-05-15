@@ -1,26 +1,22 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
-[project]
+[tool.poetry]
 name = "mepo"
-version = "v2.0.0"
-authors = [
-    {name = "GMAO SI Team", email = "siteam@gmao.gsfc.nasa.gov"},
-]
-description = "Tool to manage (m)ultiple r(epo)sitories"
-requires-python = ">= 3.9"
-license = {file = "LICENSE"}
+version = "2.0.0"
+description = "A tool for managing (m)ultiple r(epo)s"
+authors = ["GMAO SI Team <siteam@gmao.gsfc.nasa.gov>"]
+license = "Apache-2.0"
 readme = "README.md"
-dependencies = [
-    "pyyaml>=6.0.1",
-]
+repository = "https://github.com/GEOS-ESM/mepo.git"
 
-[project.urls]
-Homepage = "https://github.com/GEOS-ESM/mepo"
+[tool.poetry.dependencies]
+python = "^3.9"
+PyYAML = "^6.0.1"
+black = "^24.4.2"
+mdutils = "^1.6.0"
+pylint = "^3.1.0"
 
-[project.scripts]
-mepo = "mepo.main:main"
+[tool.poetry.scripts]
+mepo = "mepo.__main__:main"
 
-[tool.setuptools]
-include-package-data = true
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
