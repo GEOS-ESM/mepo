@@ -17,7 +17,7 @@ from .utilities.chdir import chdir as mepo_chdir
 from .utilities.version import MepoVersion
 
 
-class MepoState
+class MepoState:
 
     __state_dir_name = ".mepo"
     __state_fileptr_name = "state.json"
