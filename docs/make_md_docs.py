@@ -26,7 +26,6 @@ def get_command_list(directory):
     # Get all commands
     all_commands_py = glob.glob(os.path.join(directory, "*.py"))
     all_commands = [os.path.basename(x).replace(".py", "") for x in all_commands_py]
-    all_commands.remove("command")  # manually remove
 
     # Now let's find the commands that have subcommands
     ## First we get commands with underscore
@@ -45,9 +44,7 @@ def create_markdown_from_usage(command, mdFile):
     # Some commands have spaces, so we need to break it up again
     cmd = " ".join(cmd).split()
 
-    result = sp.run(
-        cmd, capture_output=True, universal_newlines=True, env={"COLUMNS": "256"}
-    )
+    result = sp.run(cmd, capture_output=True, universal_newlines=True)
     output = result.stdout
 
     output_list = output.split("\n")

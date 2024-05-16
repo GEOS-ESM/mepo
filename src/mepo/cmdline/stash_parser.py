@@ -1,7 +1,7 @@
 import argparse
 
 
-class MepoStashArgParser(object):
+class MepoStashArgParser:
 
     def __init__(self, stash):
         self.stash = stash.add_subparsers()

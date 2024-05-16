@@ -15,7 +15,7 @@ class AddBlankLinesDumper(yaml.SafeDumper):
             super().write_line_break()
 
 
-class Registry(object):
+class Registry:
 
     __slots__ = ["__filename", "__filetype"]
 
