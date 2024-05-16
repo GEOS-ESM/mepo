@@ -1,3 +1,5 @@
+"""Provide a command line interface to mepo"""
+
 from importlib import import_module
 
 from mepo.cmdline.parser import MepoArgParser
