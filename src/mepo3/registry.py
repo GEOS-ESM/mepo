@@ -1,5 +1,5 @@
-import yaml
 import pathlib
+import yaml
 
 from .utilities.exceptions import SuffixNotRecognizedError
 
@@ -21,14 +21,12 @@ class Registry:
 
     def __init__(self, filename):
         self.__filename = filename
-        SUFFIX_LIST = [".yaml", ".json", ".cfg"]
+        suffix_list = [".yaml", ".json", ".cfg"]
         file_suffix = pathlib.Path(filename).suffix
-        if file_suffix in SUFFIX_LIST:
+        if file_suffix in suffix_list:
             self.__filetype = file_suffix[1:]
         else:
-            raise SuffixNotRecognizedError(
-                "suffix {} not supported".format(file_suffix)
-            )
+            raise SuffixNotRecognizedError(f"suffix {file_suffix} not supported")
 
     def __validate(self, d):
         git_tag_types = {"branch", "tag", "hash"}
@@ -52,7 +50,6 @@ class Registry:
 
     def read_yaml(self):
         """Read yaml registry and return a dict containing contents"""
-        import yaml
 
         with open(self.__filename, "r") as fin:
             d = yaml.safe_load(fin)
@@ -74,7 +71,6 @@ class Registry:
 
     def write_yaml(self, d):
         """Dump dict d into a yaml file"""
-        import yaml
 
         with open(self.__filename, "w") as fout:
             yaml.dump(d, fout, sort_keys=False, Dumper=AddBlankLinesDumper)
