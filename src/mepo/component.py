@@ -13,7 +13,7 @@ from .utilities.version import MepoVersion
 original_final_node_list = []
 
 
-class MepoComponent(object):
+class MepoComponent:
 
     __slots__ = [
         "name",

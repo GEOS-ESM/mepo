@@ -2,7 +2,7 @@ import argparse
 import textwrap
 
 
-class MepoConfigArgParser(object):
+class MepoConfigArgParser:
 
     def __init__(self, config):
         self.config = config.add_subparsers()

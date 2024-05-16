@@ -1,7 +1,7 @@
 import argparse
 
 
-class MepoTagArgParser(object):
+class MepoTagArgParser:
 
     def __init__(self, tag):
         self.tag = tag.add_subparsers()
