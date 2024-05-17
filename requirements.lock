@@ -8,5 +8,7 @@
 #   with-sources: false
 
 -e file:.
+mdutils==1.6.0
+    # via mepo
 pyyaml==6.0.1
     # via mepo
