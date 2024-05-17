@@ -1,4 +1,5 @@
 """Ensure Python version"""
+
 import sys
 
 PY_VERSION = (3, 9, 0)
