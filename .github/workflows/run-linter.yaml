@@ -10,7 +10,7 @@ jobs:
     - uses: Silleellie/pylint-github-action@v2
       with:
         lint-path: |
-	  src/mepo
-	  src/mepo3
-	python-version: 3.9
+          src/mepo
+          src/mepo3
+        python-version: 3.9
       timeout-minutes: 5
