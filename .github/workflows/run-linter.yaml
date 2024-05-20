@@ -11,7 +11,6 @@ jobs:
       with:
         lint-path: |
           src/mepo
-          src/mepo3
         python-version: 3.9
         requirements-path: requirements.lock
       timeout-minutes: 5
