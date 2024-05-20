@@ -30,8 +30,16 @@ dev-dependencies = [
 [tool.hatch.metadata]
 allow-direct-references = true
 
+[tool.hatch.build.targets.sdist]
+packages = [
+    "docs",
+    "etc",
+    "src",
+    "tests",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = [
-    "src/mepo",
-    "src/mepo3",
+    "etc",
+    "src",
 ]
