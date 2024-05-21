@@ -1,6 +1,3 @@
-import argparse
-
-
 class MepoTagArgParser:
 
     def __init__(self, tag):

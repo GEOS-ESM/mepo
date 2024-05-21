@@ -6,6 +6,7 @@ authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
     "pyyaml>=6.0.1",
     "mdutils>=1.6.0",
+    "colorama>=0.4.6",
 ]
 readme = "README.md"
 license = "Apache-2.0"
@@ -16,10 +17,6 @@ requires-python = ">= 3.9"
 mepo = "mepo.__main__:main"
 mepo3 = "mepo3.__main__:main"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.rye]
 managed = true
 dev-dependencies = [
@@ -28,11 +25,20 @@ dev-dependencies = [
     "flake8>=7.0.0",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
-[tool.hatch.build.targets.wheel]
-packages = [
+[tool.hatch.build.targets.sdist]
+only_include = [
+    "docs",
+    "etc",
     "src/mepo",
-    "src/mepo3",
+    "tests",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mepo"]

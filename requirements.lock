@@ -8,6 +8,8 @@
 #   with-sources: false
 
 -e file:.
+colorama==0.4.6
+    # via mepo
 mdutils==1.6.0
     # via mepo
 pyyaml==6.0.1

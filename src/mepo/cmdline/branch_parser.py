@@ -1,6 +1,3 @@
-import argparse
-
-
 class MepoBranchArgParser:
 
     def __init__(self, branch):

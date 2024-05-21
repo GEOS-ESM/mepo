@@ -152,7 +152,7 @@ class MepoArgParser:
         )
 
     def __restore_state(self):
-        restore_state = self.subparsers.add_parser(
+        _ = self.subparsers.add_parser(
             "restore-state",
             description="Restores all components to the last saved state.",
             aliases=mepoconfig.get_command_alias("restore-state"),
@@ -490,7 +490,7 @@ class MepoArgParser:
         MepoConfigArgParser(config)
 
     def __update_state(self):
-        update_state = self.subparsers.add_parser(
+        _ = self.subparsers.add_parser(
             "update-state",
             description="Permanently update mepo1 state to current",
             aliases=mepoconfig.get_command_alias("update-state"),

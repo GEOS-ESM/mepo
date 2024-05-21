@@ -1,6 +1,3 @@
-import argparse
-
-
 class MepoStashArgParser:
 
     def __init__(self, stash):
@@ -48,7 +45,7 @@ class MepoStashArgParser:
         )
 
     def __list(self):
-        stlist = self.stash.add_parser(
+        _ = self.stash.add_parser(
             "list", description="List local stashes of all components"
         )
 

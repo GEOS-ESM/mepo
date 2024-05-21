@@ -13,6 +13,8 @@ astroid==3.2.1
 black==24.4.2
 click==8.1.7
     # via black
+colorama==0.4.6
+    # via mepo
 dill==0.3.8
     # via pylint
 flake8==7.0.0

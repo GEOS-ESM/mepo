@@ -1,7 +1,3 @@
-import argparse
-import textwrap
-
-
 class MepoConfigArgParser:
 
     def __init__(self, config):
@@ -26,7 +22,7 @@ class MepoConfigArgParser:
         get.add_argument("entry", metavar="entry", help="Entry to display.")
 
     def __set(self):
-        set = self.config.add_parser(
+        set_ = self.config.add_parser(
             "set",
             description=(
                 "Set config `entry` to `value` in `.mepoconfig`. "
@@ -34,8 +30,8 @@ class MepoConfigArgParser:
                 "So to set an `alias` for `status` of `st` You would run `mepo config set alias.st status`"
             ),
         )
-        set.add_argument("entry", metavar="entry", help="Entry to set.")
-        set.add_argument("value", metavar="value", help="Value to set entry to.")
+        set_.add_argument("entry", metavar="entry", help="Entry to set.")
+        set_.add_argument("value", metavar="value", help="Value to set entry to.")
 
     def __delete(self):
         delete = self.config.add_parser(
@@ -49,6 +45,6 @@ class MepoConfigArgParser:
         delete.add_argument("entry", metavar="entry", help="Entry to delete.")
 
     def __print(self):
-        print = self.config.add_parser(
+        _ = self.config.add_parser(
             "print", description="Print contents of `.mepoconfig`"
         )
