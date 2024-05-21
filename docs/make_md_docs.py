@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import io
 import glob
 from mdutils.mdutils import MdUtils
 import subprocess as sp
