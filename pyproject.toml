@@ -15,10 +15,6 @@ requires-python = ">= 3.9"
 [project.scripts]
 mepo = "mepo.__main__:main"
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
 [tool.rye]
 managed = true
 dev-dependencies = [
@@ -27,19 +23,20 @@ dev-dependencies = [
     "flake8>=7.0.0",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [tool.hatch.metadata]
 allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
-packages = [
+only_include = [
     "docs",
     "etc",
-    "src",
+    "src/mepo",
     "tests",
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = [
-    "etc",
-    "src",
-]
+packages = ["src/mepo"]
