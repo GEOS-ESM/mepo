@@ -1,7 +1,4 @@
-import argparse
-
-
-class MepoBranchArgParser(object):
+class MepoBranchArgParser:
 
     def __init__(self, branch):
         self.branch_subparsers = branch.add_subparsers()
