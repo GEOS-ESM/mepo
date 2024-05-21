@@ -110,7 +110,7 @@ class TestMepoCommands(unittest.TestCase):
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
-        with contextlib.redirect_stdout(io.StringIO()) as output:
+        with contextlib.redirect_stdout(io.StringIO()) as _:
             mepo_restore_state.run(SimpleNamespace())
         self.__mepo_status(self.__class__.output_clone_status)
 
@@ -128,7 +128,7 @@ class TestMepoCommands(unittest.TestCase):
             comp_name=["env", "cmake", "fvdycore"],
             quiet=False,
         )
-        with contextlib.redirect_stdout(io.StringIO()) as output:
+        with contextlib.redirect_stdout(io.StringIO()) as _:
             mepo_develop.run(args)
         self.__mepo_status("output_develop_status.txt")
         # Clean up
@@ -246,7 +246,7 @@ class TestMepoCommands(unittest.TestCase):
         )
         with contextlib.redirect_stdout(io.StringIO()) as output:
             mepo_fetch.run(args)
-        saved_output = "Fetching \x1b[1;33mFVdycoreCubed_GridComp\x1b[0;0m\n"
+        saved_output = "Fetching \x1b[33mFVdycoreCubed_GridComp\x1b[0m\n"
         self.assertEqual(output.getvalue(), saved_output)
 
     def test_pull(self):
