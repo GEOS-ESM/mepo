@@ -7,10 +7,17 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint code
     steps:
-    - uses: Silleellie/pylint-github-action@v2
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
       with:
-        lint-path: |
-          src/mepo
         python-version: 3.9
-        requirements-path: requirements.lock
+        cache: 'pip'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.lock
+      timeout-minutes: 5
+    - name: Run pylint
+      run: pylint --exit-zero src/mepo
       timeout-minutes: 5
