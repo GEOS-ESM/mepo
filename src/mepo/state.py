@@ -5,16 +5,12 @@ import glob
 import stat
 import pickle
 
-from pathlib import Path
-
 from .registry import Registry
 from .component import MepoComponent
-from .utilities import shellcmd
 from .utilities import colors
 from .utilities.exceptions import StateDoesNotExistError
 from .utilities.exceptions import StateAlreadyInitializedError
 from .utilities.chdir import chdir as mepo_chdir
-from .utilities.version import MepoVersion
 
 
 class MepoState(object):

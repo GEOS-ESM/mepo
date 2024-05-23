@@ -15,7 +15,7 @@ def run(args):
     allcomps = MepoState.read_state()
 
     if not any_differing_repos(allcomps):
-        print(f"No repositories have changed")
+        print("No repositories have changed")
     else:
         max_namelen, max_origlen = calculate_header_lengths(allcomps, args.all)
         print_header(max_namelen, max_origlen)

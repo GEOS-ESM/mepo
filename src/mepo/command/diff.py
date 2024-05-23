@@ -1,6 +1,3 @@
-import sys
-import time
-import multiprocessing as mp
 import os
 
 from shutil import get_terminal_size

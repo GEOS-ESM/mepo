@@ -1,5 +1,4 @@
 from ..state import MepoState
-from ..utilities import verify
 from ..git import GitRepository
 from ..utilities import colors
 

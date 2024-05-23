@@ -1,12 +1,9 @@
 import os
 import shlex
-import textwrap
 
-from collections import namedtuple
 from urllib.parse import urlparse
 
 from .utilities import shellcmd
-from .utilities import mepoconfig
 from .utilities.version import MepoVersion
 
 # This will be used to store the "final nodes" from each subrepo
