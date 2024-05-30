@@ -94,8 +94,6 @@ class MepoState(object):
         """
         Undo changes made my __mepo1_patch(). Called during <mepo update-state>
         """
-        import mepo
-
         entries_to_remove = ["state", "state.component", "utilities"]
         for key in entries_to_remove:
             sys.modules.pop(key, None)

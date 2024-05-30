@@ -1,6 +1,5 @@
 try:
-    import colorama
-    from colorama import Fore, Back, Style
+    from colorama import Fore, Style
 
     RED = Fore.RED
     BLUE = Fore.BLUE
