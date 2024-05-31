@@ -71,7 +71,7 @@ def run(args):
     if passed_in_registry:
         try:
             shutil.copy(args.registry, os.getcwd())
-        except shutil.SameFileError as e:
+        except shutil.SameFileError:
             pass
 
     # This tries to read the state and if not, calls init,

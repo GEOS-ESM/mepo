@@ -1,12 +1,13 @@
+import os
+import tempfile
+import subprocess
+
 from ..state import MepoState
 from ..utilities import verify
 from ..git import GitRepository
 from ..git import get_editor as get_git_editor
 
 from .stage import stage_files
-
-# Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
-import os, tempfile, subprocess
 
 
 def run(args):
@@ -17,6 +18,7 @@ def run(args):
     tf_file = None
 
     # Pop up an editor if a message is not provided
+    # Popping up an EDITOR is based on https://stackoverflow.com/a/39989442
     if not args.message:
         EDITOR = get_git_editor()
         initial_message = b""  # set up the file

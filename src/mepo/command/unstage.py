@@ -1,5 +1,4 @@
 from ..state import MepoState
-from ..utilities import shellcmd
 from ..utilities import verify
 from ..git import GitRepository
 
