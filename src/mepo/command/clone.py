@@ -1,145 +1,110 @@
 import os
 import pathlib
-import shutil
-import shlex
 from urllib.parse import urlparse
 
-from .init import run as mepo_init_run
+try:
+    from contextlib import chdir as chdir_context
+except ImportError:
+    from ..utilities.chdir import chdir as chdir_context
+
 from ..state import MepoState
-from ..state import StateDoesNotExistError
+from ..component import MepoComponent
 from ..git import GitRepository
-from ..utilities import shellcmd
 from ..utilities import colors
 from ..utilities import mepoconfig
+from ..registry import Registry
+
+
+REGISTRY = "components.yaml"
 
 
 def run(args):
+    """
+    Entry point of clone
+    1. Clone fixture
+    2. Read registry
+    3. Clone components
+    4. Write state
+    """
+    validate_args(args)
+    arg_partial = handle_partial(args.partial)
+    fixture_dir = clone_fixture(args.url, args.branch, args.directory, arg_partial)
+    with chdir_context(fixture_dir):
+        allcomps = allcomps_from_registry(args.style)
+        clone_components(allcomps, arg_partial)
+        MepoState().write_state(allcomps)
+        if args.allrepos:
+            checkout_branch_in_all_repos(allcomps, args.branch)
 
-    # This protects against someone using branch without a URL
-    if args.branch and not args.repo_url:
-        raise RuntimeError("The branch argument can only be used with a URL")
 
-    if args.allrepos and not args.branch:
-        raise RuntimeError("The allrepos option must be used with a branch/tag.")
-
-    # We can get the blobless and treeless options from the config or the args
-    if args.partial:
-        # We need to set partial to None if it's off, otherwise we use the
-        # string. This is safe because argparse only allows for 'off',
-        # 'blobless', or 'treeless'
-        partial = None if args.partial == "off" else args.partial
-    elif mepoconfig.has_option("clone", "partial"):
-        allowed = ["blobless", "treeless"]
-        partial = mepoconfig.get("clone", "partial")
-        if partial not in allowed:
-            raise Exception(
-                f"Detected partial clone type [{partial}] from .mepoconfig is not an allowed partial clone type: {allowed}"
-            )
-        else:
-            print(f"Found partial clone type [{partial}] in .mepoconfig")
-    else:
-        partial = None
-
-    # If you pass in a registry, with clone, it could be outside the repo.
-    # So use the full path
-    passed_in_registry = False
-    if args.registry:
-        passed_in_registry = True
-        args.registry = os.path.abspath(args.registry)
-    else:
-        # If we don't pass in a registry, we need to "reset" the arg to the
-        # default name because we pass args to mepo_init
-        args.registry = "components.yaml"
-
-    if args.repo_url:
-        p = urlparse(args.repo_url)
-        last_url_node = p.path.rsplit("/")[-1]
-        url_suffix = pathlib.Path(last_url_node).suffix
-        if args.directory:
-            local_clone(args.repo_url, args.branch, args.directory, partial)
-            os.chdir(args.directory)
-        else:
-            if url_suffix == ".git":
-                git_url_directory = pathlib.Path(last_url_node).stem
-            else:
-                git_url_directory = last_url_node
-
-            local_clone(args.repo_url, args.branch, git_url_directory, partial)
-            os.chdir(git_url_directory)
-
-    # Copy the new file into the repo only if we pass it in
-    if passed_in_registry:
-        try:
-            shutil.copy(args.registry, os.getcwd())
-        except shutil.SameFileError:
-            pass
-
-    # This tries to read the state and if not, calls init,
-    # loops back, and reads the state
-    while True:
-        try:
-            allcomps = MepoState.read_state()
-        except StateDoesNotExistError:
-            mepo_init_run(args)
-            continue
-        break
-
-    max_namelen = len(max([comp.name for comp in allcomps], key=len))
+def clone_components(allcomps, partial):
+    max_namelen = max([len(comp.name) for comp in allcomps])
     for comp in allcomps:
-        if not comp.fixture:
-            git = GitRepository(comp.remote, comp.local)
-            version = comp.version.name
-            version = version.replace("origin/", "")
-            recurse = comp.recurse_submodules
-
-            # According to Git, treeless clones do not interact well with
-            # submodules. So we need to see if any comp has the recurse
-            # option set to True. If so, we need to clone that comp "normally"
-
-            _partial = None if partial == "treeless" and recurse else partial
-
-            # We need the type to handle hashes in components.yaml
-            _type = comp.version.type
-            git.clone(version, recurse, _type, comp.name, _partial)
-            if comp.sparse:
-                git.sparsify(comp.sparse)
-            print_clone_info(comp, max_namelen)
-
-    if args.allrepos:
-        for comp in allcomps:
-            if not comp.fixture:
-                git = GitRepository(comp.remote, comp.local)
-                print(
-                    "Checking out %s in %s"
-                    % (
-                        colors.YELLOW + args.branch + colors.RESET,
-                        colors.RESET + comp.name + colors.RESET,
-                    )
-                )
-                git.checkout(args.branch, detach=True)
+        if comp.fixture:
+            continue  # not cloning fixture
+        git = GitRepository(comp.remote, comp.local)
+        version = comp.version.name
+        recurse_submodules = comp.recurse_submodules
+        # According to Git, treeless clones do not interact well with
+        # submodules. So if any comp has the recurse option set to True,
+        # we do a non-partial clone
+        partial = None if partial == "treeless" and recurse_submodules else partial
+        git.clone(version, recurse_submodules, partial)
+        if comp.sparse:
+            git.sparsify(comp.sparse)
+        print_clone_info(comp.name, comp.version, max_namelen)
 
 
-def print_clone_info(comp, name_width):
-    ver_name_type = "({}) {}".format(comp.version.type, comp.version.name)
-    print("{:<{width}} | {:<s}".format(comp.name, ver_name_type, width=name_width))
+def checkout_branch_in_all_repos(allcomps, branch):
+    for comp in allcomps:
+        git = GitRepository(comp.remote, comp.local)
+        print(f"Checking out {colors.YELLOW + branch + colors.RESET} in {comp.name}")
+        try:
+            git.checkout(branch, detach=True)
+        except Exception as error:
+            print(error)
 
 
-def local_clone(url, branch=None, directory=None, partial=None):
-    cmd1 = "git clone "
+def allcomps_from_registry(dir_style):
+    allcomps = []
+    assert os.path.isfile(REGISTRY)
+    for name, details in Registry(REGISTRY).read_file().items():
+        comp = MepoComponent().registry_to_component(name, details, dir_style)
+        allcomps.append(comp)
+    return allcomps
 
-    if partial == "blobless":
-        cmd1 += "--filter=blob:none "
-    elif partial == "treeless":
-        cmd1 += "--filter=tree:0 "
-    else:
-        partial = None
 
-    if branch:
-        cmd1 += "--branch {} ".format(branch)
-    cmd1 += "--quiet {}".format(url)
-    if directory:
-        cmd1 += ' "{}"'.format(directory)
-    shellcmd.run(shlex.split(cmd1))
-    if branch:
-        cmd2 = f"git -C {directory} checkout --detach {branch}"
-        shellcmd.run(shlex.split(cmd2))
+def validate_args(args):
+    if args.allrepos and args.branch is None:
+        raise RuntimeError("The allrepos option must be used with a branch/tag")
+
+
+def handle_partial(partial):
+    """
+    The "partial" argument to clone can be set either via command line or
+    via .mepoconfig. Non-default value set via command line takes precedence.
+    The default value of "partial" is None, and possible choices are None/blobless/treeless
+    """
+    ALLOWED_NON_DEFAULT = ["blobless", "treeless"]
+    if partial is None:  # default value from command line
+        if mepoconfig.has_option("clone", "partial"):
+            partial = mepoconfig.get("clone", "partial")
+            if partial not in ALLOWED_NON_DEFAULT:
+                raise ValueError(f"Invalid partial type [{partial}] in .mepoconfig")
+            print(f"Found partial clone type [{partial}] in .mepoconfig")
+    return partial
+
+
+def clone_fixture(url, branch, directory, partial):
+    if directory is None:
+        p = urlparse(url)
+        last_url_node = p.path.rsplit("/")[-1]
+        directory = pathlib.Path(last_url_node).stem
+    git = GitRepository(url, directory)
+    git.clone(branch, partial)
+    return directory
+
+
+def print_clone_info(comp_name, comp_version, name_width):
+    ver_name_type = f"({comp_version.type}) {comp_version.name}"
+    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}")

@@ -9,7 +9,6 @@ from ..utilities import mepoconfig
 
 
 class MepoArgParser:
-
     __slots__ = ["parser", "subparsers"]
 
     def __init__(self):
@@ -22,7 +21,6 @@ class MepoArgParser:
         self.subparsers.dest = "mepo_cmd"
 
     def parse(self):
-        self.__init()
         self.__clone()
         self.__list()
         self.__status()
@@ -39,7 +37,6 @@ class MepoArgParser:
         self.__pull()
         self.__pull_all()
         self.__compare()
-        self.__reset()
         self.__whereis()
         self.__stage()
         self.__unstage()
@@ -50,41 +47,18 @@ class MepoArgParser:
         self.__update_state()
         return self.parser.parse_args()
 
-    def __init(self):
-        init = self.subparsers.add_parser(
-            "init",
-            description="Initialize mepo based on `config-file`",
-            aliases=mepoconfig.get_command_alias("init"),
-        )
-        init.add_argument(
-            "--registry",
-            nargs="?",
-            default="components.yaml",
-            help="default: %(default)s",
-        )
-        init.add_argument(
-            "--style",
-            metavar="style-type",
-            nargs="?",
-            default=None,
-            choices=["naked", "prefix", "postfix"],
-            help="Style of directory file, default: prefix, allowed options: %(choices)s",
-        )
-
     def __clone(self):
         clone = self.subparsers.add_parser(
             "clone",
             description="Clone repositories.",
             aliases=mepoconfig.get_command_alias("clone"),
         )
-        clone.add_argument(
-            "repo_url", metavar="URL", nargs="?", default=None, help="URL to clone"
-        )
+        clone.add_argument("url", metavar="URL", default=None, help="URL to clone")
         clone.add_argument(
             "directory",
             nargs="?",
             default=None,
-            help="Directory to clone into (Only allowed with URL!)",
+            help="Directory to clone into",
         )
         clone.add_argument(
             "--branch",
@@ -92,14 +66,7 @@ class MepoArgParser:
             metavar="name",
             nargs="?",
             default=None,
-            help="Branch/tag of URL to initially clone (Only allowed with URL!)",
-        )
-        clone.add_argument(
-            "--registry",
-            metavar="registry",
-            nargs="?",
-            default=None,
-            help="Registry (default: components.yaml)",
+            help="Branch/tag of URL to clone",
         )
         clone.add_argument(
             "--style",
@@ -107,20 +74,35 @@ class MepoArgParser:
             nargs="?",
             default=None,
             choices=["naked", "prefix", "postfix"],
-            help="Style of directory file, default: prefix, allowed options: %(choices)s (ignored if init already called)",
+            help="Style of directory file, default: prefix, allowed options: %(choices)s",
         )
         clone.add_argument(
             "--allrepos",
             action="store_true",
-            help="Must be passed with -b/--branch. When set, it not only checkouts out the branch/tag for the fixture, but for all the subrepositories as well.",
+            help=(
+                """
+                Must be passed with -b/--branch. When set, it not only checkouts
+                out the branch/tag for the fixture, but for all the subrepositories as well.
+                """
+            ),
         )
         clone.add_argument(
             "--partial",
             metavar="partial-type",
             nargs="?",
             default=None,
-            choices=["off", "blobless", "treeless"],
-            help='Style of partial clone, default: None, allowed options: %(choices)s. Off means a "normal" full git clone, blobless means cloning with "--filter=blob:none" and treeless means cloning with "--filter=tree:0". NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.',
+            choices=[None, "blobless", "treeless"],
+            help=(
+                """
+                Style of partial clone, default: None.
+                Allowed options: %(choices)s.
+                None: normal full git clone,
+                blobless: cloning with "--filter=blob:none",
+                treeless: cloning with "--filter=tree:0".
+                NOTE: We do *not* recommend using "treeless" as it is very
+                aggressive and will cause problems with many git commands.
+                """
+            ),
         )
 
     def __list(self):
@@ -361,20 +343,6 @@ class MepoArgParser:
             action="store_true",
             help="Tells command to ignore terminal size and wrap",
         )
-
-    def __reset(self):
-        reset = self.subparsers.add_parser(
-            "reset",
-            description="Reset the current mepo clone to the original state. "
-            "This will delete all subrepos and does not check for uncommitted changes! "
-            "Must be run in the root of the mepo clone.",
-            aliases=mepoconfig.get_command_alias("reset"),
-        )
-        reset.add_argument("-f", "--force", action="store_true", help="Force action.")
-        reset.add_argument(
-            "--reclone", action="store_true", help="Reclone repos after reset."
-        )
-        reset.add_argument("-n", "--dry-run", action="store_true", help="Dry-run only")
 
     def __whereis(self):
         whereis = self.subparsers.add_parser(

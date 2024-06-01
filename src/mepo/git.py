@@ -8,7 +8,6 @@ from urllib.parse import urljoin
 from .state import MepoState
 from .utilities import shellcmd
 from .utilities import colors
-from .utilities.exceptions import RepoAlreadyClonedError
 
 
 def get_editor():
@@ -30,15 +29,16 @@ class GitRepository:
 
     def __init__(self, remote_url, local_path):
         self.__local = local_path
-
         if remote_url.startswith(".."):
             rel_remote = os.path.basename(remote_url)
             fixture_url = get_current_remote_url()
             self.__remote = urljoin(fixture_url, rel_remote)
         else:
             self.__remote = remote_url
-
-        root_dir = MepoState.get_root_dir()
+        try:
+            root_dir = MepoState.get_root_dir()
+        except FileNotFoundError:
+            root_dir = os.getcwd()
         full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
         self.__full_local_path = full_local_path
         self.__git = 'git -C "{}"'.format(self.__full_local_path)
@@ -52,36 +52,27 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, type, comp_name, partial=None):
-        cmd1 = "git clone "
+    def clone(self, version, recurse, partial=None):
+        """
+        Execute "git clone" command
+        version is tag or branch
+        """
+        PARTIAL = {"blobless": " --filter=blob:none", "treeless": " --filter=tree:0"}
 
-        if partial == "blobless":
-            cmd1 += "--filter=blob:none "
-        elif partial == "treeless":
-            cmd1 += "--filter=tree:0 "
-
+        cmd1 = "git clone"
+        if partial:
+            cmd1 += PARTIAL[partial]
         if recurse:
-            cmd1 += "--recurse-submodules "
+            cmd1 += " --recurse-submodules"
+        cmd1 += f" --quiet {self.__remote} {self.__full_local_path}"
+        shellcmd.run(shlex.split(cmd1))
 
-        cmd1 += "--quiet {} {}".format(self.__remote, self.__full_local_path)
-        try:
-            shellcmd.run(shlex.split(cmd1))
-        except sp.CalledProcessError:
-            raise RepoAlreadyClonedError(f"Error! Repo [{comp_name}] already cloned")
-
-        cmd2 = "git -C {} checkout {}".format(self.__full_local_path, version)
-        shellcmd.run(shlex.split(cmd2))
-        cmd3 = "git -C {} checkout --detach".format(self.__full_local_path)
-        shellcmd.run(shlex.split(cmd3))
-
-        # NOTE: The above looks odd because of a quirk of git. You can't do
-        #       git checkout --detach branch unless the branch is local. But
-        #       since this is at clone time, all branches are remote. Thus,
-        #       we have to do a git checkout branch and then detach.
+        if version is not None:
+            self.checkout(version, detach=True)
 
     def checkout(self, version, detach=False):
-        cmd = self.__git + " checkout "
-        cmd += "--quiet {}".format(version)
+        cmd = self.__git + " checkout"
+        cmd += f" --quiet {version}"
         shellcmd.run(shlex.split(cmd))
         if detach:
             cmd2 = self.__git + " checkout --detach"
@@ -257,7 +248,6 @@ class GitRepository:
 
             verbose_output_list = []
             for item in output_list:
-
                 index_field = item.split()[0]
                 if index_field == "2":
                     new_file_name = colors.YELLOW + item.split()[-2] + colors.RESET
@@ -511,21 +501,14 @@ class GitRepository:
         else:
             # If we are a branch...
             if commit_type == "b":
-                msgtype = "Branch"
                 reftype = "heads"
             elif commit_type == "t":
-                msgtype = "Tag"
                 reftype = "tags"
             else:
                 raise RuntimeError("Should not get here")
-            cmd = self.__git + " ls-remote {} refs/{}/{}".format(
-                self.__remote, reftype, branch
-            )
+            cmd = self.__git + f" ls-remote {self.__remote} refs/{reftype}/{branch}"
             output = shellcmd.run(shlex.split(cmd), stdout=True).strip()
             if not output:
-                # msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
-                # msg += " Have you run 'mepo push'?"
-                # raise RuntimeError(msg)
                 cmd = self.__git + " rev-parse HEAD"
             output = shellcmd.run(shlex.split(cmd), output=True).strip()
             return output.split()[0]

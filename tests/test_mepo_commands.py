@@ -2,7 +2,6 @@ import os
 
 import io
 import shutil
-import shlex
 import unittest
 import importlib
 import contextlib
@@ -26,7 +25,7 @@ import mepo.command.pull as mepo_pull
 import mepo.command.push as mepo_push
 import mepo.command.diff as mepo_diff
 import mepo.command.whereis as mepo_whereis
-import mepo.command.reset as mepo_reset
+# import mepo.command.reset as mepo_reset
 
 # Import commands with dash in the name
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
@@ -37,6 +36,9 @@ TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class TestMepoCommands(unittest.TestCase):
+    """
+    Testing mepo commands
+    """
 
     @classmethod
     def __get_saved_output(cls, output_file):
@@ -45,49 +47,34 @@ class TestMepoCommands(unittest.TestCase):
         return saved_output
 
     @classmethod
-    def __checkout_fixture(cls):
-        remote = f"https://github.com/GEOS-ESM/{cls.fixture}.git"
-        git_clone = "git clone "
-        if cls.tag:
-            git_clone += f"-b {cls.tag}"
-        cmd = f"{git_clone} {remote} {cls.fixture_dir}"
-        sp.run(shlex.split(cmd))
-
-    @classmethod
-    def __copy_config_file(cls):
-        src = os.path.join(cls.input_dir, "components.yaml")
-        dst = os.path.join(cls.fixture_dir)
-        shutil.copy(src, dst)
-
-    @classmethod
     def __mepo_clone(cls):
+        fixture = "GEOSfvdycore"
+        tag = "v2.13.0"
         # mepo clone
         args = SimpleNamespace(
             style="prefix",
-            registry=None,
-            repo_url=None,
+            url=f"https://github.com/GEOS-ESM/{fixture}.git",
             allrepos=None,
-            branch=None,
+            branch=tag,
             directory=None,
             partial="blobless",
         )
         mepo_clone.run(args)
         print(flush=True)
+        return(os.path.join(cls.tmpdir, fixture))
 
     @classmethod
     def setUpClass(cls):
-        cls.input_dir = os.path.join(TEST_DIR, "input")
         cls.output_dir = os.path.join(TEST_DIR, "output")
         cls.output_clone_status = cls.__get_saved_output("output_clone_status.txt")
         cls.fixture = "GEOSfvdycore"
         cls.tag = "v2.13.0"
         cls.tmpdir = os.path.join(TEST_DIR, "tmp")
-        cls.fixture_dir = os.path.join(cls.tmpdir, cls.fixture)
-        if os.path.isdir(cls.fixture_dir):
-            shutil.rmtree(cls.fixture_dir)
-        cls.__checkout_fixture()
-        os.chdir(cls.fixture_dir)
-        cls.__mepo_clone()
+        if os.path.isdir(cls.tmpdir):
+            shutil.rmtree(cls.tmpdir)
+        os.mkdir(cls.tmpdir)
+        os.chdir(cls.tmpdir)
+        cls.fixture_dir = cls.__mepo_clone()
 
     def setUp(self):
         pass
@@ -317,21 +304,6 @@ class TestMepoCommands(unittest.TestCase):
             mepo_whereis.run(args)
         saved_output = self.__class__.__get_saved_output("output_whereis.txt")
         self.assertEqual(output.getvalue(), saved_output)
-
-    def test_reset(self):
-        os.chdir(self.__class__.fixture_dir)
-        args = SimpleNamespace(
-            force=True,
-            reclone=False,
-            dry_run=False,
-        )
-        with contextlib.redirect_stdout(io.StringIO()) as output:
-            mepo_reset.run(args)
-        saved_output = self.__class__.__get_saved_output("output_reset.txt")
-        self.assertEqual(output.getvalue(), saved_output)
-        # Clean up - reclone (suppress output)
-        with contextlib.redirect_stdout(io.StringIO()) as output:
-            self.__class__.__mepo_clone()
 
     def tearDown(self):
         pass
