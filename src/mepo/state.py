@@ -14,6 +14,9 @@ from .utilities.chdir import chdir as mepo_chdir
 
 
 class MepoState(object):
+    """
+    Class encapsulating mepo state operations
+    """
 
     __state_dir_name = ".mepo"
     __state_fileptr_name = "state.json"
@@ -35,7 +38,7 @@ class MepoState(object):
             state_dir = os.path.join(mydir, cls.__state_dir_name)
             if os.path.exists(state_dir):
                 return state_dir
-        raise OSError("mepo state dir [.mepo] does not exist")
+        raise FileNotFoundError("mepo state dir [.mepo] does not exist")
 
     @classmethod
     def get_root_dir(cls):

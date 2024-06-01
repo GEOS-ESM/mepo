@@ -11,6 +11,9 @@ original_final_node_list = []
 
 
 class MepoComponent(object):
+    """
+    Class defining a mepo component
+    """
 
     __slots__ = [
         "name",
