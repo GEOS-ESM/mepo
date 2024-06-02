@@ -1,4 +1,7 @@
 class MepoConfigArgParser:
+    """
+    Define subcommands for `mepo config`
+    """
 
     def __init__(self, config):
         self.config = config.add_subparsers()

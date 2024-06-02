@@ -1,4 +1,7 @@
 class MepoBranchArgParser:
+    """
+    Define subcommands for `mepo branch`
+    """
 
     def __init__(self, branch):
         self.branch_subparsers = branch.add_subparsers()

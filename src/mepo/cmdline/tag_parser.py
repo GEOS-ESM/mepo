@@ -1,4 +1,7 @@
 class MepoTagArgParser:
+    """
+    Define subcommands for `mepo tag`
+    """
 
     def __init__(self, tag):
         self.tag = tag.add_subparsers()

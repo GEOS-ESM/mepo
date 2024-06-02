@@ -17,7 +17,6 @@ def valid_components(specified_comp_names, allcomps, ignore_case=False):
 
     # Loop over all the components we want to verify...
     for component_name in specified_comp_names:
-
         # Create a name to compare with based on ignore_case
         component_to_find = component_name.casefold() if ignore_case else component_name
 

@@ -16,6 +16,9 @@ class AddBlankLinesDumper(yaml.SafeDumper):
 
 
 class Registry(object):
+    """
+    Read/write mepo registry
+    """
 
     __slots__ = ["__filename", "__filetype"]
 

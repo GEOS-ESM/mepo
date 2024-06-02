@@ -71,14 +71,12 @@ def sanitize_version_string(orig, curr, git):
 
     # Now if a type or hash...
     if orig_type_is_tag_or_hash and curr_type_is_tag_or_hash:
-
         # Use rev-list to get the hash of the tag...
         orig_rev = git.rev_list(orig_ver)
         curr_rev = git.rev_list(curr_ver)
 
         # If they are identical...
         if orig_rev == curr_rev:
-
             # Replace the curr version with the original to make
             # mepo happy...
             curr_list[curr_list.index(curr_ver)] = orig_ver

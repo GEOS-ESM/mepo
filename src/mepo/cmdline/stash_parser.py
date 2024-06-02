@@ -1,4 +1,7 @@
 class MepoStashArgParser:
+    """
+    Define subcommands for `mepo stash`
+    """
 
     def __init__(self, stash):
         self.stash = stash.add_subparsers()

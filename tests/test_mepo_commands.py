@@ -61,7 +61,7 @@ class TestMepoCommands(unittest.TestCase):
         )
         mepo_clone.run(args)
         print(flush=True)
-        return(os.path.join(cls.tmpdir, fixture))
+        return os.path.join(cls.tmpdir, fixture)
 
     @classmethod
     def setUpClass(cls):

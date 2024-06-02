@@ -40,7 +40,6 @@ def run(args):
 
 
 def any_differing_repos(allcomps):
-
     for comp in allcomps:
         git = GitRepository(comp.remote, comp.local)
         curr_ver = version_to_string(git.get_version(), git)

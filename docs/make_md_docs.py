@@ -78,7 +78,6 @@ def create_markdown_from_usage(command, mdFile):
 
 
 if __name__ == "__main__":
-
     doc_file = "Mepo-Commands.md"
     mdFile = MdUtils(file_name=doc_file)
 
