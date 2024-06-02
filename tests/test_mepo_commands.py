@@ -25,7 +25,6 @@ import mepo.command.pull as mepo_pull
 import mepo.command.push as mepo_push
 import mepo.command.diff as mepo_diff
 import mepo.command.whereis as mepo_whereis
-# import mepo.command.reset as mepo_reset
 
 # Import commands with dash in the name
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
