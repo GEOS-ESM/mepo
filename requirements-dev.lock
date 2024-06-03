@@ -32,7 +32,6 @@ mccabe==0.7.0
     # via flake8
     # via pylint
 mdutils==1.6.0
-    # via mepo
 mypy-extensions==1.0.0
     # via black
 nodeenv==1.8.0
