@@ -5,7 +5,6 @@ description = "A tool for managing (m)ultiple r(epo)s"
 authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
     "pyyaml>=6.0.1",
-    "mdutils>=1.6.0",
     "colorama>=0.4.6",
 ]
 readme = "README.md"
@@ -23,6 +22,7 @@ dev-dependencies = [
     "pylint>=3.2.0",
     "flake8>=7.0.0",
     "pre-commit>=3.7.1",
+    "mdutils>=1.6.0",
 ]
 
 [build-system]
