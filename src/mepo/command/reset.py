@@ -32,7 +32,7 @@ def run(args):
     # will ask them to confirm that they want to reset the project
     if not args.force and not args.dry_run:
         print(
-            f"Are you sure you want to reset the project? If so, type 'yes' and press enter.",
+            "Are you sure you want to reset the project? If so, type 'yes' and press enter.",
             end=" ",
         )
         answer = input()
@@ -58,12 +58,12 @@ def run(args):
                 print(f"dry-run only. Not removing {relpath}")
 
     # Next, we need to remove the .mepo directory
-    print(f"Removing mepo state", end="...")
+    print("Removing mepo state", end="...")
     if not args.dry_run:
         shutil.rmtree(MepoState.get_dir())
         print("done.")
     else:
-        print(f"dry-run only. Not removing mepo state")
+        print("dry-run only. Not removing mepo state")
 
     # If they pass in the --reclone flag, then we will re-clone all the subrepos
     if args.reclone:
@@ -88,7 +88,7 @@ def run(args):
             mepo_clone_run(clone_args)
             print("Recloning done.")
         else:
-            print(f"Dry-run only. Not re-cloning all subrepos")
+            print("Dry-run only. Not re-cloning all subrepos")
 
 
 def _get_relative_path(local_path):

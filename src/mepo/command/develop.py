@@ -21,4 +21,4 @@ def run(args):
                 )
             )
         git.checkout(comp.develop)
-        output = git.pull()
+        _ = git.pull()

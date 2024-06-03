@@ -1,10 +1,7 @@
 import os
-from shutil import get_terminal_size
 
 from ..state import MepoState
-from ..component import MepoVersion
 
-from ..utilities import colors
 from ..utilities import verify
 from ..utilities.version import version_to_string
 from ..utilities.version import sanitize_version_string
