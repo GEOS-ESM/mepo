@@ -131,8 +131,14 @@ class MepoState(object):
         if cls.state_exists():
             state_dir = cls.get_dir()
             pattern = os.path.join(cls.get_dir(), "state.*.json")
-            states = [os.path.basename(x) for x in glob.glob(os.path.join(pattern))]
+            states = [os.path.basename(x) for x in glob.glob(pattern)]
             new_state_id = max([int(x.split(".")[1]) for x in states]) + 1
+            state_filename = "state." + str(new_state_id) + ".json"
+        elif cls.state_exists(old_style=True):
+            state_dir = cls.get_dir()
+            pattern = os.path.join(cls.get_dir(), "state.*.pkl")
+            states = [os.path.basename(x) for x in glob.glob(pattern)]
+            new_state_id = max([int(x.split(".")[1]) for x in states])
             state_filename = "state." + str(new_state_id) + ".json"
         else:
             state_dir = os.path.join(os.getcwd(), cls.__state_dir_name)

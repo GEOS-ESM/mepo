@@ -53,6 +53,8 @@ pylint==3.2.0
 pyyaml==6.0.1
     # via mepo
     # via pre-commit
+setuptools==70.0.0
+    # via nodeenv
 tomli==2.0.1
     # via black
     # via pylint
@@ -64,5 +66,3 @@ typing-extensions==4.11.0
     # via pylint
 virtualenv==20.26.2
     # via pre-commit
-setuptools==70.0.0
-    # via nodeenv
