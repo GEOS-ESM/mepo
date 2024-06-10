@@ -121,6 +121,8 @@ class MepoState(object):
             cls.__mepo1_patch()
             with open(cls.get_file(old_style=True), "rb") as fin:
                 allcomps = pickle.load(fin)
+            for comp in allcomps:
+                comp.local = os.path.join(cls.get_root_dir(), comp.local)
         else:
             raise StateDoesNotExistError("Error! mepo state does not exist")
         return allcomps
