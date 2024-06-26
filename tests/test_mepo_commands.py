@@ -99,6 +99,7 @@ class TestMepoCommands(unittest.TestCase):
             ignore_permissions=False,
             nocolor=True,
             hashes=False,
+            serial=False,
         )
         with contextlib.redirect_stdout(io.StringIO()) as output:
             mepo_status.run(args)
@@ -110,8 +111,9 @@ class TestMepoCommands(unittest.TestCase):
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
+        args = SimpleNamespace(serial=False)
         with contextlib.redirect_stdout(io.StringIO()) as _:
-            mepo_restore_state.run(SimpleNamespace())
+            mepo_restore_state.run(args)
         self.__mepo_status(self.__class__.output_clone_status)
 
     def test_list(self):

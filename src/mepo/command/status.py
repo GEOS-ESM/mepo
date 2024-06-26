@@ -18,12 +18,19 @@ def run(args):
     """Entry point"""
     print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
-    with mp.Pool() as pool:
-        result = pool.starmap(
-            check_component_status,
-            [(comp, args.ignore_permissions) for comp in allcomps],
-        )
-    print_status(allcomps, result, args.nocolor, args.hashes)
+    # max_width = len(max([comp.name for comp in allcomps], key=len))
+    max_width = max([len(comp.name) for comp in allcomps])
+    if args.serial:
+        for comp in allcomps:
+            result = check_component_status(comp, args.ignore_permissions)
+            print_component_status(comp, result, max_width, args.nocolor, args.hashes)
+    else:
+        with mp.Pool() as pool:
+            result = pool.starmap(
+                check_component_status,
+                [(comp, args.ignore_permissions) for comp in allcomps],
+            )
+        print_status(allcomps, result, max_width, args.nocolor, args.hashes)
 
 
 def check_component_status(comp, ignore_permissions):
@@ -54,32 +61,33 @@ def check_component_status(comp, ignore_permissions):
     )
 
 
-def print_status(allcomps, result, nocolor=False, hashes=False):
-    orig_width = len(max([comp.name for comp in allcomps], key=len))
+def print_status(allcomps, result, max_width, nocolor=False, hashes=False):
     for index, comp in enumerate(allcomps):
         time.sleep(0.025)
-        current_version, internal_state_branch_name, output = result[index]
-        if hashes:
-            comp_path = _get_relative_path(comp.local)
-            comp_hash = shellcmd.run(
-                cmd=shlex.split(f"git -C {comp_path} rev-parse HEAD"), output=True
-            ).replace("\n", "")
-            current_version = f"{current_version} ({comp_hash})"
-        # This should handle tag weirdness...
-        if current_version.split()[1] == comp.version.name:
-            component_name = comp.name
-            width = orig_width
-        # Check to see if the current tag/branch is the same as the
-        # original... if the above check didn't succeed, we are
-        # different and we colorize if asked for
-        elif (internal_state_branch_name not in comp.version.name) and not nocolor:
-            component_name = colors.RED + comp.name + colors.RESET
-            width = orig_width + len(colors.RED) + len(colors.RESET)
-        else:
-            component_name = comp.name
-            width = orig_width
-        FMT0 = "{:<%s.%ss} | {:<s}" % (width, width)
-        print(FMT0.format(component_name, current_version))
-        if output:
-            for line in output.split("\n"):
-                print("   |", line.rstrip())
+        print_component_status(comp, result[index], max_width, nocolor, hashes)
+
+
+def print_component_status(comp, result, width, nocolor=False, hashes=False):
+    current_version, internal_state_branch_name, output = result
+    if hashes:
+        comp_path = _get_relative_path(comp.local)
+        comp_hash = shellcmd.run(
+            cmd=shlex.split(f"git -C {comp_path} rev-parse HEAD"), output=True
+        ).replace("\n", "")
+        current_version = f"{current_version} ({comp_hash})"
+    # This should handle tag weirdness...
+    if current_version.split()[1] == comp.version.name:
+        component_name = comp.name
+    # Check to see if the current tag/branch is the same as the
+    # original... if the above check didn't succeed, we are
+    # different and we colorize if asked for
+    elif (internal_state_branch_name not in comp.version.name) and not nocolor:
+        component_name = colors.RED + comp.name + colors.RESET
+        width += len(colors.RED) + len(colors.RESET)
+    else:
+        component_name = comp.name
+    FMT0 = "{:<%s.%ss} | {:<s}" % (width, width)
+    print(FMT0.format(component_name, current_version))
+    if output:
+        for line in output.split("\n"):
+            print("   |", line.rstrip())

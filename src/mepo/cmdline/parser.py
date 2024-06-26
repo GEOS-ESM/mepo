@@ -150,12 +150,18 @@ class MepoArgParser:
         status.add_argument(
             "--hashes", action="store_true", help="Print the exact hash of the HEAD."
         )
+        status.add_argument(
+            "--serial", action="store_true", help="Run the serial version."
+        )
 
     def __restore_state(self):
-        _ = self.subparsers.add_parser(
+        restore_state = self.subparsers.add_parser(
             "restore-state",
             description="Restores all components to the last saved state.",
             aliases=mepoconfig.get_command_alias("restore-state"),
+        )
+        restore_state.add_argument(
+            "--serial", action="store_true", help="Run the serial version."
         )
 
     def __diff(self):
