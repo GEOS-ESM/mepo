@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   -- More code reorganization
 
 - Helper script `mepo`, used for development, moved to the `bin` directory.
+- Added README for `docs/make_md_docs.py` script
 
 - State: pickle format (mepo1 style) to json format (mepo2 style)
   -- If mepo1 style state is detected, print warning and suggest running `mepo update-state`
