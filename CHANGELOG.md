@@ -13,7 +13,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-### Removed
+## [2.0.0] - 2024-08-09
+
+### Fixed
+
+### Added
+
+- Added `pyproject.toml` to aid with `pip` installation.
+
+- Engineering
+  -- Formatting with Black
+  -- Linting with Pylint
+  -- Dependency management and packaging with Rye
+
+- Added tests to cover more `mepo` commands
+
+- Add new command `update-state` to permanently convert mepo1 style state to mepo2
+
+### Changed
+
+- Converted `mepo` to a Python project via the following renaming
+  -- Added `src/mepo/__init__.py`
+  -- Renamed `mepo.d` -> `src/mepo`
+  -- Renamed `mepo.d/utest` -> `tests`
+  -- Renamed `doc` --> `docs`
+  -- A `mepo` config file is now called a `mepo` registry
+  -- More code reorganization
+
+- Helper script `mepo`, used for development, moved to the `bin` directory.
+- Added README for `docs/make_md_docs.py` script
+
+- State: pickle format (mepo1 style) to json format (mepo2 style)
+  -- If mepo1 style state is detected, print warning and suggest running `mepo update-state`
 
 ## [1.52.0] - 2024-01-10
 

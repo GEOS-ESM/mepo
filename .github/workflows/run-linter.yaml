@@ -1,0 +1,23 @@
+name: Run linter
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint code
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.9
+        cache: 'pip'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements-dev.lock
+      timeout-minutes: 5
+    - name: Run pylint
+      run: pylint --exit-zero src/mepo
+      timeout-minutes: 5
