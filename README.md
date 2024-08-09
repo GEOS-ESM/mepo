@@ -2,6 +2,10 @@
 
 `mepo` is a tool, written in Python3 (3.9.0+), to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
 
+## Installation
+
+`pip install mepo`
+
 ## Commands
 
 For more about the possible `mepo` commands, please see the [Mepo Commands](https://github.com/GEOS-ESM/mepo/wiki/Mepo-Commands) wiki page.
