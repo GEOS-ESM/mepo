@@ -8,9 +8,9 @@
 #   with-sources: false
 
 -e file:.
-astroid==3.2.1
+astroid==3.2.4
     # via pylint
-black==24.4.2
+black==24.8.0
 cfgv==3.4.0
     # via pre-commit
 click==8.1.7
@@ -21,10 +21,10 @@ dill==0.3.8
     # via pylint
 distlib==0.3.8
     # via virtualenv
-filelock==3.14.0
+filelock==3.15.4
     # via virtualenv
-flake8==7.0.0
-identify==2.5.36
+flake8==7.1.1
+identify==2.6.0
     # via pre-commit
 isort==5.13.2
     # via pylint
@@ -34,9 +34,9 @@ mccabe==0.7.0
 mdutils==1.6.0
 mypy-extensions==1.0.0
     # via black
-nodeenv==1.8.0
+nodeenv==1.9.1
     # via pre-commit
-packaging==24.0
+packaging==24.1
     # via black
 pathspec==0.12.1
     # via black
@@ -44,25 +44,16 @@ platformdirs==4.2.2
     # via black
     # via pylint
     # via virtualenv
-pre-commit==3.7.1
-pycodestyle==2.11.1
+pre-commit==3.8.0
+pycodestyle==2.12.1
     # via flake8
 pyflakes==3.2.0
     # via flake8
-pylint==3.2.0
-pyyaml==6.0.1
+pylint==3.2.6
+pyyaml==6.0.2
     # via mepo
     # via pre-commit
-setuptools==70.0.0
-    # via nodeenv
-tomli==2.0.1
-    # via black
+tomlkit==0.13.0
     # via pylint
-tomlkit==0.12.5
-    # via pylint
-typing-extensions==4.11.0
-    # via astroid
-    # via black
-    # via pylint
-virtualenv==20.26.2
+virtualenv==20.26.3
     # via pre-commit
