@@ -4,7 +4,28 @@
 
 ## Installation
 
+### Using pip
+
+To install `mepo` using `pip`, run the following command:
+
+```
 `pip install mepo`
+```
+
+### Homebrew
+
+Using Homebrew, you can install `mepo` by installing from the gmao-si-team tap:
+
+```
+brew install gmao-si-team/packages/mepo
+```
+
+This is equivalent to running:
+
+```
+brew tap gmao-si-team/packages
+brew install mepo
+```
 
 ## Commands
 
