@@ -27,6 +27,20 @@ brew tap gmao-si-team/packages
 brew install mepo
 ```
 
+## Transitioning from `mepo` v1.x to v2.x
+
+If you try to use mepo v2.x within a mepo v1.x repository, you will get an warning message:
+```
+Detected mepo1 style state
+Run <mepo update-state> to permanently convert to mepo2 style
+```
+
+To update your repository to work with mepo v2.x, you can run the following command:
+```
+mepo update-state
+```
+and it will convert the repository from mepo v1 pickle-state to mepo v2 json-state.
+
 ## Commands
 
 For more about the possible `mepo` commands, please see the [Mepo Commands](https://github.com/GEOS-ESM/mepo/wiki/Mepo-Commands) wiki page.
