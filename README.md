@@ -27,6 +27,14 @@ brew tap gmao-si-team/packages
 brew install mepo
 ```
 
+### Spack
+
+Mepo is also available via spack as a package. To install mepo using spack, run the following command:
+
+```
+spack install mepo
+```
+
 ## Transitioning from `mepo` v1.x to v2.x
 
 If you try to use mepo v2.x within a mepo v1.x repository, you will get an warning message:
