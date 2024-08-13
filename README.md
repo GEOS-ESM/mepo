@@ -3,6 +3,31 @@
 `mepo` is a tool, written in Python3 (3.9.0+), to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
 
 
+## Installation
+
+### Using pip
+
+To install `mepo` using `pip`, run the following command:
+
+```
+`pip install mepo`
+```
+
+### Homebrew
+
+Using Homebrew, you can install `mepo` by installing from the gmao-si-team tap:
+
+```
+brew install gmao-si-team/packages/mepo
+```
+
+This is equivalent to running:
+
+```
+brew tap gmao-si-team/packages
+brew install mepo
+```
+
 ### Spack
 
 Mepo is also available via spack as a package. To install mepo using spack, run the following command:
@@ -10,6 +35,20 @@ Mepo is also available via spack as a package. To install mepo using spack, run 
 ```
 spack install mepo
 ```
+
+## Transitioning from `mepo` v1.x to v2.x
+
+If you try to use mepo v2.x within a mepo v1.x repository, you will get an warning message:
+```
+Detected mepo1 style state
+Run <mepo update-state> to permanently convert to mepo2 style
+```
+
+To update your repository to work with mepo v2.x, you can run the following command:
+```
+mepo update-state
+```
+and it will convert the repository from mepo v1 pickle-state to mepo v2 json-state.
 
 ## Commands
 

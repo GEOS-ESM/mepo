@@ -27,6 +27,7 @@ import mepo.command.push as mepo_push
 import mepo.command.diff as mepo_diff
 import mepo.command.whereis as mepo_whereis
 import mepo.command.reset as mepo_reset
+from mepo.cmdline.parser import get_version as get_mepo_version
 
 # Import commands with dash in the name
 mepo_restore_state = importlib.import_module("mepo.command.restore-state")
@@ -334,6 +335,9 @@ class TestMepoCommands(unittest.TestCase):
         # Clean up - reclone (suppress output)
         with contextlib.redirect_stdout(io.StringIO()) as output:
             self.__class__.__mepo_clone()
+
+    def test_mepo_version(self):
+        self.assertEqual(get_mepo_version(), "2.0.0")
 
     def tearDown(self):
         pass
