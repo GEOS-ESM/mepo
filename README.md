@@ -4,7 +4,42 @@
 
 ## Installation
 
+### Using pip
+
+To install `mepo` using `pip`, run the following command:
+
+```
 `pip install mepo`
+```
+
+### Homebrew
+
+Using Homebrew, you can install `mepo` by installing from the gmao-si-team tap:
+
+```
+brew install gmao-si-team/packages/mepo
+```
+
+This is equivalent to running:
+
+```
+brew tap gmao-si-team/packages
+brew install mepo
+```
+
+## Transitioning from `mepo` v1.x to v2.x
+
+If you try to use mepo v2.x within a mepo v1.x repository, you will get an warning message:
+```
+Detected mepo1 style state
+Run <mepo update-state> to permanently convert to mepo2 style
+```
+
+To update your repository to work with mepo v2.x, you can run the following command:
+```
+mepo update-state
+```
+and it will convert the repository from mepo v1 pickle-state to mepo v2 json-state.
 
 ## Commands
 

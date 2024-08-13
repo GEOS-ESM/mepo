@@ -1,6 +1,7 @@
 *~
 *.pyc
 *.egg-info
+*.lock
 dist
 venv
 
