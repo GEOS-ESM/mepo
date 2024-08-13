@@ -2,6 +2,7 @@
 
 `mepo` is a tool, written in Python3 (3.9.0+), to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
 
+
 ## Installation
 
 ### Using pip
@@ -25,6 +26,14 @@ This is equivalent to running:
 ```
 brew tap gmao-si-team/packages
 brew install mepo
+```
+
+### Spack
+
+Mepo is also available via spack as a package. To install mepo using spack, run the following command:
+
+```
+spack install mepo
 ```
 
 ## Transitioning from `mepo` v1.x to v2.x
