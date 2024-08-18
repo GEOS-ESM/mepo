@@ -1,7 +1,7 @@
 import os
 import shlex
 
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urljoin
 
 from .utilities import shellcmd
 from .utilities.version import MepoVersion
@@ -55,33 +55,40 @@ class MepoComponent(object):
             f"  ignore_submodules: {_ignore_submodules}"
         )
 
-    def __set_original_version(self, comp_details):
+    def __set_original_version(self, comp_details, fixture_url):
         if self.fixture:
-            cmd_if_branch = "git symbolic-ref HEAD"
-            # Have to use 'if not' since 0 is a good status
-            if not shellcmd.run(cmd_if_branch.split(), status=True):
-                output = shellcmd.run(cmd_if_branch.split(), output=True).rstrip()
-                ver_name = output.replace("refs/heads/", "")
-                ver_type = "b"
-                is_detached = False
+            if fixture_url is not None:
+                ver_name = "UNKNOWN"
+                ver_type = "NOT APPLICABLE"
+                is_detached = "NOT APPLICABLE"
             else:
-                # On some CI systems, git is handled oddly. As such, sometimes
-                # tags aren't found due to shallow clones
-                cmd_for_tag = "git describe --tags"
+                cmd_if_branch = "git symbolic-ref HEAD"
                 # Have to use 'if not' since 0 is a good status
-                if not shellcmd.run(cmd_for_tag.split(), status=True):
-                    ver_name = shellcmd.run(cmd_for_tag.split(), output=True).rstrip()
-                    ver_type = "t"
-                    is_detached = True
+                if not shellcmd.run(cmd_if_branch.split(), status=True):
+                    output = shellcmd.run(cmd_if_branch.split(), output=True).rstrip()
+                    ver_name = output.replace("refs/heads/", "")
+                    ver_type = "b"
+                    is_detached = False
                 else:
-                    # Per internet, describe always should always work, though mepo
-                    # will return weirdness (a grafted branch, probably a hash)
-                    cmd_for_always = "git describe --always"
-                    ver_name = shellcmd.run(
-                        cmd_for_always.split(), output=True
-                    ).rstrip()
-                    ver_type = "h"
-                    is_detached = True
+                    # On some CI systems, git is handled oddly. As such, sometimes
+                    # tags aren't found due to shallow clones
+                    cmd_for_tag = "git describe --tags"
+                    # Have to use 'if not' since 0 is a good status
+                    if not shellcmd.run(cmd_for_tag.split(), status=True):
+                        ver_name = shellcmd.run(
+                            cmd_for_tag.split(), output=True
+                        ).rstrip()
+                        ver_type = "t"
+                        is_detached = True
+                    else:
+                        # Per internet, describe always should always work, though mepo
+                        # will return weirdness (a grafted branch, probably a hash)
+                        cmd_for_always = "git describe --always"
+                        ver_name = shellcmd.run(
+                            cmd_for_always.split(), output=True
+                        ).rstrip()
+                        ver_type = "h"
+                        is_detached = True
         else:
             if comp_details.get("branch", None):
                 # SPECIAL HANDLING of 'detached head' branches
@@ -100,16 +107,18 @@ class MepoComponent(object):
                 is_detached = True
         self.version = MepoVersion(ver_name, ver_type, is_detached)
 
-    def registry_to_component(self, comp_name, comp_details, comp_style):
+    def registry_to_component(self, comp_name, comp_details, comp_style, fixture_url):
         self.name = comp_name
         self.fixture = comp_details.get("fixture", False)
         # local/remote - start
         if self.fixture:
             self.local = "."
-            repo_url = get_current_remote_url()
-            p = urlparse(repo_url)
-            last_url_node = p.path.rsplit("/")[-1]
-            self.remote = "../" + last_url_node
+            self.remote = fixture_url
+            if self.remote is None:
+                repo_url = get_current_remote_url()
+                p = urlparse(repo_url)
+                last_url_node = p.path.rsplit("/")[-1]
+                self.remote = "../" + last_url_node
         else:
             # Assume the flag for repostories is commercial-at
             repo_flag = "@"
@@ -141,6 +150,8 @@ class MepoComponent(object):
             # print(f'final self.local: {self.local}')
 
             self.remote = comp_details["remote"]
+            if fixture_url and self.remote.startswith("../"):
+                self.remote = urljoin(fixture_url, os.path.basename(self.remote))
         # local/remote - end
         self.sparse = comp_details.get("sparse", None)  # sparse is optional
         self.develop = comp_details.get("develop", None)  # develop is optional
@@ -150,7 +161,7 @@ class MepoComponent(object):
         self.ignore_submodules = comp_details.get(
             "ignore_submodules", None
         )  # ignore_submodules is optional
-        self.__set_original_version(comp_details)
+        self.__set_original_version(comp_details, fixture_url)
         return self
 
     def to_registry_format(self):

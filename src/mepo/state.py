@@ -64,14 +64,16 @@ class MepoState(object):
             return False
 
     @classmethod
-    def initialize(cls, project_registry, directory_style):
+    def initialize(cls, project_registry, directory_style, fixture_url):
         if cls.state_exists():
             raise StateAlreadyInitializedError("Error! mepo state already exists")
         input_components = Registry(project_registry).read_file()
         complist = list()
         for name, comp in input_components.items():
             complist.append(
-                MepoComponent().registry_to_component(name, comp, directory_style)
+                MepoComponent().registry_to_component(
+                    name, comp, directory_style, fixture_url
+                )
             )
         cls.write_state(complist)
 

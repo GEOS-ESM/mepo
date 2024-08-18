@@ -77,6 +77,12 @@ class MepoArgParser:
             choices=["naked", "prefix", "postfix"],
             help="Style of directory file, default: prefix, allowed options: %(choices)s",
         )
+        init.add_argument(
+            "--fixture",
+            metavar="url",
+            default=None,
+            help="Remote URL of fixture (default: None)",
+        )
 
     def __clone(self):
         clone = self.subparsers.add_parser(
@@ -128,6 +134,12 @@ class MepoArgParser:
             default=None,
             choices=["off", "blobless", "treeless"],
             help='Style of partial clone, default: None, allowed options: %(choices)s. Off means a "normal" full git clone, blobless means cloning with "--filter=blob:none" and treeless means cloning with "--filter=tree:0". NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.',
+        )
+        clone.add_argument(
+            "--fixture",
+            metavar="url",
+            default=None,
+            help="Remote URL of fixture (default: None)",
         )
 
     def __list(self):

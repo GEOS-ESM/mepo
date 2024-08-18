@@ -71,6 +71,7 @@ class TestMepoCommands(unittest.TestCase):
             branch=None,
             directory=None,
             partial="blobless",
+            fixture=None,
         )
         mepo_clone.run(args)
         print(flush=True)
