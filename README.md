@@ -1,6 +1,6 @@
 # mepo [![Actions Status](https://github.com/pchakraborty/mepo/workflows/Unit%20testing%20of%20mepo/badge.svg)](https://github.com/pchakraborty/mepo/actions) [![DOI](https://zenodo.org/badge/215067850.svg)](https://zenodo.org/badge/latestdoi/215067850) [![Rye](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/rye/main/artwork/badge.json)](https://rye-up.com)
 
-`mepo` is a tool, written in Python3 (3.9.0+), to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
+`mepo` is a tool, written in Python3, to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
 
 
 ## Installation
@@ -10,7 +10,7 @@
 To install `mepo` using `pip`, run the following command:
 
 ```
-`pip install mepo`
+pip install mepo
 ```
 
 ### Homebrew
