@@ -26,6 +26,5 @@ jobs:
 
     - name: Run tests
       run: |
-        source .venv/bin/activate
-        python tests/test_mepo_commands.py -v
+        rye test -v
       timeout-minutes: 5
