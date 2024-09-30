@@ -1,7 +1,7 @@
 import os
 import shlex
 
-from urllib.parse import urlparse
+from urllib.parse import urljoin
 
 from .utilities import shellcmd
 from .utilities.version import MepoVersion
@@ -106,10 +106,7 @@ class MepoComponent(object):
         # local/remote - start
         if self.fixture:
             self.local = "."
-            repo_url = get_current_remote_url()
-            p = urlparse(repo_url)
-            last_url_node = p.path.rsplit("/")[-1]
-            self.remote = "../" + last_url_node
+            self.remote = get_current_remote_url()
         else:
             # Assume the flag for repostories is commercial-at
             repo_flag = "@"
@@ -141,16 +138,17 @@ class MepoComponent(object):
             # print(f'final self.local: {self.local}')
 
             self.remote = comp_details["remote"]
+            if self.remote.startswith("../"):
+                self.remote = urljoin(get_current_remote_url() + "/", self.remote)
         # local/remote - end
-        self.sparse = comp_details.get("sparse", None)  # sparse is optional
-        self.develop = comp_details.get("develop", None)  # develop is optional
-        self.recurse_submodules = comp_details.get(
-            "recurse_submodules", None
-        )  # recurse_submodules is optional
-        self.ignore_submodules = comp_details.get(
-            "ignore_submodules", None
-        )  # ignore_submodules is optional
+
+        # Optionals
+        self.sparse = comp_details.get("sparse", None)
+        self.develop = comp_details.get("develop", None)
+        self.recurse_submodules = comp_details.get("recurse_submodules", None)
+        self.ignore_submodules = comp_details.get("ignore_submodules", None)
         self.__set_original_version(comp_details)
+
         return self
 
     def to_registry_format(self):
