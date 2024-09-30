@@ -6,8 +6,8 @@ from urllib.parse import urljoin
 from .utilities import shellcmd
 from .utilities.version import MepoVersion
 
-# This will be used to store the "final nodes" from each subrepo
-original_final_node_list = []
+# This will be used to store the "last nodes" from each subrepo
+last_node_list = []
 
 
 class MepoComponent(object):
@@ -103,50 +103,21 @@ class MepoComponent(object):
     def registry_to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get("fixture", False)
-        # local/remote - start
+        # local/remote
         if self.fixture:
             self.local = "."
             self.remote = get_current_remote_url()
         else:
-            # Assume the flag for repostories is commercial-at
-            repo_flag = "@"
-
-            # To make it easier to loop over the local path, split into a list
-            local_list = splitall(comp_details["local"])
-
-            # The last node of the path is what we will decorate
-            last_node = local_list[-1]
-
-            # Add that final node to a list
-            original_final_node_list.append(last_node)
-
-            # Now we need to decorate all the final nodes since we can have
-            # nested repos with mepo
-            for item in original_final_node_list:
-                try:
-                    # Find the index of every "final node" in a local path
-                    # for nesting
-                    index = local_list.index(item)
-
-                    # Decorate all final nodes
-                    local_list[index] = decorate_node(item, repo_flag, comp_style)
-                except ValueError:
-                    pass
-
-            # Now pull the list of nodes back into a path
-            self.local = os.path.join(*local_list)
-            # print(f'final self.local: {self.local}')
-
+            self.local = stylize_local_path(comp_details["local"], comp_style)
             self.remote = comp_details["remote"]
             if self.remote.startswith("../"):
                 self.remote = urljoin(get_current_remote_url() + "/", self.remote)
-        # local/remote - end
-
-        # Optionals
+        # Optionals (None, if missing)
         self.sparse = comp_details.get("sparse", None)
         self.develop = comp_details.get("develop", None)
         self.recurse_submodules = comp_details.get("recurse_submodules", None)
         self.ignore_submodules = comp_details.get("ignore_submodules", None)
+        # version
         self.__set_original_version(comp_details)
 
         return self
@@ -208,21 +179,34 @@ def get_current_remote_url():
     return output
 
 
+def stylize_local_path(local_path, style):
+    repo_flag = "@"  # Assumed flag for repos
+    local_list = splitall(local_path)
+    last_node = local_list[-1]
+    last_node_list.append(last_node)  # maintain a list of last nodes
+    # Decorate ALL last nodes since we can have nested repos
+    for item in last_node_list:
+        try:
+            index = local_list.index(item)
+            local_list[index] = decorate_node(item, repo_flag, style)
+        except ValueError:
+            pass
+    return os.path.join(*local_list)
+
+
 def decorate_node(item, flag, style):
-    # If we do not pass in a style...
     if not style:
-        # Just use what's in components.yaml
-        return item
-    # else use the style
+        return item  # use what's in the registry file
+    item = item.replace(flag, "")  # remove existing flag
+    if style == "naked":
+        output = item
+    elif style == "prefix":
+        output = flag + item
+    elif style == "postfix":
+        output = item + flag
     else:
-        item = item.replace(flag, "")
-        if style == "naked":
-            output = item
-        elif style == "prefix":
-            output = flag + item
-        elif style == "postfix":
-            output = item + flag
-        return output
+        raise Exception(f"Invalid style: {style}")
+    return output
 
 
 # From https://learning.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html
