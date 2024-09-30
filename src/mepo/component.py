@@ -55,6 +55,19 @@ class MepoComponent(object):
             f"  ignore_submodules: {_ignore_submodules}"
         )
 
+    def __eq__(self, other):
+        return (
+            self.name == other.name
+            and self.local == other.local
+            and self.remote == other.remote
+            and self.version == other.version
+            and self.sparse == other.sparse
+            and self.develop == other.develop
+            and self.recurse_submodules == other.recurse_submodules
+            and self.fixture == other.fixture
+            and self.ignore_submodules == other.recurse_submodules
+        )
+
     def __set_original_version(self, comp_details):
         if self.fixture:
             cmd_if_branch = "git symbolic-ref HEAD"
