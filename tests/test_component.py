@@ -18,17 +18,28 @@ def get_registry():
     return Registry(registry).read_file()
 
 
-def get_fvdycore_component():
+def __get_fvdycore_component_without_remote():
     comp = MepoComponent()
     comp.name = "fvdycore"
     comp.local = "./src/Components/@FVdycoreCubed_GridComp/@fvdycore"
-    comp.remote = "git@github.com:GEOS-ESM/GFDL_atmos_cubed_sphere.git"
     comp.version = MepoVersion(name="geos/v1.3.0", type="t", detached=True)
     comp.sparse = None
     comp.develop = "geos/develop"
     comp.recurse_submodules = None
     comp.fixture = False
     comp.ignore_submodules = None
+    return comp
+
+
+def get_fvdycore_component_ssh():
+    comp = __get_fvdycore_component_without_remote()
+    comp.remote = "git@github.com:GEOS-ESM/GFDL_atmos_cubed_sphere.git"
+    return comp
+
+
+def get_fvdycore_component_https():
+    comp = __get_fvdycore_component_without_remote()
+    comp.remote = "https://github.com/GEOS-ESM/FVdycoreCubed_GridComp.git"
     return comp
 
 
@@ -64,5 +75,8 @@ def test_MepoComponent():
     for name, comp in registry.items():
         if name == "fvdycore":
             fvdycore = MepoComponent().registry_to_component(name, comp, None)
-    assert fvdycore == get_fvdycore_component()
+    assert (
+        fvdycore == get_fvdycore_component_ssh()
+        or fvdycore == get_fvdycore_component_https()
+    )
     assert fvdycore.serialize() == get_fvdycore_serialized()
