@@ -30,13 +30,7 @@ class GitRepository:
 
     def __init__(self, remote_url, local_path):
         self.__local = local_path
-
-        if remote_url.startswith(".."):
-            rel_remote = os.path.basename(remote_url)
-            fixture_url = get_current_remote_url()
-            self.__remote = urljoin(fixture_url, rel_remote)
-        else:
-            self.__remote = remote_url
+        self.__remote = remote_url
 
         root_dir = MepoState.get_root_dir()
         full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
@@ -571,9 +565,3 @@ class GitRepository:
             name = hash_out.rstrip()
             tYpe = "h"
         return (name, tYpe, detached)
-
-
-def get_current_remote_url():
-    cmd = "git remote get-url origin"
-    output = shellcmd.run(shlex.split(cmd), output=True).strip()
-    return output
