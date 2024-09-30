@@ -64,8 +64,5 @@ def test_MepoComponent():
     for name, comp in registry.items():
         if name == "fvdycore":
             fvdycore = MepoComponent().registry_to_component(name, comp, None)
-            # comp = MepoComponent().registry_to_component(name, comp, None)
-            # assert comp == get_fvdycore_component()
-            # complist.append(comp)
     assert fvdycore == get_fvdycore_component()
     assert fvdycore.serialize() == get_fvdycore_serialized()
