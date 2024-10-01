@@ -27,16 +27,27 @@ class MepoComponent(object):
         "ignore_submodules",
     ]
 
-    def __init__(self):
-        self.name = None
-        self.local = None
-        self.remote = None
-        self.version = None
-        self.sparse = None
-        self.develop = None
-        self.recurse_submodules = None
-        self.fixture = None
-        self.ignore_submodules = None
+    def __init__(
+        self,
+        name=None,
+        local=None,
+        remote=None,
+        version=None,
+        sparse=None,
+        develop=None,
+        recurse_submodules=None,
+        fixture=None,
+        ignore_submodules=None,
+    ):
+        self.name = name
+        self.local = local
+        self.remote = remote
+        self.version = version
+        self.sparse = sparse
+        self.develop = develop
+        self.recurse_submodules = recurse_submodules
+        self.fixture = fixture
+        self.ignore_submodules = ignore_submodules
 
     def __repr__(self):
         # Older mepo clones will not have ignore_submodules in comp, so
