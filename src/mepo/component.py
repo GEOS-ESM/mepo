@@ -4,6 +4,7 @@ import shlex
 from dataclasses import dataclass
 from urllib.parse import urljoin
 
+from .git import get_current_remote_url
 from .utilities import shellcmd
 from .utilities.version import MepoVersion
 
@@ -173,12 +174,6 @@ class MepoComponent(object):
                 v = list(v)
             d.update({k: v})
         return d
-
-
-def get_current_remote_url():
-    cmd = "git remote get-url origin"
-    output = shellcmd.run(shlex.split(cmd), output=True).strip()
-    return output
 
 
 def stylize_local_path(local_path, style):
