@@ -34,8 +34,6 @@ class GitRepository:
     __slots__ = ["__local_path_abs", "__remote", "__git"]
 
     def __init__(self, remote_url, local_path_abs):
-        if local_path_abs.startswith("../"):
-            raise ValueError("local path cannot be relative")
         self.__local_path_abs = local_path_abs
         self.__remote = remote_url
         self.__git = 'git -C "{}"'.format(self.__local_path_abs)
