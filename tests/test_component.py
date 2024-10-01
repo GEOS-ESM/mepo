@@ -22,7 +22,7 @@ def get_fvdycore_component():
     comp = MepoComponent()
     comp.name = "fvdycore"
     comp.local = "./src/Components/@FVdycoreCubed_GridComp/@fvdycore"
-    comp.remote = "https://github.com/GEOS-ESM/FVdycoreCubed_GridComp.git"
+    comp.remote = "https://github.com/GEOS-ESM/GFDL_atmos_cubed_sphere.git"
     comp.version = MepoVersion(name="geos/v1.3.0", type="t", detached=True)
     comp.sparse = None
     comp.develop = "geos/develop"
@@ -36,7 +36,7 @@ def get_fvdycore_serialized():
     return {
         "name": "fvdycore",
         "local": "./src/Components/@FVdycoreCubed_GridComp/@fvdycore",
-        "remote": "https://github.com/GEOS-ESM/FVdycoreCubed_GridComp.git",
+        "remote": "https://github.com/GEOS-ESM/GFDL_atmos_cubed_sphere.git",
         "version": ["geos/v1.3.0", "t", True],
         "sparse": None,
         "develop": "geos/develop",
