@@ -1,6 +1,9 @@
 """Permanently convert mepo1 state to mepo2 state"""
 
+from urllib.parse import urljoin
+
 from ..state import MepoState
+from ..git import get_current_remote_url
 
 
 def run(_):
@@ -9,6 +12,9 @@ def run(_):
         # mepo2 style does not exist
         allcomps = MepoState.read_state()
         MepoState.mepo1_patch_undo()
+        for comp in allcomps:
+            if comp.remote.startswith("../"):
+                comp.remote = urljoin(get_current_remote_url() + "/", comp.remote)
         # Write new state
         MepoState.write_state(allcomps)
         print("\nConverted mepo1 state to mepo2\n")

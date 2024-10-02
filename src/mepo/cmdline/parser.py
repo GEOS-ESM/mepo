@@ -8,6 +8,12 @@ from .config_parser import MepoConfigArgParser
 from ..utilities import mepoconfig
 
 
+def get_version():
+    from importlib import metadata
+
+    return metadata.version("mepo")
+
+
 class MepoArgParser:
 
     __slots__ = ["parser", "subparsers"]
@@ -16,6 +22,7 @@ class MepoArgParser:
         self.parser = argparse.ArgumentParser(
             description="Tool to manage (m)ultiple r(epo)s"
         )
+        self.parser.add_argument("--version", action="version", version=get_version())
         self.subparsers = self.parser.add_subparsers()
         self.subparsers.title = "mepo commands"
         self.subparsers.required = True

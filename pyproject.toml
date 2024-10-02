@@ -1,6 +1,6 @@
 [project]
 name = "mepo"
-version = "2.0.0"
+version = "2.1.0"
 description = "A tool for managing (m)ultiple r(epo)s"
 authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
@@ -23,6 +23,7 @@ dev-dependencies = [
     "flake8>=7.0.0",
     "pre-commit>=3.7.1",
     "mdutils>=1.6.0",
+    "pytest>=8.2.1",
 ]
 
 [build-system]
