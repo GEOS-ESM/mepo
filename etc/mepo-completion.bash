@@ -2,18 +2,17 @@
 
 # complete -W "init clone status checkout branch diff where whereis history" mepo
 
+# SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+SCRIPT_DIR=$(dirname $(realpath $0))
+
 _get_mepo_commands() {
     local mepo_cmd_list=""
-    if [[ "$OSTYPE" == "darwin"* ]]
-    then
-       local mepodir=$(dirname $(readlink $(which mepo)))
-    else
-       local mepodir=$(dirname $(readlink -f $(which mepo)))
-    fi
-    for mydir in $(ls -d ${mepodir}/mepo.d/command/*/); do
-        if [[ $mydir != *"__pycache__"* ]]; then
-            mepo_cmd_list+=" $(basename $mydir)"
-        fi
+    local mepo_dir=$(python3 $SCRIPT_DIR/mepo-path.py)
+    for pyfile in $(ls ${mepo_dir}/command/*.py*); do
+	command=${pyfile##*/} # remove path
+	command=${command%.*} # remove extension
+	command=$(echo $command | cut -d _ -f 1)
+        mepo_cmd_list+=" $command"
     done
     echo ${mepo_cmd_list}
 }
