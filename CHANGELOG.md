@@ -11,9 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+## [2.1.0] - 2024-10-02
+
+### Fixed
+
+- Fixed mepo completion
+
+### Added
+
 - Added ability to print version info via `mepo --version`
+- Added install instructions for spack and brew tap
+- Added tests for Registry and MepoComponent classes
 
 ### Changed
+
+- Full path of remote url is now stored in the state file
+- Some refactor of component.py
+- Removed MepoState dependency in git.py
 
 ## [2.0.0] - 2024-08-12
 
