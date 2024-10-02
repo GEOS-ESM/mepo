@@ -1,15 +1,18 @@
 import os
 import shlex
 
-from urllib.parse import urlparse
+from dataclasses import dataclass
+from urllib.parse import urljoin
 
+from .git import get_current_remote_url
 from .utilities import shellcmd
 from .utilities.version import MepoVersion
 
-# This will be used to store the "final nodes" from each subrepo
-original_final_node_list = []
+# This will be used to store the "last nodes" from each subrepo
+last_node_list = []
 
 
+@dataclass(eq=True)
 class MepoComponent(object):
 
     __slots__ = [
@@ -24,16 +27,27 @@ class MepoComponent(object):
         "ignore_submodules",
     ]
 
-    def __init__(self):
-        self.name = None
-        self.local = None
-        self.remote = None
-        self.version = None
-        self.sparse = None
-        self.develop = None
-        self.recurse_submodules = None
-        self.fixture = None
-        self.ignore_submodules = None
+    def __init__(
+        self,
+        name=None,
+        local=None,
+        remote=None,
+        version=None,
+        sparse=None,
+        develop=None,
+        recurse_submodules=None,
+        fixture=None,
+        ignore_submodules=None,
+    ):
+        self.name = name
+        self.local = local
+        self.remote = remote
+        self.version = version
+        self.sparse = sparse
+        self.develop = develop
+        self.recurse_submodules = recurse_submodules
+        self.fixture = fixture
+        self.ignore_submodules = ignore_submodules
 
     def __repr__(self):
         # Older mepo clones will not have ignore_submodules in comp, so
@@ -103,54 +117,23 @@ class MepoComponent(object):
     def registry_to_component(self, comp_name, comp_details, comp_style):
         self.name = comp_name
         self.fixture = comp_details.get("fixture", False)
-        # local/remote - start
+        # local/remote
         if self.fixture:
             self.local = "."
-            repo_url = get_current_remote_url()
-            p = urlparse(repo_url)
-            last_url_node = p.path.rsplit("/")[-1]
-            self.remote = "../" + last_url_node
+            self.remote = get_current_remote_url()
         else:
-            # Assume the flag for repostories is commercial-at
-            repo_flag = "@"
-
-            # To make it easier to loop over the local path, split into a list
-            local_list = splitall(comp_details["local"])
-
-            # The last node of the path is what we will decorate
-            last_node = local_list[-1]
-
-            # Add that final node to a list
-            original_final_node_list.append(last_node)
-
-            # Now we need to decorate all the final nodes since we can have
-            # nested repos with mepo
-            for item in original_final_node_list:
-                try:
-                    # Find the index of every "final node" in a local path
-                    # for nesting
-                    index = local_list.index(item)
-
-                    # Decorate all final nodes
-                    local_list[index] = decorate_node(item, repo_flag, comp_style)
-                except ValueError:
-                    pass
-
-            # Now pull the list of nodes back into a path
-            self.local = os.path.join(*local_list)
-            # print(f'final self.local: {self.local}')
-
+            self.local = stylize_local_path(comp_details["local"], comp_style)
             self.remote = comp_details["remote"]
-        # local/remote - end
-        self.sparse = comp_details.get("sparse", None)  # sparse is optional
-        self.develop = comp_details.get("develop", None)  # develop is optional
-        self.recurse_submodules = comp_details.get(
-            "recurse_submodules", None
-        )  # recurse_submodules is optional
-        self.ignore_submodules = comp_details.get(
-            "ignore_submodules", None
-        )  # ignore_submodules is optional
+            if self.remote.startswith("../"):
+                self.remote = urljoin(get_current_remote_url() + "/", self.remote)
+        # Optionals (None, if missing)
+        self.sparse = comp_details.get("sparse", None)
+        self.develop = comp_details.get("develop", None)
+        self.recurse_submodules = comp_details.get("recurse_submodules", None)
+        self.ignore_submodules = comp_details.get("ignore_submodules", None)
+        # version
         self.__set_original_version(comp_details)
+
         return self
 
     def to_registry_format(self):
@@ -204,27 +187,34 @@ class MepoComponent(object):
         return d
 
 
-def get_current_remote_url():
-    cmd = "git remote get-url origin"
-    output = shellcmd.run(shlex.split(cmd), output=True).strip()
-    return output
+def stylize_local_path(local_path, style):
+    repo_flag = "@"  # Assumed flag for repos
+    local_list = splitall(local_path)
+    last_node = local_list[-1]
+    last_node_list.append(last_node)  # maintain a list of last nodes
+    # Decorate ALL last nodes since we can have nested repos
+    for item in last_node_list:
+        try:
+            index = local_list.index(item)
+            local_list[index] = decorate_node(item, repo_flag, style)
+        except ValueError:
+            pass
+    return os.path.join(*local_list)
 
 
 def decorate_node(item, flag, style):
-    # If we do not pass in a style...
     if not style:
-        # Just use what's in components.yaml
-        return item
-    # else use the style
+        return item  # use what's in the registry file
+    item = item.replace(flag, "")  # remove existing flag
+    if style == "naked":
+        output = item
+    elif style == "prefix":
+        output = flag + item
+    elif style == "postfix":
+        output = item + flag
     else:
-        item = item.replace(flag, "")
-        if style == "naked":
-            output = item
-        elif style == "prefix":
-            output = flag + item
-        elif style == "postfix":
-            output = item + flag
-        return output
+        raise Exception(f"Invalid style: {style}")
+    return output
 
 
 # From https://learning.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html

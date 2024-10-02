@@ -5,7 +5,6 @@ import subprocess as sp
 
 from urllib.parse import urljoin
 
-from .state import MepoState
 from .utilities import shellcmd
 from .utilities import colors
 from .utilities.exceptions import RepoAlreadyClonedError
@@ -21,33 +20,26 @@ def get_editor():
     return result.stdout.rstrip().decode("utf-8")  # byte to utf-8
 
 
+def get_current_remote_url():
+    cmd = "git remote get-url origin"
+    output = shellcmd.run(shlex.split(cmd), output=True).strip()
+    return output
+
+
 class GitRepository:
     """
     Class to consolidate git commands
     """
 
-    __slots__ = ["__local", "__full_local_path", "__remote", "__git"]
+    __slots__ = ["__local_path_abs", "__remote", "__git"]
 
-    def __init__(self, remote_url, local_path):
-        self.__local = local_path
-
-        if remote_url.startswith(".."):
-            rel_remote = os.path.basename(remote_url)
-            fixture_url = get_current_remote_url()
-            self.__remote = urljoin(fixture_url, rel_remote)
-        else:
-            self.__remote = remote_url
-
-        root_dir = MepoState.get_root_dir()
-        full_local_path = os.path.normpath(os.path.join(root_dir, local_path))
-        self.__full_local_path = full_local_path
-        self.__git = 'git -C "{}"'.format(self.__full_local_path)
+    def __init__(self, remote_url, local_path_abs):
+        self.__local_path_abs = local_path_abs
+        self.__remote = remote_url
+        self.__git = 'git -C "{}"'.format(self.__local_path_abs)
 
     def get_local_path(self):
-        return self.__local
-
-    def get_full_local_path(self):
-        return self.__full_local_path
+        return self.__local_path_abs
 
     def get_remote_url(self):
         return self.__remote
@@ -63,15 +55,15 @@ class GitRepository:
         if recurse:
             cmd1 += "--recurse-submodules "
 
-        cmd1 += "--quiet {} {}".format(self.__remote, self.__full_local_path)
+        cmd1 += "--quiet {} {}".format(self.__remote, self.__local_path_abs)
         try:
             shellcmd.run(shlex.split(cmd1))
         except sp.CalledProcessError:
             raise RepoAlreadyClonedError(f"Error! Repo [{comp_name}] already cloned")
 
-        cmd2 = "git -C {} checkout {}".format(self.__full_local_path, version)
+        cmd2 = "git -C {} checkout {}".format(self.__local_path_abs, version)
         shellcmd.run(shlex.split(cmd2))
-        cmd3 = "git -C {} checkout --detach".format(self.__full_local_path)
+        cmd3 = "git -C {} checkout --detach".format(self.__local_path_abs)
         shellcmd.run(shlex.split(cmd3))
 
         # NOTE: The above looks odd because of a quirk of git. You can't do
@@ -88,7 +80,7 @@ class GitRepository:
             shellcmd.run(shlex.split(cmd2))
 
     def sparsify(self, sparse_config):
-        dst = os.path.join(self.__full_local_path, ".git", "info", "sparse-checkout")
+        dst = os.path.join(self.__local_path_abs, ".git", "info", "sparse-checkout")
         os.makedirs(os.path.dirname(dst), exist_ok=True)
         shutil.copy(sparse_config, dst)
         cmd1 = self.__git + " config core.sparseCheckout true"
@@ -144,7 +136,7 @@ class GitRepository:
         return output.rstrip()
 
     def run_diff(self, args=None, ignore_submodules=False):
-        cmd = "git -C {}".format(self.__full_local_path)
+        cmd = "git -C {}".format(self.__local_path_abs)
         if args.ignore_permissions:
             cmd += " -c core.fileMode=false"
         cmd += " diff --color"
@@ -183,7 +175,7 @@ class GitRepository:
                 cmd = [
                     "git",
                     "-C",
-                    self.__full_local_path,
+                    self.__local_path_abs,
                     "tag",
                     "-a",
                     "-F",
@@ -194,7 +186,7 @@ class GitRepository:
                 cmd = [
                     "git",
                     "-C",
-                    self.__full_local_path,
+                    self.__local_path_abs,
                     "tag",
                     "-a",
                     "-m",
@@ -204,7 +196,7 @@ class GitRepository:
             else:
                 raise Exception("This should not happen")
         else:
-            cmd = ["git", "-C", self.__full_local_path, "tag", tag_name]
+            cmd = ["git", "-C", self.__local_path_abs, "tag", tag_name]
         shellcmd.run(cmd)
 
     def delete_branch(self, branch_name, force):
@@ -241,7 +233,7 @@ class GitRepository:
         return status, ref_type
 
     def check_status(self, ignore_permissions=False, ignore_submodules=False):
-        cmd = "git -C {}".format(self.__full_local_path)
+        cmd = "git -C {}".format(self.__local_path_abs)
         if ignore_permissions:
             cmd += " -c core.fileMode=false"
         cmd += " status --porcelain=v2"
@@ -488,9 +480,9 @@ class GitRepository:
 
     def commit_files(self, message, tf_file=None):
         if tf_file:
-            cmd = ["git", "-C", self.__full_local_path, "commit", "-F", tf_file]
+            cmd = ["git", "-C", self.__local_path_abs, "commit", "-F", tf_file]
         elif message:
-            cmd = ["git", "-C", self.__full_local_path, "commit", "-m", message]
+            cmd = ["git", "-C", self.__local_path_abs, "commit", "-m", message]
         else:
             raise Exception("This should not happen")
         shellcmd.run(cmd)
@@ -571,9 +563,3 @@ class GitRepository:
             name = hash_out.rstrip()
             tYpe = "h"
         return (name, tYpe, detached)
-
-
-def get_current_remote_url():
-    cmd = "git remote get-url origin"
-    output = shellcmd.run(shlex.split(cmd), output=True).strip()
-    return output
