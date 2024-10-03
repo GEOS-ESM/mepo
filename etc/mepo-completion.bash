@@ -2,7 +2,7 @@
 
 _get_mepo_commands() {
     local mepo_cmd_list=""
-    local mepo_dir=$(python3 -c "import os, mepo; print(os.path.dirname(mepo.__file__))")
+    local mepo_dir=$(mepo --location)
     for pyfile in $(ls ${mepo_dir}/command/*.py*); do
 	command=${pyfile##*/} # remove path
 	command=${command%.*} # remove extension
