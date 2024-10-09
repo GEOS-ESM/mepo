@@ -14,6 +14,19 @@ def get_version():
     return metadata.version("mepo")
 
 
+class LocationAction(argparse._StoreTrueAction):
+
+    def __init__(self, option_strings, dest, const=True, help=None):
+        super().__init__(option_strings, dest, const, help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        import os, sys
+        import mepo
+
+        print(os.path.dirname(mepo.__file__))
+        sys.exit(0)
+
+
 class MepoArgParser:
 
     __slots__ = ["parser", "subparsers"]
@@ -23,6 +36,9 @@ class MepoArgParser:
             description="Tool to manage (m)ultiple r(epo)s"
         )
         self.parser.add_argument("--version", action="version", version=get_version())
+        self.parser.add_argument(
+            "--location", action=LocationAction, help=argparse.SUPPRESS
+        )
         self.subparsers = self.parser.add_subparsers()
         self.subparsers.title = "mepo commands"
         self.subparsers.required = True
