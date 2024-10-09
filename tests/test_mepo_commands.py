@@ -48,7 +48,7 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __checkout_fixture(cls):
         remote = f"https://github.com/GEOS-ESM/{cls.fixture}.git"
-        git_clone = "git clone "
+        git_clone = "git clone --filter=blob:none "
         if cls.tag:
             git_clone += f"-b {cls.tag}"
         cmd = f"{git_clone} {remote} {cls.fixture_dir}"
