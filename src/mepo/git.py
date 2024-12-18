@@ -44,32 +44,23 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version, recurse, type, comp_name, partial=None):
-        cmd1 = "git clone "
+    def clone(self, version=None, recurse=None, partial=None):
+        """
+        Execute `git clone` command
+        version is tag or branch
+        """
+        PARTIAL = {"blobless": " --filter=blob:none", "treeless": " --filter=tree:0"}
 
-        if partial == "blobless":
-            cmd1 += "--filter=blob:none "
-        elif partial == "treeless":
-            cmd1 += "--filter=tree:0 "
+        cmd = "git clone "
+        if partial is not None:
+            cmd += PARTIAL[partial]
+        if recurse is not None:
+            cmd += "--recurse-submodules "
+        cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
+        shellcmd.run(shlex.split(cmd))
 
-        if recurse:
-            cmd1 += "--recurse-submodules "
-
-        cmd1 += "--quiet {} {}".format(self.__remote, self.__local_path_abs)
-        try:
-            shellcmd.run(shlex.split(cmd1))
-        except sp.CalledProcessError:
-            raise RepoAlreadyClonedError(f"Error! Repo [{comp_name}] already cloned")
-
-        cmd2 = "git -C {} checkout {}".format(self.__local_path_abs, version)
-        shellcmd.run(shlex.split(cmd2))
-        cmd3 = "git -C {} checkout --detach".format(self.__local_path_abs)
-        shellcmd.run(shlex.split(cmd3))
-
-        # NOTE: The above looks odd because of a quirk of git. You can't do
-        #       git checkout --detach branch unless the branch is local. But
-        #       since this is at clone time, all branches are remote. Thus,
-        #       we have to do a git checkout branch and then detach.
+        if version is not None:
+            self.checkout(version)
 
     def checkout(self, version, detach=False):
         cmd = self.__git + " checkout "

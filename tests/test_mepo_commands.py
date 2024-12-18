@@ -66,8 +66,8 @@ class TestMepoCommands(unittest.TestCase):
         args = SimpleNamespace(
             style="prefix",
             registry=None,
-            repo_url=None,
-            allrepos=None,
+            url=None,
+            allrepos=False,
             branch=None,
             directory=None,
             partial="blobless",

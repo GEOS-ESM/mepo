@@ -101,7 +101,7 @@ class MepoArgParser:
             aliases=mepoconfig.get_command_alias("clone"),
         )
         clone.add_argument(
-            "repo_url", metavar="URL", nargs="?", default=None, help="URL to clone"
+            "url", metavar="URL", nargs="?", default=None, help="URL to clone"
         )
         clone.add_argument(
             "directory",
@@ -122,7 +122,7 @@ class MepoArgParser:
             metavar="registry",
             nargs="?",
             default=None,
-            help="Registry (default: components.yaml)",
+            help="Registry (default: %(default)s)",
         )
         clone.add_argument(
             "--style",
@@ -142,8 +142,18 @@ class MepoArgParser:
             metavar="partial-type",
             nargs="?",
             default=None,
-            choices=["off", "blobless", "treeless"],
-            help='Style of partial clone, default: None, allowed options: %(choices)s. Off means a "normal" full git clone, blobless means cloning with "--filter=blob:none" and treeless means cloning with "--filter=tree:0". NOTE: We do *not* recommend using "treeless" as it is very aggressive and will cause problems with many git commands.',
+            choices=[None, "blobless", "treeless"],
+            help=(
+                """
+                Style of partial clone, default: %(default)s.
+                Allowed options: %(choices)s.
+                None: normal full git clone,
+                blobless: cloning with "--filter=blob:none",
+                treeless: cloning with "--filter=tree:0".
+                NOTE: We do *not* recommend using "treeless" as it is very
+                aggressive and will cause problems with many git commands.
+                """
+            ),
         )
 
     def __list(self):
