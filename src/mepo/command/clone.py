@@ -10,6 +10,7 @@ from ..git import GitRepository
 from ..utilities import colors
 from ..utilities import mepoconfig
 
+
 def run(args):
     """
     Entry point of clone.
@@ -36,7 +37,8 @@ def run(args):
         try:
             allcomps = MepoState.read_state()
         except StateDoesNotExistError:
-            mepo_init(SimpleNamespace(style=args.style, registry=get_registry(args.registry)))
+            registry = get_registry(args.registry)
+            mepo_init(SimpleNamespace(style=args.style, registry=registry))
             continue
         break
 
@@ -91,13 +93,14 @@ def clone_components(allcomps, partial):
     max_namelen = max([len(comp.name) for comp in allcomps])
     for comp in allcomps:
         if comp.fixture:
-            continue # not cloning fixture
+            continue  # not cloning fixture
         recurse_submodules = comp.recurse_submodules
         # According to Git, treeless clones do not interact well with
         # submodules. So if any comp has the recurse option set to True,
         # we do a non-partial clone
         partial = None if partial == "treeless" and recurse_submodules else partial
-        version = comp.version.name; version = version.replace("origin/", "")
+        version = comp.version.name
+        version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
         git.clone(version, recurse_submodules, partial)
         if comp.sparse:
@@ -108,7 +111,7 @@ def clone_components(allcomps, partial):
 def checkout_components(allcomps, branch):
     for comp in allcomps:
         if comp.fixture:
-            continue # fixture is already on the right branch
+            continue  # fixture is already on the right branch
         branch_y = colors.YELLOW + args.branch + colors.RESET
         print(f"Checking out {branch_y} in {comp.name}")
         git = GitRepository(comp.remote, comp.local)

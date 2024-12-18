@@ -67,5 +67,7 @@ def test_MepoComponent():
     assert fvdycore == get_fvdycore_component()
     fvdycore_serialized = fvdycore.serialize()
     remote = fvdycore_serialized["remote"]
-    fvdycore_serialized["remote"] = remote.replace("git@github.com:", "https://github.com/")
+    fvdycore_serialized["remote"] = remote.replace(
+        "git@github.com:", "https://github.com/"
+    )
     assert fvdycore_serialized == get_fvdycore_serialized()
