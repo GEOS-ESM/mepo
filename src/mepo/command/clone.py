@@ -15,42 +15,22 @@ def run(args):
     """
     Entry point of clone.
     Steps -
-    1. Clone fixture - if url is passed
+    1. Clone fixture - if url is provided
     2. Read state - if state does not exist, initialize mepo (write state) first
     3. Clone components
     4. Checkout all repos to the specified branch
     """
     CWD = os.getcwd()
 
-    if args.branch is not None and args.url is None:
-        raise RuntimeError("The branch argument can only be used with a URL")
-
     arg_partial = handle_partial(args.partial)
 
-    # Step 1 - clone fixture
     if args.url is not None:
         fixture_dir = clone_fixture(args.url, args.branch, args.directory, arg_partial)
         os.chdir(fixture_dir)
-
-    # Step 2 - Read state - if state does not exist, initialize mepo
-    while True:
-        try:
-            allcomps = MepoState.read_state()
-        except StateDoesNotExistError:
-            registry = get_registry(args.registry)
-            mepo_init(SimpleNamespace(style=args.style, registry=registry))
-            continue
-        break
-
-    # Step 3 - Clone componets
+    allcomps = read_state(args.style, args.registry)
     clone_components(allcomps, arg_partial)
-
-    # Step 4 - Checkout all repos to the specified branch
-    # TODO - pchakrab: DO WE REALLY NEED THIS???
     if args.allrepos:
-        if args.branch is None:
-            raise RuntimeError("`allrepos` option must be used with a branch/tag.")
-        checkout_components(allcomps, args.branch)
+        checkout_all_repos(allcomps, args.branch)
 
     os.chdir(CWD)
 
@@ -81,6 +61,18 @@ def clone_fixture(url, branch=None, directory=None, partial=None):
     return directory
 
 
+def read_state(arg_style, arg_registry):
+    while True:
+        try:
+            allcomps = MepoState.read_state()
+        except StateDoesNotExistError:
+            registry = get_registry(arg_registry)
+            mepo_init(SimpleNamespace(style=arg_style, registry=registry))
+            continue
+        break
+    return allcomps
+
+
 def get_registry(arg_registry):
     registry = "components.yaml"
     if arg_registry is not None:
@@ -108,16 +100,16 @@ def clone_components(allcomps, partial):
         print_clone_info(comp.name, comp.version, max_namelen)
 
 
-def checkout_components(allcomps, branch):
+def print_clone_info(comp_name, comp_version, name_width):
+    ver_name_type = f"({comp_version.type}) {comp_version.name}"
+    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}")
+
+
+def checkout_all_repos(allcomps, branch):
+    if branch is None:
+        raise RuntimeError("`allrepos` option must be used with a branch/tag.")
     for comp in allcomps:
-        if comp.fixture:
-            continue  # fixture is already on the right branch
         branch_y = colors.YELLOW + args.branch + colors.RESET
         print(f"Checking out {branch_y} in {comp.name}")
         git = GitRepository(comp.remote, comp.local)
         git.checkout(args.branch)
-
-
-def print_clone_info(comp_name, comp_version, name_width):
-    ver_name_type = f"({comp_version.type}) {comp_version.name}"
-    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}")
