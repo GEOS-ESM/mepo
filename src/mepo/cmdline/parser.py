@@ -1,4 +1,5 @@
 import argparse
+import warnings
 
 from .branch_parser import MepoBranchArgParser
 from .stash_parser import MepoStashArgParser
@@ -74,6 +75,7 @@ class MepoArgParser:
         return self.parser.parse_args()
 
     def __init(self):
+        warnings.warn("init will be removed in version 3, use clone instead")
         init = self.subparsers.add_parser(
             "init",
             description="Initialize mepo based on `config-file`",
