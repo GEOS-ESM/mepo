@@ -14,9 +14,19 @@ from ..utilities import mepoconfig
 def run(args):
     """
     Entry point of clone.
+
+    Multiple ways to run clone
+    1. After fixture has been cloned (via git clone)
+       a. mepo init
+          mepo clone
+       b. mepo clone (initializes mepo)
+    2. Clone fixture as well
+       a. mepo clone <url> [<directory>]
+       b. mepo clone -b <branch> <url> [<directory>]
+
     Steps -
     1. Clone fixture - if url is provided
-    2. Read state - if state does not exist, initialize mepo (write state) first
+    2. Read state - initialize mepo (write state) first, if needed
     3. Clone components
     4. Checkout all repos to the specified branch
     """
