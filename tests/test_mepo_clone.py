@@ -52,6 +52,7 @@ GEOS_Util              | (t) v2.1.3 (DH)
 FMS                    | (t) geos/2019.01.02+noaff.10 (DH)
 FVdycoreCubed_GridComp | (t) v2.12.0 (DH)
 fvdycore               | (t) geos/v2.9.1 (DH)
+mom6                   | (t) geos/v3.3 (DH)
 """
     with contextlib_chdir(FIXTURE_NAME):
         status_output = get_mepo_status()

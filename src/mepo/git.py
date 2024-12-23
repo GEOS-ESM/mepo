@@ -55,7 +55,7 @@ class GitRepository:
         if partial is not None:
             cmd += PARTIAL[partial]
         if recurse is not None:
-            cmd += "--recurse-submodules "
+            cmd += " --recurse-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
         shellcmd.run(shlex.split(cmd))
 
