@@ -75,7 +75,9 @@ class MepoArgParser:
         return self.parser.parse_args()
 
     def __init(self):
-        warnings.warn("init will be removed in version 3, use clone instead")
+        warnings.warn(
+            "init will be removed in version 3, use clone instead", DeprecationWarning
+        )
         init = self.subparsers.add_parser(
             "init",
             description="Initialize mepo based on `config-file`",
