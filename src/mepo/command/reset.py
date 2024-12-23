@@ -75,7 +75,7 @@ def run(args):
             "Namespace",
             (object,),
             {
-                "repo_url": None,
+                "url": None,
                 "directory": None,
                 "branch": None,
                 "registry": None,

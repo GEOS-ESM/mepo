@@ -13,10 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Hidden option `--location` for mepo that returns the path to the mepo directory
 - Added ability to print number of stashes in `mepo status`
+- Added new tests for `mepo clone`
 
 ### Changed
 
 - Removed legacy `bin` directory
+- Checked out branches are no longer in 'detached head' state
 
 ## [2.1.0] - 2024-10-02
 
