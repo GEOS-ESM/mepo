@@ -48,7 +48,7 @@ class TestMepoCommands(unittest.TestCase):
     @classmethod
     def __checkout_fixture(cls):
         remote = f"https://github.com/GEOS-ESM/{cls.fixture}.git"
-        git_clone = "git clone "
+        git_clone = "git clone --filter=blob:none "
         if cls.tag:
             git_clone += f"-b {cls.tag}"
         cmd = f"{git_clone} {remote} {cls.fixture_dir}"
@@ -66,8 +66,8 @@ class TestMepoCommands(unittest.TestCase):
         args = SimpleNamespace(
             style="prefix",
             registry=None,
-            repo_url=None,
-            allrepos=None,
+            url=None,
+            allrepos=False,
             branch=None,
             directory=None,
             partial="blobless",
@@ -337,7 +337,7 @@ class TestMepoCommands(unittest.TestCase):
             self.__class__.__mepo_clone()
 
     def test_mepo_version(self):
-        self.assertEqual(get_mepo_version(), "2.1.0")
+        self.assertEqual(get_mepo_version(), "2.2.0")
 
     def tearDown(self):
         pass

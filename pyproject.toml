@@ -1,6 +1,6 @@
 [project]
 name = "mepo"
-version = "2.1.0"
+version = "2.2.0"
 description = "A tool for managing (m)ultiple r(epo)s"
 authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
@@ -42,4 +42,7 @@ only_include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/mepo"]
+packages = [
+    "etc",
+    "src/mepo",
+]

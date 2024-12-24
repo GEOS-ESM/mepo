@@ -34,6 +34,7 @@ def run(args):
 
 
 def check_component_status(comp, ignore_permissions):
+    """Check the status of a single component"""
     git = GitRepository(comp.remote, comp.local)
 
     # Older mepo clones will not have ignore_submodules in comp, so
@@ -54,21 +55,27 @@ def check_component_status(comp, ignore_permissions):
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver, curr_ver, git)
 
+    # We also want to see if there are any stashes in the component
+    num_stashes = len(git.list_stash().splitlines())
+
     return (
         curr_ver,
         internal_state_branch_name,
+        num_stashes,
         git.check_status(ignore_permissions, _ignore_submodules),
     )
 
 
 def print_status(allcomps, result, max_width, nocolor=False, hashes=False):
+    """Print the status of all components"""
     for index, comp in enumerate(allcomps):
         time.sleep(0.025)
         print_component_status(comp, result[index], max_width, nocolor, hashes)
 
 
 def print_component_status(comp, result, width, nocolor=False, hashes=False):
-    current_version, internal_state_branch_name, output = result
+    """Print the status of a single component"""
+    current_version, internal_state_branch_name, num_stashes, output = result
     if hashes:
         comp_path = _get_relative_path(comp.local)
         comp_hash = shellcmd.run(
@@ -86,8 +93,13 @@ def print_component_status(comp, result, width, nocolor=False, hashes=False):
         width += len(colors.RED) + len(colors.RESET)
     else:
         component_name = comp.name
-    FMT0 = "{:<%s.%ss} | {:<s}" % (width, width)
-    print(FMT0.format(component_name, current_version))
+
+    # If there are stashes, we print the number of stashes in yellow
+    if num_stashes:
+        stash_str = colors.YELLOW + f"[stashes: {num_stashes}]" + colors.RESET
+        print(f"{component_name:<{width}} | {current_version} {stash_str}")
+    else:
+        print(f"{component_name:<{width}} | {current_version}")
     if output:
         for line in output.split("\n"):
             print("   |", line.rstrip())
