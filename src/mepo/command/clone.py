@@ -3,7 +3,7 @@ import pathlib
 from urllib.parse import urlparse
 from types import SimpleNamespace
 
-from .init import run as mepo_init
+from .init import run_private as mepo_init
 from ..state import MepoState
 from ..state import StateDoesNotExistError
 from ..git import GitRepository
