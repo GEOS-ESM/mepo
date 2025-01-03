@@ -1,4 +1,5 @@
 import os
+import shutil
 import pathlib
 from urllib.parse import urlparse
 from types import SimpleNamespace
@@ -119,7 +120,7 @@ def checkout_all_repos(allcomps, branch):
     if branch is None:
         raise RuntimeError("`allrepos` option must be used with a branch/tag.")
     for comp in allcomps:
-        branch_y = colors.YELLOW + args.branch + colors.RESET
+        branch_y = colors.YELLOW + branch + colors.RESET
         print(f"Checking out {branch_y} in {comp.name}")
         git = GitRepository(comp.remote, comp.local)
-        git.checkout(args.branch)
+        git.checkout(branch)
