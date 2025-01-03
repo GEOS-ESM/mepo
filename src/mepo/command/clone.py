@@ -1,9 +1,8 @@
 import os
+import shutil
 import pathlib
 from urllib.parse import urlparse
-from types import SimpleNamespace
 
-from .init import run_private as mepo_init
 from ..state import MepoState
 from ..state import StateDoesNotExistError
 from ..git import GitRepository
@@ -33,11 +32,13 @@ def run(args):
     CWD = os.getcwd()
 
     arg_partial = handle_partial(args.partial)
+    arg_style = handle_partial(args.style)
+    arg_registry = handle_registry(args.registry)
 
     if args.url is not None:
         fixture_dir = clone_fixture(args.url, args.branch, args.directory, arg_partial)
         os.chdir(fixture_dir)
-    allcomps = read_state(args.style, args.registry)
+    allcomps = read_state(arg_registry, arg_style)
     clone_components(allcomps, arg_partial)
     if args.allrepos:
         checkout_all_repos(allcomps, args.branch)
@@ -45,20 +46,35 @@ def run(args):
     os.chdir(CWD)
 
 
-def handle_partial(partial):
+def handle_partial(partial_):
     """
-    The `partial` argument to clone can be set either via command line or
+    The `partial_` argument to clone can be set either via command line or
     via .mepoconfig. Non-default value set via command line takes precedence.
-    The default value of `partial` is None, and possible choices are None/blobless/treeless
+    The default value of `partial_` is None, and possible choices are None/blobless/treeless
     """
     ALLOWED_NON_DEFAULT = ["blobless", "treeless"]
-    if partial is None:  # default value from command line
+    if partial_ is None:  # default value from command line
         if mepoconfig.has_option("clone", "partial"):
-            partial = mepoconfig.get("clone", "partial")
-            if partial not in ALLOWED_NON_DEFAULT:
-                raise ValueError(f"Invalid partial type [{partial}] in .mepoconfig")
-            print(f"Found partial clone type [{partial}] in .mepoconfig")
-    return partial
+            partial_ = mepoconfig.get("clone", "partial_")
+            if partial_ not in ALLOWED_NON_DEFAULT:
+                raise ValueError(f"Invalid partial type [{partial_}] in .mepoconfig")
+            print(f"Found partial clone type [{partial_}] in .mepoconfig")
+    return partial_
+
+
+def handle_style(style):
+    ALLOWED_NON_DEFAULT = ["naked", "prefix", "postfix"]
+    if style is None:  # default value from command line
+        # For backward compatibility, we look for the "init" option as well
+        # in .mepoconfig, provided "clone" does not contain style
+        for option in ["clone", "init"]:
+            if mepoconfig.has_option(option, "style"):
+                style = mepoconfig.get(option, "style")
+                if style not in ALLOWED_NON_DEFAULT:
+                    raise ValueError(f"Invalid style [{style}]  in .mepoconfig")
+                print(f"Found style [{style}] in .mepoconfig")
+                break
+    return style
 
 
 def clone_fixture(url, branch=None, directory=None, partial=None):
@@ -71,19 +87,20 @@ def clone_fixture(url, branch=None, directory=None, partial=None):
     return directory
 
 
-def read_state(arg_style, arg_registry):
+def read_state(registry, style):
     while True:
         try:
+            # TODO: remove in v3
+            # In case mepo has been initialized via `mepo init`
             allcomps = MepoState.read_state()
         except StateDoesNotExistError:
-            registry = get_registry(arg_registry)
-            mepo_init(SimpleNamespace(style=arg_style, registry=registry))
+            _ = MepoState.initialize(registry, style)
             continue
         break
     return allcomps
 
 
-def get_registry(arg_registry):
+def handle_registry(arg_registry):
     registry = "components.yaml"
     if arg_registry is not None:
         shutil.copy(arg_registry, os.getcwd())
@@ -91,7 +108,7 @@ def get_registry(arg_registry):
     return registry
 
 
-def clone_components(allcomps, partial):
+def clone_components(allcomps, partial_):
     max_namelen = max([len(comp.name) for comp in allcomps])
     for comp in allcomps:
         if comp.fixture:
@@ -100,11 +117,11 @@ def clone_components(allcomps, partial):
         # According to Git, treeless clones do not interact well with
         # submodules. So if any comp has the recurse option set to True,
         # we do a non-partial clone
-        partial = None if partial == "treeless" and recurse_submodules else partial
+        partial_ = None if partial_ == "treeless" and recurse_submodules else partial_
         version = comp.version.name
         version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
-        git.clone(version, recurse_submodules, partial)
+        git.clone(version, recurse_submodules, partial_)
         if comp.sparse:
             git.sparsify(comp.sparse)
         print_clone_info(comp.name, comp.version, max_namelen)
