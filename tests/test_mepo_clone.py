@@ -17,6 +17,7 @@ FIXTURE_NAME = "GEOSfvdycore-mepo-testing"
 FIXTURE_URL = f"https://github.com/pchakraborty/{FIXTURE_NAME}.git"
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 
+
 def get_mepo_status():
     args = SimpleNamespace(
         ignore_permissions=False,
@@ -149,4 +150,4 @@ fvdycore               | (b) geos/develop
     with contextlib_chdir(FIXTURE_NAME):
         status_output = get_mepo_status()
     assert status_output == saved_output
-    # shutil.rmtree(FIXTURE_NAME)
+    shutil.rmtree(FIXTURE_NAME)

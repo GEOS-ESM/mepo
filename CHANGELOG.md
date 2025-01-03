@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.2.1] - 2025-01-03
+
+### Fixed
+
+- Fixed bugs in the lesser use options of `mepo clone`, `allrepos` and `registry`
+
+
+### Added
+
+- Added tests for `mepo clone --allrepos` and `mepo clone --registry`
+
+
 ## [2.2.0] - 2024-12-24
 
 
