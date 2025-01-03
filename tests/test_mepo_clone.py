@@ -89,3 +89,33 @@ fvdycore               | (b) geos/develop
         status_output = get_mepo_status()
     assert status_output == saved_output
     shutil.rmtree(DIRECTORY)
+
+
+def test_mepo_clone_url_branch_allrepos():
+    if os.path.isdir(FIXTURE_NAME):
+        shutil.rmtree(FIXTURE_NAME)
+    args = SimpleNamespace(
+        style="prefix",
+        registry=None,
+        url=FIXTURE_URL,
+        branch="mepo-testing-do-not-delete",
+        directory=None,
+        partial="blobless",
+        allrepos=True,
+    )
+    mepo_clone.run(args)
+    saved_output = """Checking status...
+GEOSfvdycore           | (b) mepo-testing-do-not-delete
+env                    | (b) mepo-testing-do-not-delete
+cmake                  | (b) mepo-testing-do-not-delete
+ecbuild                | (b) mepo-testing-do-not-delete
+GMAO_Shared            | (b) mepo-testing-do-not-delete
+GEOS_Util              | (b) mepo-testing-do-not-delete
+FMS                    | (b) mepo-testing-do-not-delete
+FVdycoreCubed_GridComp | (b) mepo-testing-do-not-delete
+fvdycore               | (b) mepo-testing-do-not-delete
+"""
+    with contextlib_chdir(FIXTURE_NAME):
+        status_output = get_mepo_status()
+    assert status_output == saved_output
+    shutil.rmtree(FIXTURE_NAME)
