@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [1.53.0] - 2025-01-06
+
+### Changed
+
+- Made `mepo status` serial by default due to odd fork-bomb-like behavior on some systems
+
 ## [1.52.0] - 2024-01-10
 
 ### Added
