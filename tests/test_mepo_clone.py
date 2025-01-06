@@ -22,7 +22,7 @@ def get_mepo_status():
         ignore_permissions=False,
         nocolor=True,
         hashes=False,
-        serial=True,
+        parallel=False,
     )
     with contextlib.redirect_stdout(io.StringIO()) as output:
         mepo_status.run(args)
