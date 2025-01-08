@@ -71,7 +71,7 @@ def handle_style(style):
             if mepoconfig.has_option(option, "style"):
                 style = mepoconfig.get(option, "style")
                 if style not in ALLOWED_NON_DEFAULT:
-                    raise ValueError(f"Invalid style [{style}]  in .mepoconfig")
+                    raise ValueError(f"Invalid style [{style}] in .mepoconfig")
                 print(f"Found style [{style}] in .mepoconfig")
                 break
     return style
@@ -109,7 +109,7 @@ def handle_registry(arg_registry):
 
 
 def clone_components(allcomps, partial_):
-    max_namelen = max([len(comp.name) for comp in allcomps])
+    max_namelen = max(len(comp.name) for comp in allcomps)
     for comp in allcomps:
         if comp.fixture:
             continue  # not cloning fixture
