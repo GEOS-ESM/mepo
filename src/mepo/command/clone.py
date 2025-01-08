@@ -3,11 +3,19 @@ import shutil
 import pathlib
 from urllib.parse import urlparse
 
+try:
+    from contextlib import chdir as contextlib_chdir
+except ImportError:
+    from ..utilities.chdir import chdir as contextlib_chdir
+
 from ..state import MepoState
 from ..state import StateDoesNotExistError
 from ..git import GitRepository
 from ..utilities import colors
 from ..utilities import mepoconfig
+
+
+DEFAULT_REGISTRY = "components.yaml"
 
 
 def run(args):
@@ -29,48 +37,49 @@ def run(args):
     3. Clone components
     4. Checkout all repos to the specified branch
     """
-    CWD = os.getcwd()
-
     arg_partial = handle_partial(args.partial)
     arg_style = handle_partial(args.style)
     arg_registry = handle_registry(args.registry)
 
+    fixture_dir = os.getcwd()
     if args.url is not None:
         fixture_dir = clone_fixture(args.url, args.branch, args.directory, arg_partial)
-        os.chdir(fixture_dir)
-    allcomps = read_state(arg_registry, arg_style)
-    clone_components(allcomps, arg_partial)
-    if args.allrepos:
-        checkout_all_repos(allcomps, args.branch)
 
-    os.chdir(CWD)
+    with contextlib_chdir(fixture_dir):
+        if arg_registry != DEFAULT_REGISTRY:
+            shutil.copy(arg_registry, DEFAULT_REGISTRY)
+        allcomps = read_state(arg_style)
+        clone_components(allcomps, arg_partial)
+        if args.allrepos:
+            checkout_all_repos(allcomps, args.branch)
 
 
 def handle_partial(partial_):
     """
     The `partial_` argument to clone can be set either via command line or
     via .mepoconfig. Non-default value set via command line takes precedence.
-    The default value of `partial_` is None, and possible choices are None/blobless/treeless
+    The default value of `partial_` is None, and
+    possible choices are None/blobless/treeless
     """
-    ALLOWED_NON_DEFAULT = ["blobless", "treeless"]
+    allowed_non_default = ["blobless", "treeless"]
     if partial_ is None:  # default value from command line
         if mepoconfig.has_option("clone", "partial"):
             partial_ = mepoconfig.get("clone", "partial_")
-            if partial_ not in ALLOWED_NON_DEFAULT:
+            if partial_ not in allowed_non_default:
                 raise ValueError(f"Invalid partial type [{partial_}] in .mepoconfig")
             print(f"Found partial clone type [{partial_}] in .mepoconfig")
     return partial_
 
 
 def handle_style(style):
-    ALLOWED_NON_DEFAULT = ["naked", "prefix", "postfix"]
+    allowed_non_default = ["naked", "prefix", "postfix"]
     if style is None:  # default value from command line
         # For backward compatibility, we look for the "init" option as well
         # in .mepoconfig, provided "clone" does not contain style
         for option in ["clone", "init"]:
             if mepoconfig.has_option(option, "style"):
                 style = mepoconfig.get(option, "style")
-                if style not in ALLOWED_NON_DEFAULT:
+                if style not in allowed_non_default:
                     raise ValueError(f"Invalid style [{style}] in .mepoconfig")
                 print(f"Found style [{style}] in .mepoconfig")
                 break
@@ -87,24 +96,23 @@ def clone_fixture(url, branch=None, directory=None, partial=None):
     return directory
 
 
-def read_state(registry, style):
+def read_state(style):
     while True:
         try:
             # TODO: remove in v3
             # In case mepo has been initialized via `mepo init`
             allcomps = MepoState.read_state()
         except StateDoesNotExistError:
-            _ = MepoState.initialize(registry, style)
+            _ = MepoState.initialize(DEFAULT_REGISTRY, style)
             continue
         break
     return allcomps
 
 
 def handle_registry(arg_registry):
-    registry = "components.yaml"
+    registry = DEFAULT_REGISTRY
     if arg_registry is not None:
-        shutil.copy(arg_registry, os.getcwd())
-        registry = os.path.basename(arg_registry)
+        registry = arg_registry
     return registry
 
 
