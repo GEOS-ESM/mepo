@@ -9,13 +9,13 @@ from ..utilities import colors
 def run(args):
     print("Checking status...", flush=True)
     allcomps = MepoState.read_state()
-    if args.serial:
+    if args.parallel:
+        with mp.Pool() as pool:
+            result = pool.map(check_component_status, allcomps)
+    else:
         result = []
         for comp in allcomps:
             result.append(check_component_status(comp))
-    else:
-        with mp.Pool() as pool:
-            result = pool.map(check_component_status, allcomps)
     restore_state(allcomps, result)
 
 
