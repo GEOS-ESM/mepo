@@ -38,7 +38,7 @@ def run(args):
     4. Checkout all repos to the specified branch
     """
     arg_partial = handle_partial(args.partial)
-    arg_style = handle_partial(args.style)
+    arg_style = handle_style(args.style)
     arg_registry = handle_registry(args.registry)
 
     fixture_dir = os.getcwd()
@@ -64,7 +64,7 @@ def handle_partial(partial_):
     allowed_non_default = ["blobless", "treeless"]
     if partial_ is None:  # default value from command line
         if mepoconfig.has_option("clone", "partial"):
-            partial_ = mepoconfig.get("clone", "partial_")
+            partial_ = mepoconfig.get("clone", "partial")
             if partial_ not in allowed_non_default:
                 raise ValueError(f"Invalid partial type [{partial_}] in .mepoconfig")
             print(f"Found partial clone type [{partial_}] in .mepoconfig")
