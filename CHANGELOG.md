@@ -15,10 +15,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.3.0] - 2025-01-12
 
-### Fixed
-
-### Added
-
 ### Changed
 
 - Moved `mepo status` and `mepo restore-state` to default to their serial variants rather than parallel by default. At the same time, we remove the `--serial` option from these commands and add a `--parallel` option if users want to run them in parallel.
