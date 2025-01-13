@@ -20,17 +20,17 @@ def run(args):
     allcomps = MepoState.read_state()
     # max_width = len(max([comp.name for comp in allcomps], key=len))
     max_width = max([len(comp.name) for comp in allcomps])
-    if args.serial:
-        for comp in allcomps:
-            result = check_component_status(comp, args.ignore_permissions)
-            print_component_status(comp, result, max_width, args.nocolor, args.hashes)
-    else:
+    if args.parallel:
         with mp.Pool() as pool:
             result = pool.starmap(
                 check_component_status,
                 [(comp, args.ignore_permissions) for comp in allcomps],
             )
         print_status(allcomps, result, max_width, args.nocolor, args.hashes)
+    else:
+        for comp in allcomps:
+            result = check_component_status(comp, args.ignore_permissions)
+            print_component_status(comp, result, max_width, args.nocolor, args.hashes)
 
 
 def check_component_status(comp, ignore_permissions):

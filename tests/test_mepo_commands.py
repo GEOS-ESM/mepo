@@ -100,7 +100,7 @@ class TestMepoCommands(unittest.TestCase):
             ignore_permissions=False,
             nocolor=True,
             hashes=False,
-            serial=False,
+            parallel=True,
         )
         with contextlib.redirect_stdout(io.StringIO()) as output:
             mepo_status.run(args)
@@ -112,7 +112,7 @@ class TestMepoCommands(unittest.TestCase):
 
     def __mepo_restore_state(self):
         os.chdir(self.__class__.fixture_dir)
-        args = SimpleNamespace(serial=False)
+        args = SimpleNamespace(parallel=True)
         with contextlib.redirect_stdout(io.StringIO()) as _:
             mepo_restore_state.run(args)
         self.__mepo_status(self.__class__.output_clone_status)
@@ -337,7 +337,7 @@ class TestMepoCommands(unittest.TestCase):
             self.__class__.__mepo_clone()
 
     def test_mepo_version(self):
-        self.assertEqual(get_mepo_version(), "2.2.1")
+        self.assertEqual(get_mepo_version(), "2.3.0")
 
     def tearDown(self):
         pass
