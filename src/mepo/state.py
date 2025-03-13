@@ -93,7 +93,7 @@ class MepoState(object):
         if cls.state_exists():
             raise StateAlreadyInitializedError("Error! mepo state already exists")
         components, extensions, overrides = Registry(project_registry).read_file()
-        if extensions is not None:  # extending a base fixture
+        if len(extensions) > 0:  # extending a base fixture
             assert len(components) == 1
             base_fixture = list(components.values())[0]["extends"]
             assert len(base_fixture) == 1

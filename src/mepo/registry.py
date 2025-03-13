@@ -59,8 +59,8 @@ class Registry:
         """Read yaml registry and return a dict containing contents"""
         with open(self.__filename, "r") as fin:
             d = yaml.safe_load(fin)
-        extensions = d.pop("extensions", None)
-        overrides = d.pop("overrides", None)
+        extensions = d.pop("extensions", {})
+        overrides = d.pop("overrides", {})
         self.__validate(d, extensions)
         return (d, extensions, overrides)
 
