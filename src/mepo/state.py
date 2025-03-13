@@ -3,14 +3,23 @@ import sys
 import json
 import glob
 import stat
+import shutil
 import pickle
+import pathlib
+import operator
+from urllib.parse import urljoin, urlparse
 
+try:
+    from contextlib import chdir as contextlib_chdir
+except ImportError:
+    from .utilities.chdir import chdir as contextlib_chdir
+
+from .git import GitRepository, get_current_remote_url
 from .registry import Registry
 from .component import MepoComponent
 from .utilities import colors
 from .utilities.exceptions import StateDoesNotExistError
 from .utilities.exceptions import StateAlreadyInitializedError
-from .utilities.chdir import chdir as mepo_chdir
 
 
 class MepoState(object):
@@ -52,8 +61,7 @@ class MepoState(object):
         state_file = os.path.join(cls.get_dir(), fileptr_name)
         if os.path.exists(state_file):
             return state_file
-        else:
-            raise OSError(f"mepo state file [{state_file}] does not exist")
+        raise OSError(f"mepo state file [{state_file}] does not exist")
 
     @classmethod
     def state_exists(cls, old_style=False):
@@ -63,13 +71,47 @@ class MepoState(object):
         except OSError:
             return False
 
+    @staticmethod
+    def __get_registry_from_base_fixture(base_fixture):
+        name = list(base_fixture.keys())[0]
+        tag, url = operator.itemgetter("tag", "remote")(list(base_fixture.values())[0])
+        if url.startswith("../"):
+            url = urljoin(get_current_remote_url() + "/", url)
+        print(f"Extending base fixture: ({name}, {tag})")
+        p = urlparse(url)
+        last_url_node = p.path.rsplit("/")[-1]
+        tmpdir = "/tmp"
+        directory = os.path.join(tmpdir, pathlib.Path(last_url_node).stem)
+        if os.path.isdir(directory):
+            shutil.rmtree(directory)
+        git = GitRepository(url, directory)
+        git.clone(tag, partial="blobless")
+        return os.path.join(directory, "components.yaml")
+
     @classmethod
     def initialize(cls, project_registry, directory_style):
         if cls.state_exists():
             raise StateAlreadyInitializedError("Error! mepo state already exists")
-        input_components = Registry(project_registry).read_file()
-        complist = list()
-        for name, comp in input_components.items():
+        components, extensions, overrides = Registry(project_registry).read_file()
+        if extensions is not None:  # extending a base fixture
+            assert len(components) == 1
+            base_fixture = list(components.values())[0]["extends"]
+            assert len(base_fixture) == 1
+            # TODO: Ensure that base is indeed a fixture
+            base_registry = cls.__get_registry_from_base_fixture(base_fixture)
+            # base fixture cannot be extensible
+            base_components, _, _ = Registry(base_registry).read_file()
+            components = base_components
+        for key in extensions:
+            print("extending with:", key)
+            assert key not in components
+            components[key] = extensions[key]
+        for key in overrides:
+            print("overriding:", key)
+            assert key in components
+            components[key] = overrides[key]
+        complist = []
+        for name, comp in components.items():
             complist.append(
                 MepoComponent().registry_to_component(name, comp, directory_style)
             )
@@ -165,6 +207,6 @@ class MepoState(object):
         state_fileptr_fullpath = os.path.join(state_dir, cls.__state_fileptr_name)
         if os.path.isfile(state_fileptr_fullpath):
             os.remove(state_fileptr_fullpath)
-        with mepo_chdir(state_dir):
+        with contextlib_chdir(state_dir):
             new_state_filename = os.path.basename(new_state_file)
             os.symlink(new_state_filename, cls.__state_fileptr_name)

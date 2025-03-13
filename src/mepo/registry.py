@@ -1,4 +1,5 @@
 import yaml
+import json
 import pathlib
 
 from .utilities.exceptions import SuffixNotRecognizedError
@@ -15,36 +16,40 @@ class AddBlankLinesDumper(yaml.SafeDumper):
             super().write_line_break()
 
 
-class Registry(object):
+class Registry:
+    """Class implementing reading, writing and validating a mepo registry"""
 
     __slots__ = ["__filename", "__filetype"]
 
     def __init__(self, filename):
         self.__filename = filename
-        SUFFIX_LIST = [".yaml", ".json", ".cfg"]
+        suffix_list = [".yaml", ".json", ".cfg"]
         file_suffix = pathlib.Path(filename).suffix
-        if file_suffix in SUFFIX_LIST:
+        if file_suffix in suffix_list:
             self.__filetype = file_suffix[1:]
         else:
-            raise SuffixNotRecognizedError(
-                "suffix {} not supported".format(file_suffix)
-            )
+            raise SuffixNotRecognizedError(f"suffix {file_suffix} not supported")
 
-    def __validate(self, d):
+    def __validate(self, d, extensions):
         git_tag_types = {"branch", "tag", "hash"}
         num_fixtures = 0
         for k, v in d.items():
             if "fixture" in v:
-                # In case of a fixture, develop is the only additional key
+                assert v["fixture"] is True
                 num_fixtures += 1
-                assert list(v.keys()) == ["fixture", "develop"]
+                v_keys = list(v.keys())
+                required_v_keys = ["fixture", "develop"]
+                # For a fixture develop is a required key, extends is optional
+                assert v_keys in (required_v_keys, required_v_keys + ["extends"])
+                if "extends" in v_keys:  # no other components allowed
+                    assert len(d) == 1, "Only a fixture is allowed when extending"
+                    assert extensions is not None
             else:
-                # For non-fixture, one and only one of branch/tag/hash allowed
+                # For a non-fixture, one and only one of branch/tag/hash allowed
                 xsection = git_tag_types.intersection(set(v.keys()))
                 if len(xsection) != 1:
                     raise ValueError(f"{k} needs one and only one of {git_tag_types}")
-        # Can have one and only one fixture
-        assert num_fixtures == 1
+        assert num_fixtures == 1  # Can have one and only one fixture
 
     def read_file(self):
         """Call read_yaml, read_json etc. using dispatch pattern"""
@@ -52,21 +57,21 @@ class Registry(object):
 
     def read_yaml(self):
         """Read yaml registry and return a dict containing contents"""
-        import yaml
-
         with open(self.__filename, "r") as fin:
             d = yaml.safe_load(fin)
-        self.__validate(d)
-        return d
+        extensions = d.pop("extensions", None)
+        overrides = d.pop("overrides", None)
+        self.__validate(d, extensions)
+        return (d, extensions, overrides)
 
     def read_json(self):
         """Read json registry and return a dict containing contents"""
-        import json
-
         with open(self.__filename, "r") as fin:
             d = json.load(fin)
-        self.__validate(d)
-        return d
+        extensions = d.pop("extensions", None)
+        overrides = d.pop("overrides")
+        self.__validate(d, extensions)
+        return (d, extensions, overrides)
 
     def read_cfg(self):
         """Read python registry and return a dict containing contents"""
@@ -74,7 +79,6 @@ class Registry(object):
 
     def write_yaml(self, d):
         """Dump dict d into a yaml file"""
-        import yaml
 
         with open(self.__filename, "w") as fout:
             yaml.dump(d, fout, sort_keys=False, Dumper=AddBlankLinesDumper)
