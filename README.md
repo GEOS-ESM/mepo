@@ -25,7 +25,7 @@ uv install mepo
 
 #### uvx
 
-If you'd like to run `mepo` without installing it, you can use `uvx` to run it directly from the repository:
+If you'd like to run `mepo` without installing it, you can use `uvx` to run it directly:
 
 ```
 uvx mepo
