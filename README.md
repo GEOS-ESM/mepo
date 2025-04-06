@@ -13,6 +13,24 @@ To install `mepo` using `pip`, run the following command:
 pip install mepo
 ```
 
+### Using uv
+
+#### uv install
+
+You can install `mepo` using the `uv` package manager. To do so, run the following command:
+
+```
+uv install mepo
+```
+
+#### uvx
+
+If you'd like to run `mepo` without installing it, you can use `uvx` to run it directly from the repository:
+
+```
+uvx mepo
+```
+
 ### Homebrew
 
 Using Homebrew, you can install `mepo` by installing from the gmao-si-team tap:
