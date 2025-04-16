@@ -37,7 +37,10 @@ class Registry(object):
             if "fixture" in v:
                 # In case of a fixture, develop is the only additional allowed key
                 num_fixtures += 1
-                assert list(v.keys()) == ["fixture"] or list(v.keys()) == ["fixture", "develop"]
+                assert list(v.keys()) == ["fixture"] or list(v.keys()) == [
+                    "fixture",
+                    "develop",
+                ]
             else:
                 # For non-fixture, one and only one of branch/tag/hash allowed
                 xsection = git_tag_types.intersection(set(v.keys()))
