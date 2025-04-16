@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.3.1] - 2025-04-16
+
+### Fixed
+
+- Fixed `clone` to allow for fixtures without a `develop:` key in `components.yaml`
+
 ## [2.3.0] - 2025-01-12
 
 ### Changed
