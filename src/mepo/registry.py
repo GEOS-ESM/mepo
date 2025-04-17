@@ -35,12 +35,13 @@ class Registry:
         num_fixtures = 0
         for k, v in d.items():
             if "fixture" in v:
+                # in case of a fixture, develop is the only additional allowed key
                 assert v["fixture"] is True
                 num_fixtures += 1
+                required_ = ["fixture"]
+                optional_ = ["develop", "extends"]
                 v_keys = list(v.keys())
-                required_v_keys = ["fixture", "develop"]
-                # For a fixture develop is a required key, extends is optional
-                assert v_keys in (required_v_keys, required_v_keys + ["extends"])
+                assert v_keys in (required_, required_ + optional_)
                 if "extends" in v_keys:  # no other components allowed
                     assert len(d) == 1, "Only a fixture is allowed when extending"
                     assert extensions is not None
