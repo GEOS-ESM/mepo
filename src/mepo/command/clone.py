@@ -68,7 +68,7 @@ def clone_fixture(url, branch=None, directory=None, partial=None):
         last_url_node = p.path.rsplit("/")[-1]
         directory = pathlib.Path(last_url_node).stem
     git = GitRepository(url, directory)
-    git.clone(branch, partial)
+    git.clone(branch, partial=partial)
     return directory
 
 
@@ -105,7 +105,7 @@ def clone_components(allcomps, partial):
         version = comp.version.name
         version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
-        git.clone(version, recurse_submodules, partial)
+        git.clone(version, recurse=recurse_submodules, partial=partial)
         if comp.sparse:
             git.sparsify(comp.sparse)
         print_clone_info(comp.name, comp.version, max_namelen)
@@ -123,4 +123,4 @@ def checkout_all_repos(allcomps, branch):
         branch_y = colors.YELLOW + branch + colors.RESET
         print(f"Checking out {branch_y} in {comp.name}")
         git = GitRepository(comp.remote, comp.local)
-        git.checkout(branch)
+        git.checkout(branch, recurse=comp.recurse_submodules)
