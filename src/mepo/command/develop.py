@@ -20,5 +20,5 @@ def run(args):
                     colors.RESET + comp.name + colors.RESET,
                 )
             )
-        git.checkout(comp.develop)
+        git.checkout(comp.develop, recurse=comp.recurse_submodules)
         _ = git.pull()

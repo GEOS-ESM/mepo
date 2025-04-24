@@ -60,10 +60,12 @@ class GitRepository:
         shellcmd.run(shlex.split(cmd))
 
         if version is not None:
-            self.checkout(version)
+            self.checkout(version, recurse=recurse)
 
-    def checkout(self, version, detach=False):
+    def checkout(self, version, detach=False, recurse=None):
         cmd = self.__git + " checkout "
+        if recurse is not None:
+            cmd += " --recurse-submodules "
         cmd += "--quiet {}".format(version)
         shellcmd.run(shlex.split(cmd))
         if detach:

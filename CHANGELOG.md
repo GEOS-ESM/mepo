@@ -13,6 +13,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.3.2] - 2025-04-24
+
+### Fixed
+
+- Fixed `checkout` command to use `--recurse-submodules` if component has submodules
+
+## [2.3.1] - 2025-04-16
+
+### Fixed
+
+- Fixed `clone` to allow for fixtures without a `develop:` key in `components.yaml`
+
 ## [2.3.0] - 2025-01-12
 
 ### Changed

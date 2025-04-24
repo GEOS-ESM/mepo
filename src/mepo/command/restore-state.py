@@ -41,4 +41,4 @@ def restore_state(allcomps, result):
                     colors.RED + current_version + colors.RESET,
                 )
             )
-            git.checkout(comp.version.name)
+            git.checkout(comp.version.name, recurse=comp.recurse_submodules)
