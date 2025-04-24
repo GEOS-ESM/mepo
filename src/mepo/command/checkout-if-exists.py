@@ -30,4 +30,6 @@ def run(args):
                             colors.RESET + comp.name + colors.RESET,
                         )
                     )
-                git.checkout(ref_name, detach=args.detach, recurse=comp.recurse_submodules)
+                git.checkout(
+                    ref_name, detach=args.detach, recurse=comp.recurse_submodules
+                )
