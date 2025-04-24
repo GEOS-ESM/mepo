@@ -30,7 +30,7 @@ def run(args):
                         colors.RESET + comp.name + colors.RESET,
                     )
                 )
-        git.checkout(branch, args.detach)
+        git.checkout(branch, detach=args.detach, recurse=comp.recurse_submodules)
 
 
 def _get_comps_to_checkout(specified_comps, allcomps):

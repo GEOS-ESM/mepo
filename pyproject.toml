@@ -1,6 +1,6 @@
 [project]
 name = "mepo"
-version = "2.3.1"
+version = "2.3.2"
 description = "A tool for managing (m)ultiple r(epo)s"
 authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
