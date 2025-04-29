@@ -4,7 +4,6 @@ import shlex
 import subprocess as sp
 
 from .utilities import shellcmd
-from .utilities import statcolor
 
 
 def get_editor():
@@ -33,7 +32,7 @@ class GitRepository:
     def __init__(self, remote_url, local_path_abs):
         self.__local_path_abs = local_path_abs
         self.__remote = remote_url
-        self.__git = 'git -C "{}"'.format(self.__local_path_abs)
+        self.__git = f"git -C {self.__local_path_abs}"
 
     def get_local_path(self):
         return self.__local_path_abs
@@ -226,33 +225,11 @@ class GitRepository:
         cmd = f"git -C {self.__local_path_abs}"
         if ignore_permissions:
             cmd += " -c core.fileMode=false"
-        cmd += " status --porcelain=v2"
+        cmd += " status --porcelain=v2 --branch --show-stash"
         if ignore_submodules:
             cmd += " --ignore-submodules=all"
         output = shellcmd.run(shlex.split(cmd), output=True)
-        if output.strip():
-            output_split = output.splitlines()
-            # Grab the file names first for pretty printing
-            file_name_list = [item.split()[-1] for item in output_split]
-            max_len = len(max(file_name_list, key=len))
-            output_list = []
-            for item in output_split:
-                index_ = item.split()[0]
-                short_ = item.split()[1]
-                file_name = item.split()[-1]
-                if index_ == "1":
-                    status_ = statcolor.get_ordinary_change_status(short_)
-                elif index_ == "2":
-                    new_file_ = item.split()[-2]
-                    status_ = statcolor.get_renamed_copied_status(short_, new_file_)
-                elif index_ == "?":
-                    status_ = statcolor.red("untracked file")
-                else:
-                    status_ = statcolor.cyan("unknown") + " (contact mepo maintainer)"
-                status_string_ = f"{file_name:>{max_len}}: {status_}"
-                output_list.append(status_string_)
-            output = "\n".join(output_list)
-        return output.rstrip()
+        return output.strip()
 
     def __get_modified_files(self, orig_ver, comp_type):
         if not orig_ver:
