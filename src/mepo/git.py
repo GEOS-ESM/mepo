@@ -3,11 +3,8 @@ import shutil
 import shlex
 import subprocess as sp
 
-from urllib.parse import urljoin
-
 from .utilities import shellcmd
-from .utilities import colors
-from .utilities.exceptions import RepoAlreadyClonedError
+from .utilities import statcolor
 
 
 def get_editor():
@@ -226,7 +223,7 @@ class GitRepository:
         return status, ref_type
 
     def check_status(self, ignore_permissions=False, ignore_submodules=False):
-        cmd = "git -C {}".format(self.__local_path_abs)
+        cmd = f"git -C {self.__local_path_abs}"
         if ignore_permissions:
             cmd += " -c core.fileMode=false"
         cmd += " status --porcelain=v2"
@@ -234,206 +231,27 @@ class GitRepository:
             cmd += " --ignore-submodules=all"
         output = shellcmd.run(shlex.split(cmd), output=True)
         if output.strip():
-            output_list = output.splitlines()
-
+            output_split = output.splitlines()
             # Grab the file names first for pretty printing
-            file_name_list = [item.split()[-1] for item in output_list]
-            max_file_name_length = len(max(file_name_list, key=len))
-
-            verbose_output_list = []
-            for item in output_list:
-
-                index_field = item.split()[0]
-                if index_field == "2":
-                    new_file_name = colors.YELLOW + item.split()[-2] + colors.RESET
-
+            file_name_list = [item.split()[-1] for item in output_split]
+            max_len = len(max(file_name_list, key=len))
+            output_list = []
+            for item in output_split:
+                index_ = item.split()[0]
+                short_ = item.split()[1]
                 file_name = item.split()[-1]
-
-                short_status = item.split()[1]
-
-                if index_field == "?":
-                    verbose_status = colors.RED + "untracked file" + colors.RESET
-
-                elif short_status == ".D":
-                    verbose_status = colors.RED + "deleted, not staged" + colors.RESET
-                elif short_status == ".M":
-                    verbose_status = colors.RED + "modified, not staged" + colors.RESET
-                elif short_status == ".A":
-                    verbose_status = colors.RED + "added, not staged" + colors.RESET
-                elif short_status == ".T":
-                    verbose_status = (
-                        colors.RED + "typechange, not staged" + colors.RESET
-                    )
-
-                elif short_status == "D.":
-                    verbose_status = colors.GREEN + "deleted, staged" + colors.RESET
-                elif short_status == "M.":
-                    verbose_status = colors.GREEN + "modified, staged" + colors.RESET
-                elif short_status == "A.":
-                    verbose_status = colors.GREEN + "added, staged" + colors.RESET
-                elif short_status == "T.":
-                    verbose_status = colors.GREEN + "typechange, staged" + colors.RESET
-
-                elif short_status == "MM":
-                    verbose_status = (
-                        colors.GREEN
-                        + "modified, staged"
-                        + colors.RESET
-                        + " with "
-                        + colors.RED
-                        + "unstaged changes"
-                        + colors.RESET
-                    )
-                elif short_status == "MD":
-                    verbose_status = (
-                        colors.GREEN
-                        + "modified, staged"
-                        + colors.RESET
-                        + " but "
-                        + colors.RED
-                        + "deleted, not staged"
-                        + colors.RESET
-                    )
-
-                elif short_status == "AM":
-                    verbose_status = (
-                        colors.GREEN
-                        + "added, staged"
-                        + colors.RESET
-                        + " with "
-                        + colors.RED
-                        + "unstaged changes"
-                        + colors.RESET
-                    )
-                elif short_status == "AD":
-                    verbose_status = (
-                        colors.GREEN
-                        + "added, staged"
-                        + colors.RESET
-                        + " but "
-                        + colors.RED
-                        + "deleted, not staged"
-                        + colors.RESET
-                    )
-
-                elif short_status == "TM":
-                    verbose_status = (
-                        colors.GREEN
-                        + "typechange, staged"
-                        + colors.RESET
-                        + " with "
-                        + colors.RED
-                        + "unstaged changes"
-                        + colors.RESET
-                    )
-                elif short_status == "TD":
-                    verbose_status = (
-                        colors.GREEN
-                        + "typechange, staged"
-                        + colors.RESET
-                        + " but "
-                        + colors.RED
-                        + "deleted, not staged"
-                        + colors.RESET
-                    )
-
-                elif short_status == "R.":
-                    verbose_status = (
-                        colors.GREEN
-                        + "renamed"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                    )
-                elif short_status == "RM":
-                    verbose_status = (
-                        colors.GREEN
-                        + "renamed, staged"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                        + " with "
-                        + colors.RED
-                        + "unstaged changes"
-                        + colors.RESET
-                    )
-                elif short_status == "RD":
-                    verbose_status = (
-                        colors.GREEN
-                        + "renamed, staged"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                        + " but "
-                        + colors.RED
-                        + "deleted, not staged"
-                        + colors.RESET
-                    )
-
-                elif short_status == "C.":
-                    verbose_status = (
-                        colors.GREEN
-                        + "copied"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                    )
-                elif short_status == "CM":
-                    verbose_status = (
-                        colors.GREEN
-                        + "copied, staged"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                        + " with "
-                        + colors.RED
-                        + "unstaged changes"
-                        + colors.RESET
-                    )
-                elif short_status == "CD":
-                    verbose_status = (
-                        colors.GREEN
-                        + "copied, staged"
-                        + colors.RESET
-                        + " as "
-                        + colors.YELLOW
-                        + new_file_name
-                        + colors.RESET
-                        + " but "
-                        + colors.RED
-                        + "deleted, not staged"
-                        + colors.RESET
-                    )
-
+                if index_ == "1":
+                    status_ = statcolor.get_ordinary_change_status(short_)
+                elif index_ == "2":
+                    new_file_ = item.split()[-2]
+                    status_ = statcolor.get_renamed_copied_status(short_, new_file_)
+                elif index_ == "?":
+                    status_ = statcolor.red("untracked file")
                 else:
-                    verbose_status = (
-                        colors.CYAN
-                        + "unknown"
-                        + colors.RESET
-                        + " (please contact mepo maintainer)"
-                    )
-
-                verbose_status_string = (
-                    "{file_name:>{file_name_length}}: {verbose_status}".format(
-                        file_name=file_name,
-                        file_name_length=max_file_name_length,
-                        verbose_status=verbose_status,
-                    )
-                )
-                verbose_output_list.append(verbose_status_string)
-
-            output = "\n".join(verbose_output_list)
-
+                    status_ = statcolor.cyan("unknown") + " (contact mepo maintainer)"
+                status_string_ = f"{file_name:>{max_len}}: {status_}"
+                output_list.append(status_string_)
+            output = "\n".join(output_list)
         return output.rstrip()
 
     def __get_modified_files(self, orig_ver, comp_type):
