@@ -91,14 +91,13 @@ def print_component_status(comp, result, width, nocolor=False, hashes=False):
     else:
         component_name = comp.name
 
-    ahead_behind_stash, change_list = parse_output(output)
-    print(f"{component_name:<{width}} | {current_version} {ahead_behind_stash}")
-    for line in change_list:
+    ahead_behind_stash, changes = parse_output(output)
+    print(f"{component_name:<{width}} | {current_version}{ahead_behind_stash}")
+    for line in changes:
         print("   |", line.rstrip())
 
 
 def parse_output(output):
-    # Extract headers
     headers = []
     changes = []
     for item in output.splitlines():
@@ -117,14 +116,14 @@ def parse_headers(headers):
         header = header.strip("# ").split()
         if header[0] == "stash":
             num_stashes = header[1]
-            result += statcolor.yellow(f"[stashes: {num_stashes}]")
+            result += statcolor.yellow(f" [stashes: {num_stashes}]")
         elif header[0] == "branch.ab":
             ahead = int(header[1].lstrip("+"))
             if ahead > 0:
-                result += statcolor.yellow(f"[ahead: {ahead}]")
+                result += statcolor.yellow(f" [ahead: {ahead}]")
             behind = int(header[2].lstrip("-"))
             if behind > 0:
-                result += statcolor.yellow(f"[behind: {behind}]")
+                result += statcolor.yellow(f" [behind: {behind}]")
     return result
 
 
