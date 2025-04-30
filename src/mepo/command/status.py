@@ -143,7 +143,7 @@ def parse_changed_entries(changes):
         elif type_ == "?":
             status_ = statcolor.red("untracked file")
         else:
-            status_ = statcolor.cyan("unknown") + " (contact mepo maintainer)"
+            status_ = statcolor.UNKNOWN
         file_name = item.split()[-1]
         status_string_ = f"{file_name:>{max_len}}: {status_}"
         changes[idx] = status_string_
