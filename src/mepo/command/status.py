@@ -8,6 +8,7 @@ from ..state import MepoState
 from ..git import GitRepository
 from ..utilities import colors
 from ..utilities import shellcmd
+from ..utilities import statcolor
 from ..utilities.version import version_to_string
 from ..utilities.version import sanitize_version_string
 
@@ -55,13 +56,9 @@ def check_component_status(comp, ignore_permissions):
     # This command is to try and work with git tag oddities
     curr_ver = sanitize_version_string(orig_ver, curr_ver, git)
 
-    # We also want to see if there are any stashes in the component
-    num_stashes = len(git.list_stash().splitlines())
-
     return (
         curr_ver,
         internal_state_branch_name,
-        num_stashes,
         git.check_status(ignore_permissions, _ignore_submodules),
     )
 
@@ -75,7 +72,7 @@ def print_status(allcomps, result, max_width, nocolor=False, hashes=False):
 
 def print_component_status(comp, result, width, nocolor=False, hashes=False):
     """Print the status of a single component"""
-    current_version, internal_state_branch_name, num_stashes, output = result
+    current_version, internal_state_branch_name, output = result
     if hashes:
         comp_path = _get_relative_path(comp.local)
         comp_hash = shellcmd.run(
@@ -94,12 +91,60 @@ def print_component_status(comp, result, width, nocolor=False, hashes=False):
     else:
         component_name = comp.name
 
-    # If there are stashes, we print the number of stashes in yellow
-    if num_stashes:
-        stash_str = colors.YELLOW + f"[stashes: {num_stashes}]" + colors.RESET
-        print(f"{component_name:<{width}} | {current_version} {stash_str}")
-    else:
-        print(f"{component_name:<{width}} | {current_version}")
-    if output:
-        for line in output.split("\n"):
-            print("   |", line.rstrip())
+    ahead_behind_stash, changes = parse_output(output)
+    print(f"{component_name:<{width}} | {current_version}{ahead_behind_stash}")
+    for line in changes:
+        print("   |", line.rstrip())
+
+
+def parse_output(output):
+    headers = []
+    changes = []
+    for item in output.splitlines():
+        if item.startswith("#"):
+            headers.append(item)
+        else:
+            changes.append(item)
+    ahead_behind_stash = parse_headers(headers)
+    changes = parse_changed_entries(changes)
+    return (ahead_behind_stash, changes)
+
+
+def parse_headers(headers):
+    result = ""
+    for header in headers:
+        header = header.strip("# ").split()
+        if header[0] == "stash":
+            num_stashes = header[1]
+            result += statcolor.yellow(f" [stashes: {num_stashes}]")
+        elif header[0] == "branch.ab":
+            ahead = int(header[1].lstrip("+"))
+            if ahead > 0:
+                result += statcolor.yellow(f" [ahead: {ahead}]")
+            behind = int(header[2].lstrip("-"))
+            if behind > 0:
+                result += statcolor.yellow(f" [behind: {behind}]")
+    return result
+
+
+def parse_changed_entries(changes):
+    max_len = 0
+    if changes:
+        changed_files = [x.split()[-1] for x in changes]
+        max_len = len(max(changed_files, key=len))
+    for idx, item in enumerate(changes):
+        type_ = item.split()[0]
+        short_ = item.split()[1]
+        if type_ == "1":
+            status_ = statcolor.get_ordinary_change_status(short_)
+        elif type_ == "2":
+            new_file_ = item.split()[-2]
+            status_ = statcolor.get_renamed_copied_status(short_, new_file_)
+        elif type_ == "?":
+            status_ = statcolor.red("untracked file")
+        else:
+            status_ = statcolor.cyan("unknown") + " (contact mepo maintainer)"
+        file_name = item.split()[-1]
+        status_string_ = f"{file_name:>{max_len}}: {status_}"
+        changes[idx] = status_string_
+    return changes
