@@ -337,7 +337,7 @@ class TestMepoCommands(unittest.TestCase):
             self.__class__.__mepo_clone()
 
     def test_mepo_version(self):
-        self.assertEqual(get_mepo_version(), "2.3.2")
+        self.assertEqual(get_mepo_version(), "2.4.0")
 
     def tearDown(self):
         pass

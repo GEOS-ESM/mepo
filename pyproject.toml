@@ -1,6 +1,6 @@
 [project]
 name = "mepo"
-version = "2.3.2"
+version = "2.4.0"
 description = "A tool for managing (m)ultiple r(epo)s"
 authors = [{name="GMAO SI Team", email="siteam@gmao.gsfc.nasa.gov"}]
 dependencies = [
@@ -15,7 +15,7 @@ requires-python = ">= 3.9"
 [project.scripts]
 mepo = "mepo.__main__:main"
 
-[tool.rye]
+[tool.uv]
 managed = true
 dev-dependencies = [
     "black>=24.4.2",
