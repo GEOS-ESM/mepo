@@ -15,7 +15,7 @@ requires-python = ">= 3.9"
 [project.scripts]
 mepo = "mepo.__main__:main"
 
-[tool.rye]
+[tool.uv]
 managed = true
 dev-dependencies = [
     "black>=24.4.2",
