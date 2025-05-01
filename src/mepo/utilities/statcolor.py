@@ -21,6 +21,9 @@ def yellow(string):
     return colors.YELLOW + string + colors.RESET
 
 
+UNKNOWN = cyan("unknown") + " (contact mepo maintainer)"
+
+
 def get_ordinary_change_status(short_status):
     unstaged_ = " with " + red("unstaged changes")
     deleted_unstaged_ = " but " + red("deleted, not staged")
@@ -45,7 +48,7 @@ def get_ordinary_change_status(short_status):
         "TM": green("typechange, staged") + unstaged_,
         "TD": green("typechange, staged") + deleted_unstaged_,
     }
-    return d[short_status]
+    return d.get(short_status, UNKNOWN)
 
 
 def get_renamed_copied_status(short_status, new_file_name):
@@ -62,4 +65,4 @@ def get_renamed_copied_status(short_status, new_file_name):
         "CM": green("copied, staged") + new_file_name_ + unstaged_,
         "CD": green("copied, staged") + new_file_name_ + deleted_unstaged_,
     }
-    return d[short_status]
+    return d.get(short_status, UNKNOWN)

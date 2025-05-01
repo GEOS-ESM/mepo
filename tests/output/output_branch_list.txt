@@ -1,12 +1,9 @@
 ecbuild | * (HEAD detached at geos/v1.3.0)
-        |   release/stable
-        |   remotes/origin/HEAD -> origin/release/stable
+        |   geos/develop
+        |   remotes/origin/HEAD -> origin/geos/develop
         |   remotes/origin/develop
         |   remotes/origin/feature/FindMKL-portability-improvement
-        |   remotes/origin/feature/ecbuild_use_package_quiet
-        |   remotes/origin/feature/netcdf4-cmake
+        |   remotes/origin/geos/develop
         |   remotes/origin/geos/main
         |   remotes/origin/master
         |   remotes/origin/mepo-testing-do-not-delete
-        |   remotes/origin/merge-develop-into-MKL-2025Apr28
-        |   remotes/origin/release/stable
