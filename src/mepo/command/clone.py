@@ -92,7 +92,7 @@ def get_registry(arg_registry):
     return registry
 
 
-def clone_components(allcomps, partial):
+def clone_components(allcomps, arg_partial):
     max_namelen = max([len(comp.name) for comp in allcomps])
     for comp in allcomps:
         if comp.fixture:
@@ -101,7 +101,14 @@ def clone_components(allcomps, partial):
         # According to Git, treeless clones do not interact well with
         # submodules. So if any comp has the recurse option set to True,
         # we do a non-partial clone
-        partial = None if partial == "treeless" and recurse_submodules else partial
+        partial = (
+            None if arg_partial == "treeless" and recurse_submodules else arg_partial
+        )
+
+        # The components.yaml can specify blobless as an option so that wins out
+        if comp.blobless:
+            partial = "blobless"
+
         version = comp.version.name
         version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
