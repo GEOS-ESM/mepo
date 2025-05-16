@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added ahead/behind info to `mepo status`
+- Added `blobless:` option to `components.yaml` to force blobless cloning for a repo
 
 ### Changed
 
