@@ -101,9 +101,9 @@ def clone_components(allcomps, arg_partial):
         # According to Git, treeless clones do not interact well with
         # submodules. So if any comp has the recurse option set to True,
         # we do a non-partial clone
-        partial = (
-            None if arg_partial == "treeless" and recurse_submodules else arg_partial
-        )
+        partial = arg_partial
+        if arg_partial == "treeless" and recurse_submodules:
+            partial = None
 
         # The components.yaml can specify blobless as an option so that wins out
         if comp.blobless:
