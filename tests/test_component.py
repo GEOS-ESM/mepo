@@ -43,6 +43,7 @@ def get_fvdycore_serialized():
         "recurse_submodules": None,
         "fixture": False,
         "ignore_submodules": None,
+        "blobless": None,
     }
 
 
@@ -60,7 +61,6 @@ def test_stylize_local_path():
 
 def test_MepoComponent():
     registry = get_registry()
-    complist = list()
     for name, comp in registry.items():
         if name == "fvdycore":
             fvdycore = MepoComponent().registry_to_component(name, comp, None)
