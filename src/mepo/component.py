@@ -1,5 +1,4 @@
 import os
-import shlex
 
 from dataclasses import dataclass
 from urllib.parse import urljoin
@@ -25,6 +24,7 @@ class MepoComponent(object):
         "recurse_submodules",
         "fixture",
         "ignore_submodules",
+        "blobless",
     ]
 
     def __init__(
@@ -38,6 +38,7 @@ class MepoComponent(object):
         recurse_submodules=None,
         fixture=None,
         ignore_submodules=None,
+        blobless=None,
     ):
         self.name = name
         self.local = local
@@ -48,6 +49,7 @@ class MepoComponent(object):
         self.recurse_submodules = recurse_submodules
         self.fixture = fixture
         self.ignore_submodules = ignore_submodules
+        self.blobless = blobless
 
     def __repr__(self):
         # Older mepo clones will not have ignore_submodules in comp, so
@@ -66,6 +68,7 @@ class MepoComponent(object):
             f"  develop: {self.develop}\n"
             f"  recurse_submodules: {self.recurse_submodules}\n"
             f"  fixture: {self.fixture}\n"
+            f"  blobless: {self.blobless}\n"
             f"  ignore_submodules: {_ignore_submodules}"
         )
 
@@ -131,6 +134,7 @@ class MepoComponent(object):
         self.develop = comp_details.get("develop", None)
         self.recurse_submodules = comp_details.get("recurse_submodules", None)
         self.ignore_submodules = comp_details.get("ignore_submodules", None)
+        self.blobless = comp_details.get("blobless", None)
         # version
         self.__set_original_version(comp_details)
 
@@ -165,6 +169,8 @@ class MepoComponent(object):
                 details["recurse_submodules"] = self.recurse_submodules
             if self.ignore_submodules:
                 details["ignore_submodules"] = self.ignore_submodules
+            if self.blobless:
+                details["blobless"] = self.blobless
         return {self.name: details}
 
     def deserialize(self, d):

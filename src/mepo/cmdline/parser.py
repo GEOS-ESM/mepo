@@ -21,7 +21,8 @@ class LocationAction(argparse._StoreTrueAction):
         super().__init__(option_strings, dest, const, help=help)
 
     def __call__(self, parser, namespace, values, option_string=None):
-        import os, sys
+        import os
+        import sys
         import mepo
 
         print(os.path.dirname(mepo.__file__))
