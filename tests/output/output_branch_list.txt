@@ -3,6 +3,7 @@ ecbuild | * (HEAD detached at geos/v1.3.0)
         |   remotes/origin/HEAD -> origin/geos/develop
         |   remotes/origin/develop
         |   remotes/origin/feature/FindMKL-portability-improvement
+        |   remotes/origin/geos-develop-before-2025May13-merge
         |   remotes/origin/geos/develop
         |   remotes/origin/geos/main
         |   remotes/origin/master
