@@ -52,12 +52,14 @@ class MepoComponent(object):
         self.blobless = blobless
 
     def __repr__(self):
-        # Older mepo clones will not have ignore_submodules in comp, so
+        # Older mepo clones may not have some keys comp, so
         # we need to handle this gracefully
         try:
             _ignore_submodules = self.ignore_submodules
+            _blobless = self.blobless
         except AttributeError:
             _ignore_submodules = None
+            _blobless = None
 
         return (
             f"{self.name} -\n"
@@ -68,7 +70,7 @@ class MepoComponent(object):
             f"  develop: {self.develop}\n"
             f"  recurse_submodules: {self.recurse_submodules}\n"
             f"  fixture: {self.fixture}\n"
-            f"  blobless: {self.blobless}\n"
+            f"  blobless: {_blobless}\n"
             f"  ignore_submodules: {_ignore_submodules}"
         )
 
@@ -175,7 +177,7 @@ class MepoComponent(object):
 
     def deserialize(self, d):
         for k in self.__slots__:
-            v = d[k]
+            v = d.get(k, None)  # for older clones, some keys could be missing
             if k == "version":
                 # list -> namedtuple
                 v = MepoVersion(*v)  # * for arg unpacking
