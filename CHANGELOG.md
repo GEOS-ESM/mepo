@@ -13,6 +13,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [2.4.0] - 2025-05-30
+
+### Fixed
+
+### Added
+
+- Added ahead/behind info to `mepo status`
+- Added `blobless:` option to `components.yaml` to force blobless cloning for a repo
+
+### Changed
+
+- Moved coloring of `git status` output from `src/mepo/git.py` to `src/mepo/command/status/py`
+- Streamlined output processing of `git status`
+- Migrated mepo management from rye to uv
+
 ## [2.3.2] - 2025-04-24
 
 ### Fixed
