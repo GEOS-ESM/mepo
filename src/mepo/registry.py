@@ -46,7 +46,15 @@ class Registry(object):
                 if len(xsection) != 1:
                     raise ValueError(f"{k} needs one and only one of {git_tag_types}")
         # Can have one and only one fixture
-        assert num_fixtures == 1
+        # We must have *exactly* one fixture, not zero or more
+        if num_fixtures < 1:
+            raise ValueError("At least one fixture must be defined in the registry")
+        elif num_fixtures > 1:
+            raise ValueError(
+                "Only one fixture can be defined in the registry, found {}".format(
+                    num_fixtures
+                )
+            )
 
     def read_file(self):
         """Call read_yaml, read_json etc. using dispatch pattern"""
