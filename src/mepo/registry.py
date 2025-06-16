@@ -50,11 +50,8 @@ class Registry(object):
         if num_fixtures < 1:
             raise ValueError("At least one fixture must be defined in the registry")
         elif num_fixtures > 1:
-            raise ValueError(
-                "Only one fixture can be defined in the registry, found {}".format(
-                    num_fixtures
-                )
-            )
+            # Use f-string for better readability
+            raise ValueError(f"Only one fixture can be defined in the registry, found {num_fixtures}")
 
     def read_file(self):
         """Call read_yaml, read_json etc. using dispatch pattern"""
