@@ -20,7 +20,7 @@ pip install mepo
 You can install `mepo` using the `uv` package manager. To do so, run the following command:
 
 ```
-uv install mepo
+uv tool install mepo
 ```
 
 #### uvx
