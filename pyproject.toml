@@ -17,7 +17,9 @@ mepo = "mepo.__main__:main"
 
 [tool.uv]
 managed = true
-dev-dependencies = [
+
+[dependency-groups]
+dev = [
     "black>=24.4.2",
     "pylint>=3.2.0",
     "flake8>=7.0.0",
