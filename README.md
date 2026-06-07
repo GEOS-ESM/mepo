@@ -33,17 +33,36 @@ uvx mepo
 
 ### Homebrew
 
-Using Homebrew, you can install `mepo` by installing from the gmao-si-team tap:
+`mepo` is available from the GMAO-SI-Team Homebrew tap:
 
-```
+```sh
 brew install gmao-si-team/packages/mepo
 ```
 
-This is equivalent to running:
+This direct install form is recommended because it tells Homebrew exactly which formula from the tap you want to install.
 
+#### Homebrew tap trust
+
+Newer Homebrew versions warn about formulae from non-official taps. If you enable tap trust checks, or when Homebrew begins requiring them by default, you may need to explicitly trust this formula or tap.
+
+To trust only the `mepo` formula:
+
+```sh
+brew trust --formula gmao-si-team/packages/mepo
 ```
+
+If you prefer to tap the repository first and then install by short name:
+
+```sh
 brew tap gmao-si-team/packages
+brew trust gmao-si-team/packages
 brew install mepo
+```
+
+Only run `brew trust` for taps or formulae whose maintainers and source repository you trust. To remove the tap later:
+
+```sh
+brew untap gmao-si-team/packages
 ```
 
 ### Spack
