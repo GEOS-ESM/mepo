@@ -8,18 +8,31 @@ jobs:
     name: Lint code
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Install uv
-      uses: astral-sh/setup-uv@v5
+      # Pin the action to a full commit SHA rather than a mutable tag like
+      # `v8`. This avoids supply-chain surprises if the tag is moved or a
+      # future release changes behavior unexpectedly.
+      #
+      # The trailing comment records the human-readable version this SHA
+      # corresponds to. To update this action later, use Dependabot or pick
+      # a newer release tag, then replace this SHA and update the comment.
+      uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
       with:
-          version: "latest"
+        # Pin uv itself too, so linting checks do not change just because
+        # a new uv release was published.
+        version: "0.11.19"
+        # This repository currently does not commit uv.lock. Without a lock
+        # file, setup-uv's cache key cannot be invalidated reliably, so leave
+        # caching off to avoid noisy cache warnings and stale environments.
+        enable-cache: false
 
     - name: Install Python and other dependencies
       run: uv sync
 
     - name: Run pylint
-      run: |
-        source .venv/bin/activate
-        pylint --exit-zero src/mepo
+      # Use `uv run` so this always runs the pylint installed in the project
+      # environment, without needing to manually activate .venv.
+      run: uv run pylint --exit-zero src/mepo
       timeout-minutes: 5
