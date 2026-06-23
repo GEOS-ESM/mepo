@@ -14,8 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated GitHub Actions CI workflows:
-  - All workflows now use `actions/checkout@v6`
-  - All workflows now use `astral-sh/setup-uv` pinned to a specific version (`0.11.19`) with caching disabled
+  - All workflows now use `actions/checkout@v7`
+  - All workflows now use `astral-sh/setup-uv` pinned to a specific SHA (`v8.2.0`) with uv `0.11.23` and caching disabled
   - `run-formatter.yaml` and `run-linter.yaml` now use `uv run` instead of manually activating `.venv`
   - `run-tests.yaml` Python version matrix updated: added 3.13, 3.14, pypy@3.11; removed pypy@3.9; added `fail-fast: false`
 - Updated `pyproject.toml`:
