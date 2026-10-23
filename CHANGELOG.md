@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added retry of failed `git clone` (default 4 attempts, with backoff) to survive transient network errors. Configurable via `attempts` in the `[clone]` section of `~/.mepoconfig`
 - `mepo clone` now shows `[N retries]` next to any component that needed retries
+- Failed clone retries remove the partial directory (only if the clone created it), fixing retries after a blobless checkout failure
 ### Changed
 
 ## [2.4.0] - 2025-05-30

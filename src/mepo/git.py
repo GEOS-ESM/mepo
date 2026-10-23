@@ -66,6 +66,8 @@ class GitRepository:
         # Retry to survive transient network failures (e.g. flaky github.com)
         attempts = get_clone_attempts()
         retries = 0
+        # Only clean up a directory this clone created; never touch existing (e.g. nested) repos
+        existed = os.path.exists(self.__local_path_abs)
         for attempt in range(1, attempts + 1):
             try:
                 shellcmd.run(shlex.split(cmd))
@@ -74,6 +76,9 @@ class GitRepository:
                 if attempt == attempts:
                     raise
                 retries += 1
+                if not existed:
+                    # blobless clones can fail in checkout and leave the dir behind
+                    shutil.rmtree(self.__local_path_abs, ignore_errors=True)
                 delay = 5 * attempt
                 print(
                     f"git clone of {self.__remote} failed, retry {attempt}/{attempts - 1} in {delay}s"
