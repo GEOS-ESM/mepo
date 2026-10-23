@@ -112,15 +112,16 @@ def clone_components(allcomps, arg_partial):
         version = comp.version.name
         version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
-        git.clone(version, recurse=recurse_submodules, partial=partial)
+        retries = git.clone(version, recurse=recurse_submodules, partial=partial)
         if comp.sparse:
             git.sparsify(comp.sparse)
-        print_clone_info(comp.name, comp.version, max_namelen)
+        print_clone_info(comp.name, comp.version, max_namelen, retries)
 
 
-def print_clone_info(comp_name, comp_version, name_width):
+def print_clone_info(comp_name, comp_version, name_width, retries=0):
     ver_name_type = f"({comp_version.type}) {comp_version.name}"
-    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}")
+    suffix = f" [{retries} retries]" if retries else ""
+    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}{suffix}")
 
 
 def checkout_all_repos(allcomps, branch):

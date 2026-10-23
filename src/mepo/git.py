@@ -65,6 +65,7 @@ class GitRepository:
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
         # Retry to survive transient network failures (e.g. flaky github.com)
         attempts = get_clone_attempts()
+        retries = 0
         for attempt in range(1, attempts + 1):
             try:
                 shellcmd.run(shlex.split(cmd))
@@ -72,14 +73,16 @@ class GitRepository:
             except sp.CalledProcessError:
                 if attempt == attempts:
                     raise
+                retries += 1
                 delay = 5 * attempt
                 print(
-                    f"git clone failed, retry {attempt}/{attempts - 1} in {delay}s"
+                    f"git clone of {self.__remote} failed, retry {attempt}/{attempts - 1} in {delay}s"
                 )
                 time.sleep(delay)
 
         if version is not None:
             self.checkout(version, recurse=recurse)
+        return retries
 
     def checkout(self, version, detach=False, recurse=None):
         cmd = self.__git + " checkout "
