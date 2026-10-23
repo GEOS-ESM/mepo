@@ -77,7 +77,8 @@ class GitRepository:
             checkout_cmd = self.__git + " checkout "
             if recurse is not None:
                 checkout_cmd += " --recurse-submodules "
-            checkout_cmd += "--quiet {}".format(version)
+            # --force: a failed attempt can leave a half-switched tree; repo is new, nothing to lose
+            checkout_cmd += "--force --quiet {}".format(version)
             retries += self.__run_with_retries(checkout_cmd, verbose, False)
         return retries
 
