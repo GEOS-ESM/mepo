@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Added retry of failed `git clone` (default 4 attempts, with backoff) to survive transient network errors. Configurable via `attempts` in the `[clone]` section of `~/.mepoconfig`
+
 ### Changed
 
 ## [2.4.0] - 2025-05-30

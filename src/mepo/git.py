@@ -2,8 +2,18 @@ import os
 import shutil
 import shlex
 import subprocess as sp
+import time
 
-from .utilities import shellcmd
+from .utilities import mepoconfig, shellcmd
+
+DEFAULT_CLONE_ATTEMPTS = 4
+
+
+def get_clone_attempts():
+    """Total clone attempts, from [clone] attempts in ~/.mepoconfig (min 1)"""
+    if mepoconfig.has_option("clone", "attempts"):
+        return max(1, int(mepoconfig.get("clone", "attempts")))
+    return DEFAULT_CLONE_ATTEMPTS
 
 
 def get_editor():
@@ -53,7 +63,20 @@ class GitRepository:
         if recurse is not None:
             cmd += " --recurse-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
-        shellcmd.run(shlex.split(cmd))
+        # Retry to survive transient network failures (e.g. flaky github.com)
+        attempts = get_clone_attempts()
+        for attempt in range(1, attempts + 1):
+            try:
+                shellcmd.run(shlex.split(cmd))
+                break
+            except sp.CalledProcessError:
+                if attempt == attempts:
+                    raise
+                delay = 5 * attempt
+                print(
+                    f"git clone failed, retry {attempt}/{attempts - 1} in {delay}s"
+                )
+                time.sleep(delay)
 
         if version is not None:
             self.checkout(version, recurse=recurse)
