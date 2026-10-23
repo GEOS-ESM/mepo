@@ -50,7 +50,7 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version=None, recurse=None, partial=None):
+    def clone(self, version=None, recurse=None, partial=None, verbose=False):
         """
         Execute `git clone` command
         version is tag or branch
@@ -70,22 +70,34 @@ class GitRepository:
         retries = 0
         # Only clean up a directory this clone created; never touch existing (e.g. nested) repos
         existed = os.path.exists(self.__local_path_abs)
+        verbose = verbose or mepoconfig.config.getboolean(
+            "clone", "verbose", fallback=False
+        )
         for attempt in range(1, attempts + 1):
-            try:
-                shellcmd.run(shlex.split(cmd))
+            result = sp.run(
+                shlex.split(cmd),
+                stdout=sp.PIPE,
+                stderr=sp.PIPE,
+                universal_newlines=True,
+            )
+            if result.returncode == 0:
                 break
-            except sp.CalledProcessError:
-                if attempt == attempts:
-                    raise
-                retries += 1
-                if not existed:
-                    # blobless clones can fail in checkout and leave the dir behind
-                    shutil.rmtree(self.__local_path_abs, ignore_errors=True)
-                delay = 5 * attempt
+            last = attempt == attempts
+            # Hide git's error and the retry notice unless verbose (or out of attempts)
+            if verbose or last:
+                print(result.stderr)
+            if last:
+                result.check_returncode()
+            retries += 1
+            if not existed:
+                # blobless clones can fail in checkout and leave the dir behind
+                shutil.rmtree(self.__local_path_abs, ignore_errors=True)
+            delay = 5 * attempt
+            if verbose:
                 print(
                     f"git clone of {self.__remote} failed, retry {attempt}/{attempts - 1} in {delay}s"
                 )
-                time.sleep(delay)
+            time.sleep(delay)
 
         if version is not None:
             self.checkout(version, recurse=recurse)
