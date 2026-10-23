@@ -63,16 +63,31 @@ class GitRepository:
         if recurse is not None:
             cmd += " --recurse-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
-        # Retry to survive transient network failures (e.g. flaky github.com)
-        attempts = get_clone_attempts()
         # Fail fast on dead connections (default ssh waits ~2 min); respect user's own setting
         os.environ.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")
-        retries = 0
         # Only clean up a directory this clone created; never touch existing (e.g. nested) repos
-        existed = os.path.exists(self.__local_path_abs)
+        cleanup = not os.path.exists(self.__local_path_abs)
         verbose = verbose or mepoconfig.config.getboolean(
             "clone", "verbose", fallback=False
         )
+        retries = self.__run_with_retries(cmd, verbose, cleanup)
+
+        if version is not None:
+            # blobless checkouts fetch from the remote, so they can fail transiently too
+            checkout_cmd = self.__git + " checkout "
+            if recurse is not None:
+                checkout_cmd += " --recurse-submodules "
+            checkout_cmd += "--quiet {}".format(version)
+            retries += self.__run_with_retries(checkout_cmd, verbose, False)
+        return retries
+
+    def __run_with_retries(self, cmd, verbose, cleanup):
+        """
+        Run cmd, retrying on failure to survive transient network errors.
+        Returns the number of retries used.
+        """
+        attempts = get_clone_attempts()
+        retries = 0
         for attempt in range(1, attempts + 1):
             result = sp.run(
                 shlex.split(cmd),
@@ -81,7 +96,7 @@ class GitRepository:
                 universal_newlines=True,
             )
             if result.returncode == 0:
-                break
+                return retries
             last = attempt == attempts
             # Hide git's error and the retry notice unless verbose (or out of attempts)
             if verbose or last:
@@ -89,19 +104,15 @@ class GitRepository:
             if last:
                 result.check_returncode()
             retries += 1
-            if not existed:
+            if cleanup:
                 # blobless clones can fail in checkout and leave the dir behind
                 shutil.rmtree(self.__local_path_abs, ignore_errors=True)
             delay = 5 * attempt
             if verbose:
                 print(
-                    f"git clone of {self.__remote} failed, retry {attempt}/{attempts - 1} in {delay}s"
+                    f"git failed ({self.__remote}), retry {attempt}/{attempts - 1} in {delay}s"
                 )
             time.sleep(delay)
-
-        if version is not None:
-            self.checkout(version, recurse=recurse)
-        return retries
 
     def checkout(self, version, detach=False, recurse=None):
         cmd = self.__git + " checkout "

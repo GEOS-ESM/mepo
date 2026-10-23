@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Added retry of failed `git clone` (default 4 attempts, with backoff) to survive transient network errors. Configurable via `attempts` in the `[clone]` section of `~/.mepoconfig`
+- Added retry of failed `git clone` (and the post-clone checkout) (default 4 attempts, with backoff) to survive transient network errors. Configurable via `attempts` in the `[clone]` section of `~/.mepoconfig`
 - `mepo clone` now shows `[N retries]` next to any component that needed retries
 - Retry details (git's error and retry notice) are hidden unless `--verbose`/`-v` is passed to `mepo clone` or `verbose = true` is set in the `[clone]` section of `~/.mepoconfig`
 - `mepo clone` sets an ssh `ConnectTimeout` of 20s (unless `GIT_SSH_COMMAND` is already set) so dead connections fail fast and retry
