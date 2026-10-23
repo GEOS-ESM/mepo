@@ -65,6 +65,8 @@ class GitRepository:
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
         # Retry to survive transient network failures (e.g. flaky github.com)
         attempts = get_clone_attempts()
+        # Fail fast on dead connections (default ssh waits ~2 min); respect user's own setting
+        os.environ.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")
         retries = 0
         # Only clean up a directory this clone created; never touch existing (e.g. nested) repos
         existed = os.path.exists(self.__local_path_abs)
