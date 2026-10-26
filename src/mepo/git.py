@@ -5,6 +5,7 @@ import subprocess as sp
 import time
 
 from .utilities import mepoconfig, shellcmd
+from .utilities.exceptions import RepoAlreadyClonedError
 
 DEFAULT_CLONE_ATTEMPTS = 4
 
@@ -71,6 +72,11 @@ class GitRepository:
         cleanup = not os.path.exists(path) or (
             os.path.isdir(path) and not os.listdir(path)
         )
+        if not cleanup:
+            raise RepoAlreadyClonedError(
+                f"'{path}' already exists and is not empty. Has 'mepo clone' "
+                "already been run here? Remove the directory, or use 'mepo reset --reclone'."
+            )
         verbose = verbose or mepoconfig.config.getboolean(
             "clone", "verbose", fallback=False
         )
