@@ -8,7 +8,7 @@ jobs:
     name: Lint code
     steps:
     - name: Checkout code
-      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
     - name: Install uv
       # Pin the action to a full commit SHA rather than a mutable tag like
@@ -18,11 +18,11 @@ jobs:
       # The trailing comment records the human-readable version this SHA
       # corresponds to. To update this action later, use Dependabot or pick
       # a newer release tag, then replace this SHA and update the comment.
-      uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+      uses: astral-sh/setup-uv@07a047e608db84b3d8c06cd9a7c7dcc9c355c18e # v10.3.2
       with:
         # Pin uv itself too, so linting checks do not change just because
         # a new uv release was published.
-        version: "0.11.23"
+        version: "0.13.5"
         # This repository currently does not commit uv.lock. Without a lock
         # file, setup-uv's cache key cannot be invalidated reliably, so leave
         # caching off to avoid noisy cache warnings and stale environments.
