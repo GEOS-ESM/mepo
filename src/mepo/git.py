@@ -65,8 +65,12 @@ class GitRepository:
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
         # Fail fast on dead connections (default ssh waits ~2 min); respect user's own setting
         os.environ.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")
-        # Only clean up a directory this clone created; never touch existing (e.g. nested) repos
-        cleanup = not os.path.exists(self.__local_path_abs)
+        # Only clean up a directory this clone created (or an empty one, e.g. a submodule
+        # placeholder); never touch existing non-empty (e.g. nested) repos
+        path = self.__local_path_abs
+        cleanup = not os.path.exists(path) or (
+            os.path.isdir(path) and not os.listdir(path)
+        )
         verbose = verbose or mepoconfig.config.getboolean(
             "clone", "verbose", fallback=False
         )
