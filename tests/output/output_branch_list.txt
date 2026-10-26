@@ -6,5 +6,6 @@ ecbuild | * (HEAD detached at geos/v1.3.0)
         |   remotes/origin/geos-develop-before-2025May13-merge
         |   remotes/origin/geos/develop
         |   remotes/origin/geos/main
+        |   remotes/origin/geos/release/3.13.1
         |   remotes/origin/master
         |   remotes/origin/mepo-testing-do-not-delete
