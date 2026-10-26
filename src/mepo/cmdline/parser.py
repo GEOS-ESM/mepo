@@ -159,6 +159,13 @@ class MepoArgParser:
                 """),
         )
 
+        clone.add_argument(
+            "--verbose",
+            "-v",
+            action="store_true",
+            help="Show git's error output and retry notices for failed clone attempts (or set verbose = true in [clone] of ~/.mepoconfig)",
+        )
+
     def __list(self):
         listcomps = self.subparsers.add_parser(
             "list",

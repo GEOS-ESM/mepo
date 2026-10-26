@@ -81,6 +81,7 @@ def run(args):
                 "registry": None,
                 "allrepos": False,
                 "style": None,
+                "partial": None,
             },
         )
         if not args.dry_run:
