@@ -2,8 +2,19 @@ import os
 import shutil
 import shlex
 import subprocess as sp
+import time
 
-from .utilities import shellcmd
+from .utilities import mepoconfig, shellcmd
+from .utilities.exceptions import RepoAlreadyClonedError
+
+DEFAULT_CLONE_ATTEMPTS = 4
+
+
+def get_clone_attempts():
+    """Total clone attempts, from [clone] attempts in ~/.mepoconfig (min 1)"""
+    if mepoconfig.has_option("clone", "attempts"):
+        return max(1, int(mepoconfig.get("clone", "attempts")))
+    return DEFAULT_CLONE_ATTEMPTS
 
 
 def get_editor():
@@ -40,7 +51,7 @@ class GitRepository:
     def get_remote_url(self):
         return self.__remote
 
-    def clone(self, version=None, recurse=None, partial=None):
+    def clone(self, version=None, recurse=None, partial=None, verbose=False):
         """
         Execute `git clone` command
         version is tag or branch
@@ -53,10 +64,66 @@ class GitRepository:
         if recurse is not None:
             cmd += " --recurse-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
-        shellcmd.run(shlex.split(cmd))
+        # Fail fast on dead connections (default ssh waits ~2 min); respect user's own setting
+        os.environ.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")
+        # Only clean up a directory this clone created (or an empty one, e.g. a submodule
+        # placeholder); never touch existing non-empty (e.g. nested) repos
+        path = self.__local_path_abs
+        cleanup = not os.path.exists(path) or (
+            os.path.isdir(path) and not os.listdir(path)
+        )
+        if not cleanup:
+            raise RepoAlreadyClonedError(
+                f"'{path}' already exists and is not empty. Has 'mepo clone' "
+                "already been run here? Remove the directory, or use 'mepo reset --reclone'."
+            )
+        verbose = verbose or mepoconfig.config.getboolean(
+            "clone", "verbose", fallback=False
+        )
+        retries = self.__run_with_retries(cmd, verbose, cleanup)
 
         if version is not None:
-            self.checkout(version, recurse=recurse)
+            # blobless checkouts fetch from the remote, so they can fail transiently too
+            checkout_cmd = self.__git + " checkout "
+            if recurse is not None:
+                checkout_cmd += " --recurse-submodules "
+            # --force: a failed attempt can leave a half-switched tree; repo is new, nothing to lose
+            checkout_cmd += "--force --quiet {}".format(version)
+            retries += self.__run_with_retries(checkout_cmd, verbose, False)
+        return retries
+
+    def __run_with_retries(self, cmd, verbose, cleanup):
+        """
+        Run cmd, retrying on failure to survive transient network errors.
+        Returns the number of retries used.
+        """
+        attempts = get_clone_attempts()
+        retries = 0
+        for attempt in range(1, attempts + 1):
+            result = sp.run(
+                shlex.split(cmd),
+                stdout=sp.PIPE,
+                stderr=sp.PIPE,
+                universal_newlines=True,
+            )
+            if result.returncode == 0:
+                return retries
+            last = attempt == attempts
+            # Hide git's error and the retry notice unless verbose (or out of attempts)
+            if verbose or last:
+                print(result.stderr)
+            if last:
+                result.check_returncode()
+            retries += 1
+            if cleanup:
+                # blobless clones can fail in checkout and leave the dir behind
+                shutil.rmtree(self.__local_path_abs, ignore_errors=True)
+            delay = 5 * attempt
+            if verbose:
+                print(
+                    f"git failed ({self.__remote}), retry {attempt}/{attempts - 1} in {delay}s"
+                )
+            time.sleep(delay)
 
     def checkout(self, version, detach=False, recurse=None):
         cmd = self.__git + " checkout "
