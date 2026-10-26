@@ -148,8 +148,7 @@ class MepoArgParser:
             nargs="?",
             default=None,
             choices=[None, "blobless", "treeless"],
-            help=(
-                """
+            help=("""
                 Style of partial clone, default: %(default)s.
                 Allowed options: %(choices)s.
                 None: normal full git clone,
@@ -157,8 +156,7 @@ class MepoArgParser:
                 treeless: cloning with "--filter=tree:0".
                 NOTE: We do *not* recommend using "treeless" as it is very
                 aggressive and will cause problems with many git commands.
-                """
-            ),
+                """),
         )
 
     def __list(self):
