@@ -21,7 +21,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Moved Git-wide retry settings `attempts` and `verbose` from `[clone]` to `[git]` in `~/.mepoconfig` (defaults: 4 total attempts, verbosity off). Users who configured these in 2.5.0 must move them to `[git]`.
+- Moved Git-wide retry settings `attempts` and `verbose` from `[clone]` to `[git]` in `~/.mepoconfig` (defaults: 6 total attempts, verbosity off). Users who configured these in 2.5.0 must move them to `[git]`.
+- Increased the default from 4 to 6 total attempts for unreliable connections (five retries with 75 seconds of backoff in total, plus Git execution time). Explicit `git.attempts` settings still take precedence.
 - Updated configuration documentation and command help, and documented how to regenerate the wiki command reference.
 
 ## [2.5.0] - 2026-10-26

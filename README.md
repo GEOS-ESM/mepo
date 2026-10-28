@@ -103,16 +103,16 @@ The defaults are:
 
 ```ini
 [git]
-attempts = 4
+attempts = 6
 verbose = false
 ```
 
-`attempts` counts the initial attempt, with a minimum of 1. Retries wait 5, 10, 15, ... seconds; set `attempts = 1` to disable retries. Retry detection currently recognizes English Git/SSH diagnostics only.
+`attempts` counts the initial attempt, with a minimum of 1. Retries wait 5, 10, 15, ... seconds; the default allows five retries with 75 seconds of backoff in total, plus Git execution time. Set `attempts = 1` to disable retries. Retry detection currently recognizes English Git/SSH diagnostics only.
 
 To configure retries and enable diagnostics for retried commands:
 
 ```sh
-mepo config set git.attempts 4
+mepo config set git.attempts 6
 mepo config set git.verbose true
 ```
 

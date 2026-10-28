@@ -9,7 +9,7 @@ from . import mepoconfig
 def run_with_retries(cmd, verbose=False, cleanup=None):
     """Return (result, retry count); cleanup is only for a new clone's directory."""
     config = mepoconfig.config
-    attempts = max(1, config.getint("git", "attempts", fallback=4))
+    attempts = max(1, config.getint("git", "attempts", fallback=6))
     verbose = verbose or config.getboolean("git", "verbose", fallback=False)
     env = os.environ.copy()
     env.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")

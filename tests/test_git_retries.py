@@ -87,8 +87,14 @@ def test_attempt_limit_and_final_error(runner, capsys):
     runner.return_value = result(1, stderr=TIMEOUT)
     with pytest.raises(sp.CalledProcessError):
         shellcmd.run(["git", "pull"], retry=True)
-    assert runner.call_count == 4
-    assert shellcmd.time.sleep.call_args_list == [call(5), call(10), call(15)]
+    assert runner.call_count == 6
+    assert shellcmd.time.sleep.call_args_list == [
+        call(5),
+        call(10),
+        call(15),
+        call(20),
+        call(25),
+    ]
     assert capsys.readouterr().out.count(TIMEOUT) == 1
 
 
@@ -109,14 +115,14 @@ def test_verbose_and_stdout_mode(runner, capsys):
     assert shellcmd.run(["git", "ls-remote"], stdout=True, retry=True) == "hash"
     output = capsys.readouterr().out
     assert TIMEOUT in output
-    assert "retry 1/3 in 5s" in output
+    assert "retry 1/5 in 5s" in output
 
 
 def test_clone_settings_do_not_control_retries(runner, capsys):
     mepoconfig.config.read_dict({"clone": {"attempts": "1", "verbose": "true"}})
     runner.return_value = result(1, stderr=TIMEOUT)
     assert shellcmd.run(["git", "fetch"], status=True, retry=True) == 1
-    assert runner.call_count == 4
+    assert runner.call_count == 6
     assert capsys.readouterr().out == ""
 
 
@@ -124,7 +130,7 @@ def test_explicit_verbose_overrides_config(runner, capsys):
     mepoconfig.config.read_dict({"git": {"verbose": "false"}})
     runner.side_effect = [result(1, stderr=TIMEOUT), result()]
     shellcmd.run_with_retries(["git", "clone"], verbose=True)
-    assert "retry 1/3 in 5s" in capsys.readouterr().out
+    assert "retry 1/5 in 5s" in capsys.readouterr().out
 
 
 def test_invalid_attempts_rejected(runner):
