@@ -7,11 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.6.0] - 2026-10-28
+
 ### Fixed
+
+- Retry transient Git transport failures during checkout, pull, fetch, and read-only operations that can fetch missing objects in partial clones, including `mepo develop`. Reuse the retry settings and SSH connection timeout; directory cleanup remains clone-only.
+- Fail immediately on non-transport Git errors (including missing branches/tags, authentication failures, and merge conflicts), rather than retrying them during clone.
+- Fixed command documentation generation to use the installed Python module, preserve multiline help, recognize current argument headings, and include all commands and options.
 
 ### Added
 
+- Added regression tests for Git retries and command documentation generation.
+
 ### Changed
+
+- Moved Git-wide retry settings `attempts` and `verbose` from `[clone]` to `[git]` in `~/.mepoconfig` (defaults: 4 total attempts, verbosity off). Users who configured these in 2.5.0 must move them to `[git]`.
+- Updated configuration documentation and command help, and documented how to regenerate the wiki command reference.
 
 ## [2.5.0] - 2026-10-26
 

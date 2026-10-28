@@ -81,7 +81,7 @@ class MepoArgParser:
         )
         init = self.subparsers.add_parser(
             "init",
-            description="Initialize mepo based on `config-file`",
+            description="Initialize mepo from a component registry (deprecated; use clone instead, init will be removed in version 3)",
             aliases=mepoconfig.get_command_alias("init"),
         )
         init.add_argument(
@@ -148,7 +148,8 @@ class MepoArgParser:
             nargs="?",
             default=None,
             choices=[None, "blobless", "treeless"],
-            help=("""
+            help=(
+                """
                 Style of partial clone, default: %(default)s.
                 Allowed options: %(choices)s.
                 None: normal full git clone,
@@ -156,14 +157,15 @@ class MepoArgParser:
                 treeless: cloning with "--filter=tree:0".
                 NOTE: We do *not* recommend using "treeless" as it is very
                 aggressive and will cause problems with many git commands.
-                """),
+                """
+            ),
         )
 
         clone.add_argument(
             "--verbose",
             "-v",
             action="store_true",
-            help="Show git's error output and retry notices for failed clone attempts (or set verbose = true in [clone] of ~/.mepoconfig)",
+            help="Show git's error output and retry notices for clone and post-clone checkout attempts (or set verbose = true in [git] of ~/.mepoconfig)",
         )
 
     def __list(self):
@@ -541,6 +543,6 @@ class MepoArgParser:
     def __update_state(self):
         _ = self.subparsers.add_parser(
             "update-state",
-            description="Permanently update mepo1 state to current",
+            description="Permanently convert mepo version 1 state (pickle) to the current JSON format",
             aliases=mepoconfig.get_command_alias("update-state"),
         )
