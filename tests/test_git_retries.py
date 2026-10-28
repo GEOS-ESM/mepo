@@ -10,7 +10,6 @@ from mepo.git import GitRepository
 from mepo.utilities import mepoconfig, shellcmd
 from mepo.utilities.exceptions import RepoAlreadyClonedError
 
-
 TIMEOUT = (
     "ssh: connect to host github.com port 22: Connection timed out\n"
     "fatal: Could not read from remote repository.\n"

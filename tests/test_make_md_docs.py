@@ -6,7 +6,6 @@ from unittest.mock import Mock
 import pytest
 from mdutils.mdutils import MdUtils
 
-
 spec = importlib.util.spec_from_file_location(
     "make_md_docs", Path(__file__).parents[1] / "docs" / "make_md_docs.py"
 )
