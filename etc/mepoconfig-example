@@ -2,7 +2,7 @@
 #
 # .mepoconfig is a config file a la gitconfig with sections and options.
 #
-# Currently, .mepoconfig files recognize three sections: [init], [alias], and [clone].
+# Currently, .mepoconfig files recognize [init], [alias], [clone], and [git].
 #
 # =======================================================================
 #
@@ -81,3 +81,35 @@
 #   You set these options by running:
 #
 #     mepo config set clone.partial <value>
+#
+# =======================================================================
+#
+# [git] Section
+#
+#   Git transport retries use this section (including clone, checkout, pull,
+#   fetch, and read-only commands that fetch missing partial-clone objects):
+#
+#     [git]
+#     attempts = 6
+#     verbose = false
+#
+#   Unspecified options use the defaults shown above.
+#   You can set these options with mepo config set git.attempts <value> and
+#   mepo config set git.verbose <true|false>.
+#
+#   attempts is the total number of attempts (minimum 1), with waits of
+#   5, 10, 15, ... seconds between retries. Only recognized transient network
+#   failures are retried. The default allows five retries with 75 seconds of
+#   backoff in total, plus Git execution time. Missing branches/tags,
+#   authentication failures, and merge conflicts are not retried.
+#   Detection currently recognizes English diagnostics only.
+#   Set attempts = 1 to disable retries. Push, commit, and stash-changing
+#   operations are not automatically retried.
+#   verbose shows failed attempts and retry notices; final errors always show.
+#   mepo clone --verbose also enables notices for that clone invocation.
+#   Retried commands default to ssh -o ConnectTimeout=20, unless
+#   GIT_SSH_COMMAND is already set. This limits connection setup, not the whole
+#   Git operation. Existing repositories are never deleted by retry cleanup.
+#
+#   Upgrading from 2.5.0: move attempts and verbose from [clone] to [git].
+#   The old locations are no longer read; partial remains under [clone].

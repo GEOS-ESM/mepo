@@ -2,19 +2,9 @@ import os
 import shutil
 import shlex
 import subprocess as sp
-import time
 
-from .utilities import mepoconfig, shellcmd
+from .utilities import shellcmd
 from .utilities.exceptions import RepoAlreadyClonedError
-
-DEFAULT_CLONE_ATTEMPTS = 4
-
-
-def get_clone_attempts():
-    """Total clone attempts, from [clone] attempts in ~/.mepoconfig (min 1)"""
-    if mepoconfig.has_option("clone", "attempts"):
-        return max(1, int(mepoconfig.get("clone", "attempts")))
-    return DEFAULT_CLONE_ATTEMPTS
 
 
 def get_editor():
@@ -64,8 +54,6 @@ class GitRepository:
         if recurse is not None:
             cmd += " --recurse-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
-        # Fail fast on dead connections (default ssh waits ~2 min); respect user's own setting
-        os.environ.setdefault("GIT_SSH_COMMAND", "ssh -o ConnectTimeout=20")
         # Only clean up a directory this clone created (or an empty one, e.g. a submodule
         # placeholder); never touch existing non-empty (e.g. nested) repos
         path = self.__local_path_abs
@@ -77,9 +65,6 @@ class GitRepository:
                 f"'{path}' already exists and is not empty. Has 'mepo clone' "
                 "already been run here? Remove the directory, or use 'mepo reset --reclone'."
             )
-        verbose = verbose or mepoconfig.config.getboolean(
-            "clone", "verbose", fallback=False
-        )
         retries = self.__run_with_retries(cmd, verbose, cleanup)
 
         if version is not None:
@@ -93,47 +78,25 @@ class GitRepository:
         return retries
 
     def __run_with_retries(self, cmd, verbose, cleanup):
-        """
-        Run cmd, retrying on failure to survive transient network errors.
-        Returns the number of retries used.
-        """
-        attempts = get_clone_attempts()
-        retries = 0
-        for attempt in range(1, attempts + 1):
-            result = sp.run(
-                shlex.split(cmd),
-                stdout=sp.PIPE,
-                stderr=sp.PIPE,
-                universal_newlines=True,
-            )
-            if result.returncode == 0:
-                return retries
-            last = attempt == attempts
-            # Hide git's error and the retry notice unless verbose (or out of attempts)
-            if verbose or last:
-                print(result.stderr)
-            if last:
-                result.check_returncode()
-            retries += 1
-            if cleanup:
-                # blobless clones can fail in checkout and leave the dir behind
-                shutil.rmtree(self.__local_path_abs, ignore_errors=True)
-            delay = 5 * attempt
-            if verbose:
-                print(
-                    f"git failed ({self.__remote}), retry {attempt}/{attempts - 1} in {delay}s"
-                )
-            time.sleep(delay)
+        result, retries = shellcmd.run_with_retries(
+            shlex.split(cmd),
+            verbose=verbose,
+            cleanup=self.__local_path_abs if cleanup else None,
+        )
+        if result.returncode != 0:
+            print(result.stderr)
+            result.check_returncode()
+        return retries
 
     def checkout(self, version, detach=False, recurse=None):
         cmd = self.__git + " checkout "
         if recurse is not None:
             cmd += " --recurse-submodules "
         cmd += "--quiet {}".format(version)
-        shellcmd.run(shlex.split(cmd))
+        shellcmd.run(shlex.split(cmd), retry=True)
         if detach:
             cmd2 = self.__git + " checkout --detach"
-            shellcmd.run(shlex.split(cmd2))
+            shellcmd.run(shlex.split(cmd2), retry=True)
 
     def sparsify(self, sparse_config):
         dst = os.path.join(self.__local_path_abs, ".git", "info", "sparse-checkout")
@@ -142,7 +105,7 @@ class GitRepository:
         cmd1 = self.__git + " config core.sparseCheckout true"
         shellcmd.run(shlex.split(cmd1))
         cmd2 = self.__git + " read-tree -mu HEAD"
-        shellcmd.run(shlex.split(cmd2))
+        shellcmd.run(shlex.split(cmd2), retry=True)
 
     def list_branch(self, all=False, nocolor=False):
         cmd = self.__git + " branch"
@@ -150,25 +113,25 @@ class GitRepository:
             cmd += " -a"
         if nocolor:
             cmd += " --color=never"
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def list_tags(self):
         cmd = self.__git + " tag"
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def rev_list(self, tag):
         cmd = self.__git + " rev-list -n 1 {}".format(tag)
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def rev_parse(self, short=False):
         cmd = self.__git + " rev-parse --verify HEAD"
         if short:
             cmd += " --short"
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def list_stash(self):
         cmd = self.__git + " stash list"
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def pop_stash(self):
         cmd = self.__git + " stash pop"
@@ -188,7 +151,7 @@ class GitRepository:
         cmd = self.__git + " stash show"
         if patch:
             cmd += " -p --color"
-        output = shellcmd.run(shlex.split(cmd), output=True)
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True)
         return output.rstrip()
 
     def run_diff(self, args=None, ignore_submodules=False):
@@ -206,7 +169,7 @@ class GitRepository:
             cmd += " --ignore-space-change"
         if ignore_submodules:
             cmd += " --ignore-submodules=all"
-        output = shellcmd.run(shlex.split(cmd), output=True)
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True)
         return output.rstrip()
 
     def fetch(self, args=None):
@@ -219,7 +182,7 @@ class GitRepository:
             cmd += " --tags"
         if args.force:
             cmd += " --force"
-        return shellcmd.run(shlex.split(cmd), output=True)
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True)
 
     def create_branch(self, branch_name):
         cmd = self.__git + " branch {}".format(branch_name)
@@ -278,10 +241,10 @@ class GitRepository:
     def verify_branch_or_tag(self, ref_name):
         branch_cmd = self.__git + f" show-branch remotes/origin/{ref_name}"
         tag_cmd = self.__git + f" rev-parse {ref_name}"
-        branch_status = shellcmd.run(shlex.split(branch_cmd), status=True)
+        branch_status = shellcmd.run(shlex.split(branch_cmd), status=True, retry=True)
         ref_type = "UNKNOWN"
         if branch_status != 0:
-            status = shellcmd.run(shlex.split(tag_cmd), status=True)
+            status = shellcmd.run(shlex.split(tag_cmd), status=True, retry=True)
             ref_type = "Tag"
         else:
             status = branch_status
@@ -295,7 +258,7 @@ class GitRepository:
         cmd += " status --porcelain=v2 --branch --show-stash"
         if ignore_submodules:
             cmd += " --ignore-submodules=all"
-        output = shellcmd.run(shlex.split(cmd), output=True)
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True)
         return output.strip()
 
     def __get_modified_files(self, orig_ver, comp_type):
@@ -306,12 +269,12 @@ class GitRepository:
                 cmd = self.__git + " diff --name-only origin/{}".format(orig_ver)
             else:
                 cmd = self.__git + " diff --name-only {}".format(orig_ver)
-        output = shellcmd.run(shlex.split(cmd), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
         return output.split("\n") if output else []
 
     def __get_untracked_files(self):
         cmd = self.__git + " ls-files --others --exclude-standard"
-        output = shellcmd.run(shlex.split(cmd), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
         return output.split("\n") if output else []
 
     def get_changed_files(self, untracked=False, orig_ver=None, comp_type=None):
@@ -326,7 +289,7 @@ class GitRepository:
 
     def get_staged_files(self):
         cmd = self.__git + " diff --name-only --staged"
-        output = shellcmd.run(shlex.split(cmd), output=True).strip()
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
         return output.split("\n") if output else []
 
     def unstage_file(self, myfile):
@@ -349,7 +312,7 @@ class GitRepository:
     def get_remote_latest_commit_id(self, branch, commit_type):
         if commit_type == "h":
             cmd = self.__git + " cat-file -e {}".format(branch)
-            status = shellcmd.run(shlex.split(cmd), status=True)
+            status = shellcmd.run(shlex.split(cmd), status=True, retry=True)
             if status != 0:
                 msg = "Hash {} does not exist on {}".format(branch, self.__remote)
                 msg += " Have you run 'mepo push'?"
@@ -368,26 +331,26 @@ class GitRepository:
             cmd = self.__git + " ls-remote {} refs/{}/{}".format(
                 self.__remote, reftype, branch
             )
-            output = shellcmd.run(shlex.split(cmd), stdout=True).strip()
+            output = shellcmd.run(shlex.split(cmd), stdout=True, retry=True).strip()
             if not output:
                 # msg = '{} {} does not exist on {}'.format(msgtype, branch, self.__remote)
                 # msg += " Have you run 'mepo push'?"
                 # raise RuntimeError(msg)
                 cmd = self.__git + " rev-parse HEAD"
-            output = shellcmd.run(shlex.split(cmd), output=True).strip()
+            output = shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
             return output.split()[0]
 
     def get_local_latest_commit_id(self):
         cmd = self.__git + " rev-parse HEAD"
-        return shellcmd.run(shlex.split(cmd), output=True).strip()
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
 
     def pull(self):
         cmd = self.__git + " pull"
-        return shellcmd.run(shlex.split(cmd), output=True).strip()
+        return shellcmd.run(shlex.split(cmd), output=True, retry=True).strip()
 
     def get_version(self):
         cmd = self.__git + " show -s --pretty=%D HEAD"
-        output = shellcmd.run(shlex.split(cmd), output=True)
+        output = shellcmd.run(shlex.split(cmd), output=True, retry=True)
         if output.startswith("HEAD ->"):  # an actual branch
             detached = False
             name = output.split(",")[0].split("->")[1].strip()
@@ -407,13 +370,13 @@ class GitRepository:
                 tYpe = "b"
         elif output.startswith("HEAD"):  # Assume hash
             cmd = self.__git + " rev-parse HEAD"
-            hash_out = shellcmd.run(shlex.split(cmd), output=True)
+            hash_out = shellcmd.run(shlex.split(cmd), output=True, retry=True)
             detached = True
             name = hash_out.rstrip()
             tYpe = "h"
         elif output.startswith("grafted"):
             cmd = self.__git + " describe --always"
-            hash_out = shellcmd.run(shlex.split(cmd), output=True)
+            hash_out = shellcmd.run(shlex.split(cmd), output=True, retry=True)
             detached = True
             name = hash_out.rstrip()
             tYpe = "h"

@@ -1,4 +1,4 @@
-# mepo [![Actions Status](https://github.com/pchakraborty/mepo/workflows/Unit%20testing%20of%20mepo/badge.svg)](https://github.com/pchakraborty/mepo/actions) [![DOI](https://zenodo.org/badge/215067850.svg)](https://zenodo.org/badge/latestdoi/215067850) [![Rye](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/rye/main/artwork/badge.json)](https://rye-up.com) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/GEOS-ESM/mepo)
+# mepo [![Actions Status](https://github.com/pchakraborty/mepo/workflows/Unit%20testing%20of%20mepo/badge.svg)](https://github.com/pchakraborty/mepo/actions) [![DOI](https://zenodo.org/badge/215067850.svg)](https://zenodo.org/badge/latestdoi/215067850) [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/GEOS-ESM/mepo)
 
 `mepo` is a tool, written in Python3, to manage (m)ultiple git r(epo)sitories, by attempting to create an illusion of a 'single repository' for multi-repository projects. Please see the [Wiki](../../wiki) for examples of `mepo` workflows.
 
@@ -90,6 +90,37 @@ and it will convert the repository from mepo v1 pickle-state to mepo v2 json-sta
 ## Commands
 
 For more about the possible `mepo` commands, please see the [Mepo Commands](https://github.com/GEOS-ESM/mepo/wiki/Mepo-Commands) wiki page.
+
+## Configuration
+
+User settings live in `~/.mepoconfig`. See the [example configuration](etc/mepoconfig-example) for directory styles, command aliases, partial clones, and Git retry settings. You can edit the file directly or use `mepo config set section.option value`.
+
+### Git transport retries
+
+Mepo retries recognized transient network failures during clone, checkout, pull, and fetch, including those run by `mepo develop`. Read-only operations such as status and diff also retry when a partial clone needs to fetch missing objects. Missing branches/tags, authentication failures, merge conflicts, and other non-transport errors are not retried. Push, commit, and stash-changing operations are not automatically retried.
+
+The defaults are:
+
+```ini
+[git]
+attempts = 6
+verbose = false
+```
+
+`attempts` counts the initial attempt, with a minimum of 1. Retries wait 5, 10, 15, ... seconds; the default allows five retries with 75 seconds of backoff in total, plus Git execution time. Set `attempts = 1` to disable retries. Retry detection currently recognizes English Git/SSH diagnostics only.
+
+To configure retries and enable diagnostics for retried commands:
+
+```sh
+mepo config set git.attempts 6
+mepo config set git.verbose true
+```
+
+Intermediate failures and retry notices are hidden by default. `mepo clone --verbose` (or `-v`) enables them for that clone invocation, including its post-clone checkout. Components that needed clone retries show `[N retries]` in the clone summary.
+
+Retry-enabled commands use an SSH connection timeout of 20 seconds unless `GIT_SSH_COMMAND` is already set. This is a connection timeout, not a limit on the whole Git operation. Retry cleanup only removes a new clone's incomplete directory, never an existing repository or the repository during post-clone checkout retries.
+
+**Upgrading from 2.5.0:** Move any `attempts` and `verbose` settings from `[clone]` to `[git]`; the old locations are no longer read. Partial-clone settings remain under `[clone]` as `partial`.
 
 ## Presentation
 
