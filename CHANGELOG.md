@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Apply partial-clone filters to recursively cloned submodules as well as their parent repository, using `--also-filter-submodules` (requires Git 2.36 or newer).
+
 ## [2.6.0] - 2026-10-28
 
 ### Fixed
