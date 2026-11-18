@@ -321,10 +321,8 @@ class GitRepository:
         else:
             # If we are a branch...
             if commit_type == "b":
-                #msgtype = "Branch"
                 reftype = "heads"
             elif commit_type == "t":
-                #msgtype = "Tag"
                 reftype = "tags"
             else:
                 raise RuntimeError("Should not get here")
