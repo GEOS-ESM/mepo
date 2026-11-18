@@ -35,11 +35,14 @@ def run(args):
 
     arg_partial = handle_partial(args.partial)
 
+    verbose = getattr(args, "verbose", False)  # reset builds its own args
     if args.url is not None:
-        fixture_dir = clone_fixture(args.url, args.branch, args.directory, arg_partial)
+        fixture_dir = clone_fixture(
+            args.url, args.branch, args.directory, arg_partial, verbose
+        )
         os.chdir(fixture_dir)
     allcomps = read_state(args.style, args.registry)
-    clone_components(allcomps, arg_partial)
+    clone_components(allcomps, arg_partial, verbose)
     if args.allrepos:
         checkout_all_repos(allcomps, args.branch)
 
@@ -62,13 +65,13 @@ def handle_partial(partial):
     return partial
 
 
-def clone_fixture(url, branch=None, directory=None, partial=None):
+def clone_fixture(url, branch=None, directory=None, partial=None, verbose=False):
     if directory is None:
         p = urlparse(url)
         last_url_node = p.path.rsplit("/")[-1]
         directory = pathlib.Path(last_url_node).stem
     git = GitRepository(url, directory)
-    git.clone(branch, partial=partial)
+    git.clone(branch, partial=partial, verbose=verbose)
     return directory
 
 
@@ -92,7 +95,7 @@ def get_registry(arg_registry):
     return registry
 
 
-def clone_components(allcomps, arg_partial):
+def clone_components(allcomps, arg_partial, verbose=False):
     max_namelen = max([len(comp.name) for comp in allcomps])
     for comp in allcomps:
         if comp.fixture:
@@ -112,15 +115,18 @@ def clone_components(allcomps, arg_partial):
         version = comp.version.name
         version = version.replace("origin/", "")
         git = GitRepository(comp.remote, comp.local)
-        git.clone(version, recurse=recurse_submodules, partial=partial)
+        retries = git.clone(
+            version, recurse=recurse_submodules, partial=partial, verbose=verbose
+        )
         if comp.sparse:
             git.sparsify(comp.sparse)
-        print_clone_info(comp.name, comp.version, max_namelen)
+        print_clone_info(comp.name, comp.version, max_namelen, retries)
 
 
-def print_clone_info(comp_name, comp_version, name_width):
+def print_clone_info(comp_name, comp_version, name_width, retries=0):
     ver_name_type = f"({comp_version.type}) {comp_version.name}"
-    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}")
+    suffix = f" [{retries} retries]" if retries else ""
+    print(f"{comp_name:<{name_width}} | {ver_name_type:<s}{suffix}")
 
 
 def checkout_all_repos(allcomps, branch):

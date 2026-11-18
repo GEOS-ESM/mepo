@@ -88,8 +88,10 @@ class MepoComponent(object):
                 # tags aren't found due to shallow clones
                 cmd_for_tag = "git describe --tags"
                 # Have to use 'if not' since 0 is a good status
-                if not shellcmd.run(cmd_for_tag.split(), status=True):
-                    ver_name = shellcmd.run(cmd_for_tag.split(), output=True).rstrip()
+                if not shellcmd.run(cmd_for_tag.split(), status=True, retry=True):
+                    ver_name = shellcmd.run(
+                        cmd_for_tag.split(), output=True, retry=True
+                    ).rstrip()
                     ver_type = "t"
                     is_detached = True
                 else:
@@ -97,7 +99,7 @@ class MepoComponent(object):
                     # will return weirdness (a grafted branch, probably a hash)
                     cmd_for_always = "git describe --always"
                     ver_name = shellcmd.run(
-                        cmd_for_always.split(), output=True
+                        cmd_for_always.split(), output=True, retry=True
                     ).rstrip()
                     ver_type = "h"
                     is_detached = True

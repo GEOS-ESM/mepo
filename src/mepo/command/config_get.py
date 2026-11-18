@@ -10,9 +10,7 @@ def run(args):
             f"Option [{option}] does not exist in section [{section}] in .mepoconfig"
         )
     value = mepoconfig.get(section, option)
-    print(
-        f"""
+    print(f"""
     [{section}]
     {option} = {value}
-    """
-    )
+    """)

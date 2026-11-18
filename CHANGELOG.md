@@ -7,13 +7,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-### Added
-
 ### Changed
 
 - Clarified error message for `mepo clone` when a fixture is not found in the registry (or more than one fixture is found)
+
+## [2.6.0] - 2026-10-28
+
+### Fixed
+
+- Retry transient Git transport failures during checkout, pull, fetch, and read-only operations that can fetch missing objects in partial clones, including `mepo develop`. Reuse the retry settings and SSH connection timeout; directory cleanup remains clone-only.
+- Fail immediately on non-transport Git errors (including missing branches/tags, authentication failures, and merge conflicts), rather than retrying them during clone.
+- Fixed command documentation generation to use the installed Python module, preserve multiline help, recognize current argument headings, and include all commands and options.
+
+### Added
+
+- Added regression tests for Git retries and command documentation generation.
+
+### Changed
+
+- Moved Git-wide retry settings `attempts` and `verbose` from `[clone]` to `[git]` in `~/.mepoconfig` (defaults: 6 total attempts, verbosity off). Users who configured these in 2.5.0 must move them to `[git]`.
+- Increased the default from 4 to 6 total attempts for unreliable connections (five retries with 75 seconds of backoff in total, plus Git execution time). Explicit `git.attempts` settings still take precedence.
+- Updated configuration documentation and command help, and documented how to regenerate the wiki command reference.
+
+## [2.5.0] - 2026-10-26
+
+### Fixed
+
+- Fixed `mepo reset --reclone` crashing because the clone arguments were missing `partial` (#383)
+
+### Added
+
+- Added retry of failed `git clone` (and the post-clone checkout) (default 4 attempts, with backoff) to survive transient network errors. Configurable via `attempts` in the `[clone]` section of `~/.mepoconfig`
+- `mepo clone` now shows `[N retries]` next to any component that needed retries
+- Retry details (git's error and retry notice) are hidden unless `--verbose`/`-v` is passed to `mepo clone` or `verbose = true` is set in the `[clone]` section of `~/.mepoconfig`
+- `mepo clone` now fails immediately with a clear message (no retries) if a target directory already exists and is non-empty, e.g. when `mepo clone` is run twice
+- `mepo clone` sets an ssh `ConnectTimeout` of 20s (unless `GIT_SSH_COMMAND` is already set) so dead connections fail fast and retry
+- Failed clone retries remove the partial directory (only if the clone created it), fixing retries after a blobless checkout failure
+
+### Changed
+
+- Updated GitHub Actions CI workflows:
+  - All workflows now use `actions/checkout@v7` (pinned to SHA, v7.0.1)
+  - All workflows now use `astral-sh/setup-uv` pinned to a specific SHA (`v10.3.2`) with uv `0.13.5` and caching disabled
+  - `run-formatter.yaml` and `run-linter.yaml` now use `uv run` instead of manually activating `.venv`
+  - `run-tests.yaml` Python version matrix updated: added 3.13, 3.14, 3.15; removed all PyPy versions (no benefit for a subprocess-bound CLI); added `fail-fast: false`
+- Updated `pyproject.toml`:
+  - Migrated `[tool.uv] dev-dependencies` to `[dependency-groups] dev`
+  - Fixed `license` field to use inline table format (`{ file = "LICENSE" }`)
+  - Moved `repository` URL to `[project.urls]`
+- Revised Homebrew installation instructions in `README.md`
 
 ## [2.4.0] - 2025-05-30
 

@@ -12,7 +12,6 @@ except ImportError:
 import mepo.command.clone as mepo_clone
 import mepo.command.status as mepo_status
 
-
 FIXTURE_NAME = "GEOSfvdycore-mepo-testing"
 FIXTURE_URL = f"https://github.com/pchakraborty/{FIXTURE_NAME}.git"
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
