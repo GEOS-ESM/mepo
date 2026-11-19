@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Clarified error message for `mepo clone` when a fixture is not found in the registry (or more than one fixture is found)
+
 ### Fixed
 
 - Apply partial-clone filters to recursively cloned submodules as well as their parent repository, using `--also-filter-submodules` (requires Git 2.36 or newer).
