@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.7.0] - 2026-11-19
+
 ### Changed
 
 - Clarified error message for `mepo clone` when a fixture is not found in the registry (or more than one fixture is found)
