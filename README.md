@@ -91,9 +91,29 @@ and it will convert the repository from mepo v1 pickle-state to mepo v2 json-sta
 
 For more about the possible `mepo` commands, please see the [Mepo Commands](https://github.com/GEOS-ESM/mepo/wiki/Mepo-Commands) wiki page.
 
+## Shell completion
+
+Tab completion is available for bash and zsh. It covers commands and sub-commands (e.g. `mepo branch create`), options, option values (e.g. `--style`), command aliases from `~/.mepoconfig`, and component names when run inside a mepo clone. Zsh also shows a short description for each candidate.
+
+Source the script for your shell from `etc/` (in a pip installation, that directory is `$(dirname $(mepo --location))/etc`):
+
+```sh
+# ~/.bashrc
+source /path/to/mepo/etc/mepo-completion.bash
+
+# ~/.zshrc (after compinit)
+source /path/to/mepo/etc/mepo-completion.zsh
+```
+
+Zsh users can instead copy `mepo-completion.zsh` as `_mepo` into a directory on `$fpath`.
+
 ## Configuration
 
 User settings live in `~/.mepoconfig`. See the [example configuration](etc/mepoconfig-example) for directory styles, command aliases, partial clones, and Git retry settings. You can edit the file directly or use `mepo config set section.option value`.
+
+### Partial clones and submodules
+
+When a component enables `recurse_submodules: true`, blobless cloning (via `--partial=blobless`, configuration, or `blobless: true` in `components.yaml`) also filters its submodules using Git's `--also-filter-submodules` option. This requires Git 2.36 or newer and affects new clones only. Treeless cloning still falls back to a full clone for recursive components unless the component explicitly sets `blobless: true`.
 
 ### Git transport retries
 

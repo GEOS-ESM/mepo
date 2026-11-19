@@ -1,3 +1,4 @@
+import sys
 from importlib import import_module
 
 from mepo.cmdline.parser import MepoArgParser
@@ -5,6 +6,13 @@ from mepo.utilities import mepoconfig
 
 
 def main():
+    # Hidden entry point used by the shell completion scripts in etc/
+    if len(sys.argv) > 1 and sys.argv[1] == "__complete":
+        from mepo.cmdline.completion import main as complete
+
+        complete(sys.argv[2:])
+        return
+
     args = MepoArgParser().parse()
     mepo_cmd = mepoconfig.get_alias_command(args.mepo_cmd)
 

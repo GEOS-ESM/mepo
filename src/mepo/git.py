@@ -53,6 +53,8 @@ class GitRepository:
             cmd += PARTIAL[partial]
         if recurse is not None:
             cmd += " --recurse-submodules "
+            if partial is not None:
+                cmd += " --also-filter-submodules "
         cmd += " --quiet {} {}".format(self.__remote, self.__local_path_abs)
         # Only clean up a directory this clone created (or an empty one, e.g. a submodule
         # placeholder); never touch existing non-empty (e.g. nested) repos
@@ -321,10 +323,8 @@ class GitRepository:
         else:
             # If we are a branch...
             if commit_type == "b":
-                msgtype = "Branch"
                 reftype = "heads"
             elif commit_type == "t":
-                msgtype = "Tag"
                 reftype = "tags"
             else:
                 raise RuntimeError("Should not get here")
