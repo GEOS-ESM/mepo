@@ -47,6 +47,10 @@ class MepoArgParser:
         self.subparsers.dest = "mepo_cmd"
 
     def parse(self):
+        return self.build().parse_args()
+
+    def build(self):
+        """Add all sub-commands and return the (not yet parsed) argparse parser"""
         self.__init()
         self.__clone()
         self.__list()
@@ -73,7 +77,7 @@ class MepoArgParser:
         self.__save()
         self.__config()
         self.__update_state()
-        return self.parser.parse_args()
+        return self.parser
 
     def __init(self):
         warnings.warn(
