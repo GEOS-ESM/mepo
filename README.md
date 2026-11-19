@@ -111,6 +111,10 @@ Zsh users can instead copy `mepo-completion.zsh` as `_mepo` into a directory on 
 
 User settings live in `~/.mepoconfig`. See the [example configuration](etc/mepoconfig-example) for directory styles, command aliases, partial clones, and Git retry settings. You can edit the file directly or use `mepo config set section.option value`.
 
+### Partial clones and submodules
+
+When a component enables `recurse_submodules: true`, blobless cloning (via `--partial=blobless`, configuration, or `blobless: true` in `components.yaml`) also filters its submodules using Git's `--also-filter-submodules` option. This requires Git 2.36 or newer and affects new clones only. Treeless cloning still falls back to a full clone for recursive components unless the component explicitly sets `blobless: true`.
+
 ### Git transport retries
 
 Mepo retries recognized transient network failures during clone, checkout, pull, and fetch, including those run by `mepo develop`. Read-only operations such as status and diff also retry when a partial clone needs to fetch missing objects. Missing branches/tags, authentication failures, merge conflicts, and other non-transport errors are not retried. Push, commit, and stash-changing operations are not automatically retried.

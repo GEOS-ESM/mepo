@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Apply partial-clone filters to recursively cloned submodules as well as their parent repository, using `--also-filter-submodules` (requires Git 2.36 or newer).
+
 ### Added
 
 - Added full shell completion for bash (`etc/mepo-completion.bash`) and zsh (`etc/mepo-completion.zsh`): commands, sub-commands, options, option values, command aliases, and component names. Candidates are generated from mepo's own argument parser through a hidden `mepo __complete` entry point, so completion stays in sync with the commands.
